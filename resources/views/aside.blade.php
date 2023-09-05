@@ -61,7 +61,7 @@
                     <select name="" class="form-select aside-select" id="statusSelect" style="border-left: none; font-size: 13px;">
                         <option value="">
                             <!-- @lang('lang.filter_by_client') -->
-                            Filter by {{($user->role == 'Admin') ? 'Clients' : 'Drivers'}}
+                            Filter by {{($user->role == 'Admin') ? 'Admins' : 'Users'}}
                         </option>
                         @foreach($activeRoutes as $key => $value)
                             @php
@@ -84,7 +84,7 @@
                 </span>
             </div>
             <div class="col-lg-12">
-                <h6 class="mb-0 mt-2">@lang('lang.ongoing_trips')</h6>
+                <h6 class="mb-0 mt-2">@lang('lang.ongoing_quotations')</h6>
             </div>
         </div>
 @endif
@@ -157,7 +157,7 @@
                 <h5 class="mb-0">
                     <a data-toggle="collapse" href="#collapseNoData" aria-expanded="true" aria-controls="collapseNoData">
                         <div class="d-flex flex-column">
-                            <span class="mb-1" style="font-style: normal;font-weight: 700;font-size: 14px;line-height: 17px;letter-spacing: 0.01em;color: #323C47;">@lang('lang.no_trip_available_yet')</span>
+                            <span class="mb-1" style="font-style: normal;font-weight: 700;font-size: 14px;line-height: 17px;letter-spacing: 0.01em;color: #323C47;">@lang('lang.no_quot_available')</span>
                         </div>
                     </a>
                 </h5>
@@ -165,7 +165,7 @@
             <div id="collapseNoData" class="collapse show" role="tabpanel" aria-labelledby="headingNoData" data-parent="#accordion">
                 <div class="card-body aside_bottom p-2 aside_body">
                     <!-- Additional content for no data scenario if needed -->
-                    <p>@lang('lang.you_dont_have_any_trips_yet')!</p>
+                    <p>@lang('lang.dont_quotation')!</p>
                 </div>
             </div>
         </div>
@@ -185,7 +185,7 @@
             <div id="collapseNoData" class="collapse show" role="tabpanel" aria-labelledby="headingNoData" data-parent="#accordion">
                 <div class="card-body p-2 aside_body">
                     <!-- Additional content for no data scenario if needed -->
-                    <p>@lang('lang.you_dont_have_any_trips_yet')!</p>
+                    <p>@lang('lang.dont_quotation')!</p>
                 </div>
             </div>
         </div>

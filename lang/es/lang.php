@@ -3,6 +3,8 @@
 return [
 
     "admin" => "yönetici",
+    "admins" => "yöneticiler",
+    "super_admins" => "süper yöneticiler",
     "select_driver" => "sürücü seç",
     "dashboard" => "Gösterge Paneli",
     "revenue" => "Hasılat",
@@ -253,5 +255,22 @@ return [
   "no_trip_available_yet" => "Henüz gezi mevcut değil",
   "you_dont_have_any_trips_yet" => "Henüz seyahatiniz yok",
   "client_email" => "Müşteri E-postası",
+  // QIC software
+  "total_quotations" => "Toplam Alıntılar",
+  "completed_contracts" => "Tamamlanan Sözleşmeler",
+  "active_contracts" => "Aktif Sözleşmeler",
+  "invoices_sent" => "Faturalar gönderildi",
+  "total_invoices" => "Toplam Faturalar",
+  "ongoing_quotations" => "Aktif Teklifler",
+  "no_quot_available" => "Henüz Teklif Bulunmamaktadır",
+  "dont_quotation" => "Henüz bir teklifiniz yok",
+  "quotations" => "Alıntılar",
+  "contracts" => "Sözleşmeler",
+  "invoices" => "Faturalar",
+
+
+  "" => "",
+  "" => "",
+  "" => "",
 
 ];

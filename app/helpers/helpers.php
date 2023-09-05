@@ -54,17 +54,17 @@ function view_permission($page_name) {
                 case 'settings':
                 case 'clients':
                 case 'drivers':
-                case 'calender':
+                // case 'calender':
                 case 'routes':    
                 case 'users':
-                case 'announcements':
-                case 'notifications': 
+                // case 'announcements':
+                // case 'notifications': 
                 case 'create_trip':     
             // case 'announcements_alerts': 
-                case 'pdf_templates': 
-                case 'packages': 
+                // case 'pdf_templates': 
+                // case 'packages': 
                 case 'logout': 
-                case 'calendar_maintable': 
+                // case 'calendar_maintable': 
 
                     return true;
                 default:
@@ -77,13 +77,13 @@ function view_permission($page_name) {
                 case 'settings':
                 case 'drivers':
                 case 'routes':
-                case 'calender':      
-                case 'notifications':    
+                // case 'calender':      
+                // case 'notifications':    
                 case 'create_trip': 
                 case 'logout': 
-                case 'home': 
-                case 'subscription':
-                case 'calendar_maintable': 
+                // case 'home': 
+                // case 'subscription':
+                // case 'calendar_maintable': 
 
                     return true;
                 default:
@@ -95,11 +95,11 @@ function view_permission($page_name) {
                 case 'index':
                 case 'settings':    
                 case 'routes': 
-                case 'calender':    
-                case 'notifications':    
-                case 'driver_map':    
+                // case 'calender':    
+                // case 'notifications':    
+                // case 'driver_map':    
                 case 'logout':
-                case 'calendar_maintable':
+                // case 'calendar_maintable':
                     return true;
                     
                 default:

@@ -14,7 +14,7 @@
                 <path d="M15.58 10.58C15.58 12.56 13.98 14.17 12 14.17C10.02 14.17 8.41998 12.56 8.41998 10.58C8.41998 8.60002 10.02 7 12 7C13.98 7 15.58 8.60002 15.58 10.58Z" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
               </svg>
             </span>
-            <span>@lang('lang.users')</span>
+            <span>@lang('lang.super_admins')</span>
           </h3>
           <div class="row">
             <!-- <div class="col-lg-4"></div> -->

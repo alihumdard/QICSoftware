@@ -3,6 +3,8 @@
 return [
 
     "admin" => "Admin",
+    "super_admins" => "Super Admins",
+    "admins" => "Admins",
     "select_driver" => "Select driver",
     "dashboard" => "Dashboard",
     "revenue" => "Revenue",
@@ -254,5 +256,20 @@ return [
   "no_trip_available_yet" => "No trip available yet",
   "you_dont_have_any_trips_yet" => "You don't have any trips yet",
   "client_email" => "Client Email",
+// QIC software
+  "total_quotations" => "Total Quotations",
+  "completed_contracts" => "Completed Contracts",
+  "active_contracts" => "Active Contracts",
+  "invoices_sent" => "Invoices Sent",
+  "total_invoices" => "Total Invoices",
+  "ongoing_quotations" => "Active Quotations",
+  "no_quot_available" => "No Quotation available yet",
+  "dont_quotation" => "You don't have any quotation yet",
+  "quotations" => "Quotations",
+  "invoices" => "Invoices",
+  "contracts" => "Contracts",
+  "" => "",
+  "" => "",
+  "" => "",
 
 ];

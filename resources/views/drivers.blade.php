@@ -18,14 +18,14 @@
                 <path fill-rule="evenodd" clip-rule="evenodd" d="M2.51468 6.08952C2.54002 5.9568 2.66152 5.86035 2.80334 5.86035H13.3647C13.5066 5.86035 13.6281 5.9568 13.6534 6.08952L13.6535 6.09019L13.6537 6.09086L13.654 6.09248L13.6546 6.09627L13.6562 6.10643C13.6574 6.1143 13.6588 6.1244 13.66 6.13651C13.6626 6.16079 13.6649 6.19339 13.6653 6.23307C13.666 6.31249 13.6586 6.42116 13.6286 6.54914C13.5677 6.80783 13.416 7.13668 13.0686 7.45627C12.3798 8.08986 10.9647 8.651 8.08404 8.651C5.20341 8.651 3.78827 8.08986 3.09948 7.45627C2.75205 7.13668 2.60035 6.80783 2.53951 6.54914C2.50943 6.42116 2.50212 6.31249 2.50279 6.23307C2.50312 6.19339 2.50547 6.16079 2.50803 6.13651C2.50932 6.1244 2.51066 6.1143 2.51183 6.10643L2.51345 6.09627L2.51412 6.09248L2.5144 6.09086L2.51456 6.09019L2.51468 6.08952Z" fill="white" />
               </svg>
             </span>
-            <span>@lang('lang.drivers')</span>
+            <span>@lang('lang.users')</span>
           </h3>
           <div class="row mb-2">
             <!-- <div class="col-lg-4"></div> -->
             <div class="col-lg-12">
               <div class="row mx-1">
                 <div class="col-lg-9 col-sm-6 mb-1 pr-0" style="text-align: right;">
-                  <button class="btn add-btn text-white" data-toggle="modal" data-target="#addclient" style="background-color: #E45F00;"><span><i class="fa fa-plus"></i> @lang('lang.add_driver')</span></button>
+                  <button class="btn add-btn text-white" data-toggle="modal" data-target="#addclient" style="background-color: #E45F00;"><span><i class="fa fa-plus"></i> @lang('lang.add_user')</span></button>
                 </div>
                 <div class="col-lg-3 col-sm-6 pr-0">
                   <div class="input-group">
