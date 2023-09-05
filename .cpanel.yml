@@ -1,0 +1,4 @@
+deployment:
+  tasks:
+    - export DEPLOYPATH=/home/htcjapan/public_html/htcjapan.jp/scooble
+    - /bin/cp * $DEPLOYPATH
