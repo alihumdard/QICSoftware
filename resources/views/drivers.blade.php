@@ -25,7 +25,7 @@
             <div class="col-lg-12">
               <div class="row mx-1">
                 <div class="col-lg-9 col-sm-6 mb-1 pr-0" style="text-align: right;">
-                  <button class="btn add-btn text-white" data-toggle="modal" data-target="#addclient" style="background-color: #E45F00;"><span><i class="fa fa-plus"></i> @lang('lang.add_user')</span></button>
+                  <button class="btn content-background add-btn text-white" data-toggle="modal" data-target="#addclient" ><span><i class="fa fa-plus"></i> @lang('lang.add_user')</span></button>
                 </div>
                 <div class="col-lg-3 col-sm-6 pr-0">
                   <div class="input-group">
@@ -81,8 +81,8 @@
 
                     @if($user->role != 'Client')
                     <th></th>
-                    <th>@lang('lang.clients')</th>
-                    <th>@lang('lang.client_email')</th>
+                    <th>@lang('lang.admins')</th>
+                    <th>@lang('lang.admin_email')</th>
                     @endif
 
                     <th>@lang('lang.status')</th>
@@ -176,6 +176,7 @@
 
     <!-- Add Client Modal -->
   @php
+  $modal_title = "User";
   $login_userId = $user->id;
   $user_role_static = 'Driver';
   @endphp

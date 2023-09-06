@@ -20,8 +20,8 @@ class UserTableSeeder extends Seeder
     {
             // Create an admin user
             User::factory()->create([
-                'name' => 'Admin',
-                'email' => 'admin@gmail.com',
+                'name' => 'Super Admin',
+                'email' => 'superadmin@gmail.com',
                 'password' => Hash::make('12345'),
                 'role' => 'Admin',
                 'status' => '1',
@@ -29,8 +29,8 @@ class UserTableSeeder extends Seeder
     
             // Create a client user
             User::factory()->create([
-                'name' => 'Client',
-                'email' => 'client@gmail.com',
+                'name' => 'Admin',
+                'email' => 'admin@gmail.com',
                 'password' => Hash::make('12345'),
                 'role' => 'Client',
                 'added_user_id' => '1',
@@ -40,8 +40,8 @@ class UserTableSeeder extends Seeder
     
             // Create a driver user
             User::factory()->create([
-                'name' => 'Driver',
-                'email' => 'driver@gmail.com',
+                'name' => 'User ',
+                'email' => 'user@gmail.com',
                 'password' => Hash::make('12345'),
                 'role' => 'Driver',
                 'added_user_id' => '1',

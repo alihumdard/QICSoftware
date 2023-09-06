@@ -22,7 +22,14 @@ Route::middleware('check.userAuthCheck','check.subscription')->group(function ()
 
 Route::match(['post','get'],'/client', [UserController::class, 'clients']);
 Route::match(['post','get'],'/drivers', [UserController::class, 'drivers']);
-Route::match(['post','get'],'/routes', [UserController::class, 'routes']);
+
+Route::match(['post','get'],'/quotations', [UserController::class, 'quotations'])->name('quotations');
+Route::match(['post','get'],'/contracts', [UserController::class, 'contracts'])->name('contracts');
+Route::match(['post','get'],'/invoices', [UserController::class, 'invoices'])->name('invoices');
+Route::match(['post','get'],'/add_quotation', [UserController::class, 'add_quotation'])->name('add_quotation');
+Route::match(['post','get'],'/add_contract', [UserController::class, 'add_contract'])->name('add_contract');
+Route::match(['post','get'],'/add_invoice', [UserController::class, 'add_invoice'])->name('add_invoice');
+
 Route::match(['post','get'],'/calender', [UserController::class, 'calender']);
 Route::match(['post','get'],'/calendar_maintable', [UserController::class, 'calendar_maintable']);
 Route::match(['post','get'],'/users', [UserController::class, 'users']);
@@ -33,7 +40,9 @@ Route::match(['post','get'],'/settings', [UserController::class, 'settings']);
 Route::match(['post','get'],'/edit/{id}', [UserController::class, 'user_edit']);
 Route::match(['post','get'],'/user_store', [UserController::class, 'user_store']);
 Route::match(['post','get'],'/lang_change', [UserController::class, 'lang_change']);
-Route::match(['post','get'],'/create_trip', [UserController::class, 'create_trip']);
+
+
+
 Route::match(['post','get'],'/driver_map', [UserController::class, 'driver_map']);
 Route::match(['post','get'],'/announcements_alerts', [UserController::class, 'announcements_alerts']);
 Route::match(['post','get'],'/pdf_templates', [UserController::class, 'pdf_templates']);

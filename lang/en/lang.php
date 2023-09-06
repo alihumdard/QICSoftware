@@ -268,6 +268,48 @@ return [
   "quotations" => "Quotations",
   "invoices" => "Invoices",
   "contracts" => "Contracts",
+  "add_sadmin" => "Add S_Admin",
+  "admin_email" => "Admin Email",
+  "create_quotation" => "Create Quotation",
+  "add_quotation" => "Add Quotation",
+  "create_contract" => "Create Contract",
+  "add_contract" => "Add Contract",
+  "create_invoice" => "Create Invoice",
+  "add_invoice" => "Add Invoice",
+
+  "quoted_date" => "Quoted Date",
+  "quote_title" => "Quote Title",
+  "quoted_amount" => "Quoted Amount",
+  "quote_category" => "Quote Category",
+  "quotation_desc" => "Quotation Description ",
+
+      // Contracts
+      "contract_date" => "Contract Date",
+      "contract_title" => "Contract Title",
+      "contract_amount" => "Contract Amount",
+      "contract_category" => "Contract Category",
+      "contract_desc" => "Contract Description",
+  
+      // Invoices
+      "invoice_date" => "Invoice Date",
+      "invoice_title" => "Invoice Title",
+      "invoice_amount" => "Invoice Amount",
+      "invoice_category" => "Invoice Category",
+      "invoice_desc" => "Invoice Description",
+      "category" => "Category",
+
+    "save_quotation" => "Save Quotation",
+
+    "save_contract" => "Save Contract",
+
+    "save_invoice" => "Save Invoice",
+  "" => "",
+  "" => "",
+  "" => "",
+  "" => "",
+  "" => "",
+  "" => "",
+  "" => "",
   "" => "",
   "" => "",
   "" => "",

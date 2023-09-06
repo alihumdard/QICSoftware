@@ -95,6 +95,7 @@ function view_permission($page_name) {
                 case 'index':
                 case 'settings':    
                 case 'routes': 
+                case 'create_trip': 
                 // case 'calender':    
                 // case 'notifications':    
                 // case 'driver_map':    

@@ -85,7 +85,7 @@
                                 <path d="M13.3333 8.88888H11.1111V6.66665C11.1111 6.37197 10.994 6.08935 10.7857 5.88098C10.5773 5.67261 10.2947 5.55554 9.99999 5.55554C9.7053 5.55554 9.42269 5.67261 9.21431 5.88098C9.00594 6.08935 8.88888 6.37197 8.88888 6.66665V8.88888H6.66665C6.37197 8.88888 6.08935 9.00594 5.88098 9.21431C5.67261 9.42269 5.55554 9.7053 5.55554 9.99999C5.55554 10.2947 5.67261 10.5773 5.88098 10.7857C6.08935 10.994 6.37197 11.1111 6.66665 11.1111H8.88888V13.3333C8.88888 13.628 9.00594 13.9106 9.21431 14.119C9.42269 14.3274 9.7053 14.4444 9.99999 14.4444C10.2947 14.4444 10.5773 14.3274 10.7857 14.119C10.994 13.9106 11.1111 13.628 11.1111 13.3333V11.1111H13.3333C13.628 11.1111 13.9106 10.994 14.119 10.7857C14.3274 10.5773 14.4444 10.2947 14.4444 9.99999C14.4444 9.7053 14.3274 9.42269 14.119 9.21431C13.9106 9.00594 13.628 8.88888 13.3333 8.88888Z" fill="white" />
                             </svg>
                         </span>
-                        <span>{{ ($duplicate_trip ?? '' ==1) ? 'Duplicate Quotation' : ((isset($data['id'])) ? 'Update Quotation' : 'Add Quotation') }}</span>
+                        <span>{{ ($duplicate_trip ?? '' ==1) ? 'Duplicate Contract' : ((isset($data['id'])) ? 'Update Contract' : 'Add Contract') }}</span>
                     </h3>
                 </div>
 
@@ -139,7 +139,7 @@
                             </div>
 
                             <div class="col-lg-12 mb-2">
-                                <label for="trip_desc">@lang('lang.quotation_desc')</label>
+                                <label for="trip_desc">@lang('lang.contract_desc')</label>
                                 <textarea name="desc" id="trip_desc" class="form-control" placeholder="@lang('lang.trip_description')">{{ $data['desc'] ?? '' }}</textarea>
                                 <p id="charCountContainer" class="text-secondary text-right" style="display: none;"><span id="charCount">250</span> /250</p>
                             </div>
@@ -150,14 +150,14 @@
                             </div>
 
                             <div class="col-lg-4 col-sm-6">
-                                <label for="end_address">@lang('lang.quote_category')</label>
+                                <label for="end_address">@lang('lang.contract_category')</label>
                                 <select required name="start_point"  class="form-select">
                                 <option disabled selected> Select @lang('lang.quote_category')</option>
                                 </select>
                             </div>
 
                             <div class="col-lg-4 col-sm-6">
-                                <label for="end_address">@lang('lang.quoted_amount')</label>
+                                <label for="end_address">@lang('lang.contract_amount')</label>
                                 <input required type="number" min="1" name="" id="" value="{{ $data['title'] ?? 1 }}" placeholder="@lang('lang.quoted_amount')" class="form-control">
                             </div>
                         </div>
@@ -167,7 +167,7 @@
                             <div class=" offset-lg-10  offset-md-6 col-lg-2 col-md-6 col-sm-12 d-flex justify-content-end  text-right mt-2 mb-5">
                                 <button type="submit" id="btn_save_trip" class="btn btn-block active text-white" style="background-color:#184A45FF;  border-radius: 8px;">
                                 <div class="spinner-border spinner-border-sm text-white d-none" id="spinner"></div>
-                                    <span id="text">@lang('lang.save_trip')</span>
+                                    <span id="text">@lang('lang.save_contract')</span>
                                 </button>
                             </div>
                         </div>

@@ -21,7 +21,7 @@
                 <path d="M18.4862 18.5H18.4978" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
               </svg>
             </span>
-            <span>@lang('lang.quotations')</span>
+            <span>@lang('lang.contracts')</span>
           </h3>
           <div class="row mb-2">
             <!-- <div class="col-lg-4"></div> -->
@@ -29,10 +29,10 @@
               <div class="row mx-1">
                 <div class="col-lg-9 col-sm-6 mb-1 pr-0" style="text-align: right;">
                   <a >
-                    <button class="btn content-background add-btn text-white" ><span><i class=" fa-regular fa-file-lines"></i> @lang('lang.create_quotation')</span></button>
+                    <button class="btn content-background add-btn text-white" ><span><i class=" fa-regular fa-file-lines"></i> @lang('lang.create_contract')</span></button>
                   </a>
-                  <a href="/create_trip">
-                    <button class="btn add-btn text-white" style="background-color: #E95C20FF;"><span><i class="fa fa-plus"></i> @lang('lang.add_quotation')</span></button>
+                  <a href="{{ route('add_contract') }}">
+                    <button class="btn add-btn text-white" style="background-color: #E95C20FF;"><span><i class="fa fa-plus"></i> @lang('lang.add_contract')</span></button>
                   </a>
                 </div>
                 <div class="col-lg-3 col-sm-6 pr-0">
@@ -81,10 +81,10 @@
                 <thead class="text-secondary" style="background-color: #E9EAEF;">
                   <tr style="font-size: small;">
                     <th>#</th>
-                    <th style="width: 100px;">@lang('lang.quoted_date')</th>
-                    <th>@lang('lang.quote_title')</th>
-                    <th>@lang('lang.quoted_amount')</th>
-                    <th>@lang('lang.quote_category')</th>
+                    <th style="width: 100px;">@lang('lang.date')</th>
+                    <th>@lang('lang.contract_title')</th>
+                    <th>@lang('lang.contract_amount')</th>
+                    <th>@lang('lang.category')</th>
                     <th>@lang('lang.description')</th>
                     <th>@lang('lang.client_name')</th>
                     <th>@lang('lang.status')</th>

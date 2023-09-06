@@ -267,7 +267,55 @@ return [
   "quotations" => "Alıntılar",
   "contracts" => "Sözleşmeler",
   "invoices" => "Faturalar",
+  "add_sadmin" => "yönetici ekle",
+  "admin_email" => "Yönetici e-postası",
+  "create_quotation" => "Teklif Oluştur",
+  "add_quotation" => "Teklif Ekle",
+  "quoted_date" => "Alıntı Tarihi",
+  "quote_title" => "Alıntı Başlığı",
+  "quoted_amount" => "Teklif edilen tutar",
+  "quote_category" => "Alıntı Kategorisi",
+  "quotation_desc" => "Teklif açıklaması",
+  "create_contract" => "Sözleşme Oluştur",
+    "add_contract" => "Sözleşme Ekle",
+    "create_invoice" => "Fatura Oluştur",
+    "add_invoice" => "Fatura Ekle",
 
+
+    // Contracts
+    "contract_date" => "Sözleşme Tarihi",
+    "contract_title" => "Sözleşme Başlığı",
+    "contract_amount" => "Sözleşme Tutarı",
+    "contract_category" => "Sözleşme Kategorisi",
+    "contract_desc" => "Sözleşme Açıklaması",
+
+    // Invoices
+    "invoice_date" => "Fatura Tarihi",
+    "invoice_title" => "Fatura Başlığı",
+    "invoice_amount" => "Fatura Tutarı",
+    "invoice_category" => "Fatura Kategorisi",
+    "invoice_desc" => "Fatura Açıklaması",
+    "category" => "Kategori",
+
+  "save_quotation" => "Kaydet Teklif",
+  "save_contract" => "Kaydet Sözleşme",
+  "save_invoice" => "Kaydet Fatura",
+  
+  "" => "",
+  "" => "",
+  "" => "",
+
+  "" => "",
+  "" => "",
+  "" => "",
+
+  "" => "",
+  "" => "",
+  "" => "",
+
+  "" => "",
+  "" => "",
+  "" => "",
 
   "" => "",
   "" => "",

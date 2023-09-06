@@ -20856,7 +20856,7 @@ body{
   width: 78px;
   padding: 10px 0px 10px 0px;
   /* z-index: 99; */
-  background-color:#3B2182F2;
+  background-color:#184A45FF;
   transition: all .5s ease;
   position: fixed;
   top:0;
@@ -20977,7 +20977,7 @@ body{
   width: 100%;
   height: 100%;
   transform: scaleX(0);
-  background-color: #3B2182F2;
+  background-color: #B0B8B4FF;
   border-left: 5px solid #E45F00;
   border-radius: 5px;
   transition: transform 0.3s ease-in-out;
@@ -20987,7 +20987,7 @@ body{
 
 .sidebar li a:hover::after{
   transform: scaleX(1);
-  color:#3B2182F2
+  color:#B0B8B4FF
 }
 
 .sidebar li a .link_name{
@@ -21041,7 +21041,7 @@ body{
   top:50%;
   right: 0;
   transform: translateY(-50%);
-  background-color: #3B2182F2;
+  background-color: #B0B8B4FF;
   width: 100%;
   height: 60px;
   line-height: 60px;
@@ -21126,6 +21126,10 @@ body{
 .circle-tile {
   margin-bottom: 15px;
   text-align: center;
+}
+
+.content-background{
+  background-color: #184A45FF !important;
 }
 
 .top_bagdes {

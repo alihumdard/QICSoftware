@@ -181,7 +181,7 @@ if(isset($user->role) && $user->role == user_roles('1')){
       <div class="logo_name d-none" id="logo-name">
         <div class="nav-profile-text d-flex flex-column text-wrap">
           <span class="mb-1" style="font-size: small;">{{(isset($user->name)) ? $user->name : 'Guest'}}</span>
-          <span class="text-secondary text-small">{{(isset($user->role)) ? $user->role : 'Guest'}}</span>
+          <span class="text-secondary text-white text-small">{{(isset($user->role)) ? $user->role : 'Guest'}}</span>
         </div>
       </div>
     </div>
@@ -202,7 +202,7 @@ if(isset($user->role) && $user->role == user_roles('1')){
 
       @if(view_permission('routes'))
       <li>
-        <a href="{{'/routes'}}">
+        <a href="{{ route('quotations') }}">
         <i class="ml-3 fa-regular fa-file-lines"></i>
           <span class="link_name">@lang('lang.quotations')</span>
         </a>
@@ -212,7 +212,7 @@ if(isset($user->role) && $user->role == user_roles('1')){
 
       @if(view_permission('routes'))
       <li>
-        <a href="{{'/routes'}}">
+        <a href="{{ route('contracts') }}">
         <i class="ml-3 fa-solid fa-file-signature" style="color: #fefffa;"></i>
           <span class="link_name">@lang('lang.contracts')</span>
         </a>
@@ -222,7 +222,7 @@ if(isset($user->role) && $user->role == user_roles('1')){
 
       @if(view_permission('routes'))
       <li>
-        <a href="{{'/routes'}}">
+        <a href="{{ route('invoices') }}">
         <i class=" ml-3 fa-solid fa-receipt"></i>
           <span class="link_name">@lang('lang.invoices')</span>
         </a>
@@ -426,11 +426,11 @@ if(isset($user->role) && $user->role == user_roles('1')){
   <section class="home-section">
   <i class="menu btn-menu-openClose open-btn-menu" id="btn" style="top: 82; left: 63;">
     <svg width="40" height="50" id="open-icon" viewBox="0 0 15 39" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M0 5.19807C0 2.88825 2.50083 1.44493 4.50083 2.60048L13.5008 7.80048C14.4286 8.33651 15 9.32662 15 10.3981V28.6019C15 29.6734 14.4286 30.6635 13.5008 31.1995L4.50083 36.3995C2.50083 37.5551 0 36.1118 0 33.8019V5.19807Z" fill="#452C88" />
+      <path d="M0 5.19807C0 2.88825 2.50083 1.44493 4.50083 2.60048L13.5008 7.80048C14.4286 8.33651 15 9.32662 15 10.3981V28.6019C15 29.6734 14.4286 30.6635 13.5008 31.1995L4.50083 36.3995C2.50083 37.5551 0 36.1118 0 33.8019V5.19807Z" fill="#184A45FF" />
       <path d="M7.58929 16.638C7.5 16.5469 7.35714 16.5469 7.28571 16.638L6.92857 17.0026C6.83929 17.0755 6.83929 17.2214 6.92857 17.3125L8.66071 19.026L4.21429 19.026C4.10714 19.026 4 19.1172 4 19.2448L4 19.7552C4 19.8646 4.10714 19.974 4.21429 19.974L8.66071 19.974L6.92857 21.6693C6.83929 21.7604 6.83929 21.9062 6.92857 21.9792L7.28571 22.3437C7.35714 22.4349 7.5 22.4349 7.58929 22.3437L10.2321 19.6458C10.3214 19.5547 10.3214 19.4271 10.2321 19.3359L7.58929 16.638ZM11.0714 16.2187L11.0714 22.7812C11.0714 22.8906 11.1786 23 11.2857 23L11.7857 23C11.9107 23 12 22.8906 12 22.7812L12 16.2188C12 16.0911 11.9107 16 11.7857 16L11.2857 16C11.1786 16 11.0714 16.0911 11.0714 16.2187Z" fill="white" />
     </svg>
     <svg width="40" height="50" class="d-none close-btn-menu" id="close-icon" viewBox="0 0 15 37" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M0 3.21168C0 0.74256 2.50083 -0.800304 4.50083 0.434943L13.5008 5.99358C14.4286 6.56658 15 7.62497 15 8.77035L15 28.2296C15 29.375 14.4286 30.4334 13.5008 31.0064L4.50083 36.565C2.50083 37.8003 0 36.2575 0 33.7883L0 3.21168Z" fill="#452C88" />
+      <path d="M0 3.21168C0 0.74256 2.50083 -0.800304 4.50083 0.434943L13.5008 5.99358C14.4286 6.56658 15 7.62497 15 8.77035L15 28.2296C15 29.375 14.4286 30.4334 13.5008 31.0064L4.50083 36.565C2.50083 37.8003 0 36.2575 0 33.7883L0 3.21168Z" fill="#184A45FF" />
       <path d="M7.41071 20.362C7.5 20.4531 7.64286 20.4531 7.71429 20.362L8.07143 19.9974C8.16071 19.9245 8.16071 19.7786 8.07143 19.6875L6.33929 17.974L10.7857 17.974C10.8929 17.974 11 17.8828 11 17.7552V17.2448C11 17.1354 10.8929 17.026 10.7857 17.026L6.33929 17.026L8.07143 15.3307C8.16071 15.2396 8.16071 15.0938 8.07143 15.0208L7.71429 14.6563C7.64286 14.5651 7.5 14.5651 7.41071 14.6563L4.7679 17.3542C4.6786 17.4453 4.6786 17.5729 4.7679 17.6641L7.41071 20.362ZM3.9286 20.7813L3.9286 14.2188C3.9286 14.1094 3.8214 14 3.7143 14H3.2143C3.0893 14 3 14.1094 3 14.2188L3 20.7812C3 20.9089 3.0893 21 3.2143 21H3.7143C3.8214 21 3.9286 20.9089 3.9286 20.7813Z" fill="white" />
     </svg>
   </i>
@@ -451,7 +451,7 @@ if(isset($user->role) && $user->role == user_roles('1')){
             <li class="nav-item dropdown">
               <a class="nav-link count-indicator dropdown-toggle mx-1" id="notificationDropdown" href="#" data-bs-toggle="dropdown">
                 <div class="nav-profile-image">
-                  <button class="btn btn-sm text-white" style="background-color: #E45F00;">
+                  <button class="btn content-background btn-sm text-white" >
                     <i class="fa fa-plus" style="font-size: 20px;"></i>
                   </button>
                 </div>
@@ -481,7 +481,7 @@ if(isset($user->role) && $user->role == user_roles('1')){
 
                 @if(view_permission('routes'))
                 <div class="dropdown-divider"></div>
-                <a class="dropdown-item preview-item" href="/routes">
+                <a class="dropdown-item preview-item" href="{{ route('quotations') }}">
                   <div class="preview-thumbnail">
                     <div class="preview-icon">
                     <i class="ml-3 fa-regular fa-file-lines"></i>
@@ -495,7 +495,7 @@ if(isset($user->role) && $user->role == user_roles('1')){
 
                 @if(view_permission('routes'))
                 <div class="dropdown-divider"></div>
-                <a class="dropdown-item preview-item" href="/routes">
+                <a class="dropdown-item preview-item" href="{{ route('contracts') }}">
                   <div class="preview-thumbnail">
                     <div class="preview-icon">
                     <i class=" ml-3  fa-solid fa-file-signature"></i>
@@ -509,7 +509,7 @@ if(isset($user->role) && $user->role == user_roles('1')){
 
                 @if(view_permission('routes'))
                 <div class="dropdown-divider"></div>
-                <a class="dropdown-item preview-item" href="/routes">
+                <a class="dropdown-item preview-item" href="{{ route('invoices') }}">
                   <div class="preview-thumbnail">
                     <div class="preview-icon">
                     <i class=" ml-3 fa-solid fa-receipt"></i>
@@ -523,7 +523,7 @@ if(isset($user->role) && $user->role == user_roles('1')){
 
                 @if(view_permission('drivers'))
                 <div class="dropdown-divider"></div>
-                <a class="dropdown-item preview-item" data-toggle="modal" data-target="#addclient">
+                <a class="dropdown-item preview-item" href="{{ '/drivers' }}">
                   <div class="preview-thumbnail">
                     <div class="preview-icon ml-2">
                       <svg width="40" height="32" viewBox="0 0 27 41" fill="none" xmlns="http://www.w3.org/2000/svg">

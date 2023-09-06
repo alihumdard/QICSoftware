@@ -135,7 +135,7 @@ class UserController extends Controller
                         return view('client_dashboard', $data);
                     }
                 }else{
-                    return redirect('/home');
+                    return redirect('/login');
                 }
 
             }
@@ -202,8 +202,9 @@ class UserController extends Controller
             }
         }
         else {
-            $package = Package::orderBy('id', 'ASC')->get()->toArray();
-            return view('home', ['data' => $package]);
+            // $package = Package::orderBy('id', 'ASC')->get()->toArray();
+            // return view('login', ['data' => $package]);
+            return view('login');
         }
     }
     
@@ -250,7 +251,7 @@ class UserController extends Controller
 
     }
 
-    public function routes()
+    public function quotations()
     {
         $user = auth()->user();
         $page_name = 'routes';
@@ -268,7 +269,7 @@ class UserController extends Controller
             ->get()
             ->toArray();
 
-            return view('routes', ['data' => $trips,'user'=>$user]);
+            return view('quotations', ['data' => $trips,'user'=>$user]);
         } 
 
         else if(isset($user->role) && $user->role == user_roles('2')){
@@ -278,7 +279,7 @@ class UserController extends Controller
             ->orderBy('trips.id', 'desc')
             ->get()
             ->toArray();
-            return view('routes', ['data' => $trips,'user'=>$user]);
+            return view('quotations', ['data' => $trips,'user'=>$user]);
         }
         
         else {
@@ -288,12 +289,98 @@ class UserController extends Controller
             ->orderBy('trips.id', 'desc')
             ->get()
             ->toArray();
-            return view('routes', ['data' => $trips,'user'=>$user]);
+            return view('quotations', ['data' => $trips,'user'=>$user]);
         } 
 
     }
 
-    public function create_trip(Request $request)
+    public function contracts()
+    {
+        $user = auth()->user();
+        $page_name = 'routes';
+
+        if(!view_permission($page_name)){
+            return redirect()->back();  
+        }
+
+        if(isset($user->role) && $user->role == user_roles('1')){
+
+            $trips = Trip::join('users as drivers', 'drivers.id', '=', 'trips.driver_id')
+            ->join('users as clients', 'clients.id', '=', 'trips.client_id')
+            ->select('trips.*', 'drivers.id as driver_id', 'drivers.name as driver_name', 'drivers.user_pic as driver_pic', 'clients.user_pic as client_pic', 'clients.name as client_name')
+            ->orderBy('trips.id', 'desc')
+            ->get()
+            ->toArray();
+
+            return view('contracts', ['data' => $trips,'user'=>$user]);
+        } 
+
+        else if(isset($user->role) && $user->role == user_roles('2')){
+            $trips = Trip::join('users', 'users.id', '=', 'trips.driver_id')
+            ->where('trips.client_id', $user->id)
+            ->select('trips.*', 'users.id as driver_id', 'users.name as driver_name', 'users.user_pic  as driver_pic')
+            ->orderBy('trips.id', 'desc')
+            ->get()
+            ->toArray();
+            return view('contracts', ['data' => $trips,'user'=>$user]);
+        }
+        
+        else {
+            $trips = Trip::join('users', 'users.id', '=', 'trips.client_id')
+            ->where('trips.driver_id', $user->id)
+            ->select('trips.*', 'users.id as client_id', 'users.name as client_name', 'users.user_pic  as client_pic')
+            ->orderBy('trips.id', 'desc')
+            ->get()
+            ->toArray();
+            return view('contracts', ['data' => $trips,'user'=>$user]);
+        } 
+
+    }
+
+    public function invoices()
+    {
+        $user = auth()->user();
+        $page_name = 'routes';
+
+        if(!view_permission($page_name)){
+            return redirect()->back();  
+        }
+
+        if(isset($user->role) && $user->role == user_roles('1')){
+
+            $trips = Trip::join('users as drivers', 'drivers.id', '=', 'trips.driver_id')
+            ->join('users as clients', 'clients.id', '=', 'trips.client_id')
+            ->select('trips.*', 'drivers.id as driver_id', 'drivers.name as driver_name', 'drivers.user_pic as driver_pic', 'clients.user_pic as client_pic', 'clients.name as client_name')
+            ->orderBy('trips.id', 'desc')
+            ->get()
+            ->toArray();
+
+            return view('invoices', ['data' => $trips,'user'=>$user]);
+        } 
+
+        else if(isset($user->role) && $user->role == user_roles('2')){
+            $trips = Trip::join('users', 'users.id', '=', 'trips.driver_id')
+            ->where('trips.client_id', $user->id)
+            ->select('trips.*', 'users.id as driver_id', 'users.name as driver_name', 'users.user_pic  as driver_pic')
+            ->orderBy('trips.id', 'desc')
+            ->get()
+            ->toArray();
+            return view('invoices', ['data' => $trips,'user'=>$user]);
+        }
+        
+        else {
+            $trips = Trip::join('users', 'users.id', '=', 'trips.client_id')
+            ->where('trips.driver_id', $user->id)
+            ->select('trips.*', 'users.id as client_id', 'users.name as client_name', 'users.user_pic  as client_pic')
+            ->orderBy('trips.id', 'desc')
+            ->get()
+            ->toArray();
+            return view('invoices', ['data' => $trips,'user'=>$user]);
+        } 
+
+    }
+
+    public function add_quotation(Request $request)
     {
         $user = auth()->user();
         $data['user'] = $user;
@@ -325,7 +412,7 @@ class UserController extends Controller
                 }else{
                     $data['client_list'] = User::where(['role' => user_roles('2'), 'status'=>auth_users()])->orderBy('id', 'desc')->select('id','name')->get()->toArray();
                 $data['driver_list'] = User::where(['role' => user_roles('3'),'client_id' => $data['data']['client_id']])->orderBy('id', 'desc')->get()->toArray();
-                    return view('create_trip',$data);
+                    return view('add_quotation',$data);
                 }
             }
             
@@ -344,7 +431,7 @@ class UserController extends Controller
                     dd($data);
                     return view('pdf_templates',$data);                    
                     }else{
-                        return view('create_trip',$data);
+                        return view('add_quotation',$data);
                     }
             }
         }
@@ -352,10 +439,144 @@ class UserController extends Controller
             if(isset($user->role) && $user->role == user_roles('1')){    
                 $data['driver_list'] = [];
                 $data['client_list'] = User::where(['role' => user_roles('2'),'status' => auth_users()])->orderBy('id', 'desc')->select('id','name')->get()->toArray();
-                return view('create_trip',$data);
+                return view('add_quotation',$data);
             }else{
                 $data['driver_list'] = User::where(['role' => user_roles('3'),'client_id' => $user->id])->orderBy('id', 'desc')->get()->toArray();
-                return view('create_trip',$data);
+                return view('add_quotation',$data);
+            }
+        }
+    }
+
+    public function add_contract(Request $request)
+    {
+        $user = auth()->user();
+        $data['user'] = $user;
+        $page_name = 'create_trip';
+
+        if(!view_permission($page_name)){
+            return redirect()->back();  
+        }
+        $data['duplicate_trip'] = NULL;
+        if ($request->has('id')) {
+
+            $data['duplicate_trip'] = $request->duplicate_trip ?? NULL;
+            
+            if(isset($user->role) && ($user->role == user_roles('1'))){   
+                $trip = Trip::with(['addresses' => function ($query) {
+                    $query->orderBy('order_no', 'ASC');
+                }])->find($request->id);
+                
+                $data['data'] = $trip->toArray();
+                $data['data']['addresses'] = $trip->addresses->toArray();
+                //$data['client_list'] = User::where(['role' => user_roles('2'), 'status'=>auth_users()])->orderBy('id', 'desc')->select('id','name')->get()->toArray();
+                //$data['driver_list'] = User::where(['role' => user_roles('3'),'client_id' => $data['data']['client_id']])->orderBy('id', 'desc')->get()->toArray();
+                if ($request->dashboard_data == 1) {
+                    $data['client_list'] = User::where('id', $trip->client_id)->first();
+                    $data['driver_list'] = User::where('id', $trip->driver_id)->first();
+                    //dd($data);
+                     
+                return view('pdf_templates',$data);                    
+                }else{
+                    $data['client_list'] = User::where(['role' => user_roles('2'), 'status'=>auth_users()])->orderBy('id', 'desc')->select('id','name')->get()->toArray();
+                $data['driver_list'] = User::where(['role' => user_roles('3'),'client_id' => $data['data']['client_id']])->orderBy('id', 'desc')->get()->toArray();
+                    return view('add_contract',$data);
+                }
+            }
+            
+            else{
+                $trip = Trip::with(['addresses' => function ($query) {
+                    $query->orderBy('order_no', 'ASC');
+                }])->find($request->id);
+                
+                $data['data'] = $trip->toArray();
+                $data['data']['addresses'] = $trip->addresses->toArray();
+                
+                $data['driver_list'] = User::where(['role' => user_roles('3')])->orderBy('id', 'desc')->select('id','name')->get()->toArray();
+                if ($request->dashboard_data == 1) {
+                    $data['client_list'] = User::where('id', $trip->client_id)->first();
+                    $data['driver_list'] = User::where('id', $trip->driver_id)->first();
+                    dd($data);
+                    return view('pdf_templates',$data);                    
+                    }else{
+                        return view('add_contract',$data);
+                    }
+            }
+        }
+        else{
+            if(isset($user->role) && $user->role == user_roles('1')){    
+                $data['driver_list'] = [];
+                $data['client_list'] = User::where(['role' => user_roles('2'),'status' => auth_users()])->orderBy('id', 'desc')->select('id','name')->get()->toArray();
+                return view('add_contract',$data);
+            }else{
+                $data['driver_list'] = User::where(['role' => user_roles('3'),'client_id' => $user->id])->orderBy('id', 'desc')->get()->toArray();
+                return view('add_contract',$data);
+            }
+        }
+    }
+
+    public function add_invoice(Request $request)
+    {
+        $user = auth()->user();
+        $data['user'] = $user;
+        $page_name = 'create_trip';
+
+        if(!view_permission($page_name)){
+            return redirect()->back();  
+        }
+        $data['duplicate_trip'] = NULL;
+        if ($request->has('id')) {
+
+            $data['duplicate_trip'] = $request->duplicate_trip ?? NULL;
+            
+            if(isset($user->role) && ($user->role == user_roles('1'))){   
+                $trip = Trip::with(['addresses' => function ($query) {
+                    $query->orderBy('order_no', 'ASC');
+                }])->find($request->id);
+                
+                $data['data'] = $trip->toArray();
+                $data['data']['addresses'] = $trip->addresses->toArray();
+                //$data['client_list'] = User::where(['role' => user_roles('2'), 'status'=>auth_users()])->orderBy('id', 'desc')->select('id','name')->get()->toArray();
+                //$data['driver_list'] = User::where(['role' => user_roles('3'),'client_id' => $data['data']['client_id']])->orderBy('id', 'desc')->get()->toArray();
+                if ($request->dashboard_data == 1) {
+                    $data['client_list'] = User::where('id', $trip->client_id)->first();
+                    $data['driver_list'] = User::where('id', $trip->driver_id)->first();
+                    //dd($data);
+                     
+                return view('pdf_templates',$data);                    
+                }else{
+                    $data['client_list'] = User::where(['role' => user_roles('2'), 'status'=>auth_users()])->orderBy('id', 'desc')->select('id','name')->get()->toArray();
+                $data['driver_list'] = User::where(['role' => user_roles('3'),'client_id' => $data['data']['client_id']])->orderBy('id', 'desc')->get()->toArray();
+                    return view('add_invoice',$data);
+                }
+            }
+            
+            else{
+                $trip = Trip::with(['addresses' => function ($query) {
+                    $query->orderBy('order_no', 'ASC');
+                }])->find($request->id);
+                
+                $data['data'] = $trip->toArray();
+                $data['data']['addresses'] = $trip->addresses->toArray();
+                
+                $data['driver_list'] = User::where(['role' => user_roles('3')])->orderBy('id', 'desc')->select('id','name')->get()->toArray();
+                if ($request->dashboard_data == 1) {
+                    $data['client_list'] = User::where('id', $trip->client_id)->first();
+                    $data['driver_list'] = User::where('id', $trip->driver_id)->first();
+                    dd($data);
+                    return view('pdf_templates',$data);                    
+                    }else{
+                        return view('add_invoice',$data);
+                    }
+            }
+        }
+        else{
+            if(isset($user->role) && $user->role == user_roles('1')){    
+                $data['driver_list'] = [];
+                $data['client_list'] = User::where(['role' => user_roles('2'),'status' => auth_users()])->orderBy('id', 'desc')->select('id','name')->get()->toArray();
+                return view('add_invoice',$data);
+            }else{
+                $data['driver_list'] = User::where(['role' => user_roles('3'),'client_id' => $user->id])->orderBy('id', 'desc')->get()->toArray();
+                return view('add_invoice',$data);
             }
         }
     }
@@ -736,7 +957,7 @@ class UserController extends Controller
     {
         session()->forget('lang');
         session()->flush();
-        return redirect('/home');
+        return redirect('/login');
     }
 
     public function forgot_password(REQUEST $request)

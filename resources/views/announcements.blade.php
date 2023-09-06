@@ -78,7 +78,7 @@
                     <input type="radio" name="type" class="type" required value="News" {{ ($announcmnent['type'] ?? '') === 'News' ? 'checked' : '' }}> @lang('lang.news')
                 </div>
                 <div class="col-lg-2 col-sm-2 mt-3 text-center p-0">
-                    <button class="btn btn-sm px-4 text-white" name="submit" id="submitBtn" style="background-color: #E45F00;"><span>{{($announcmnent['id']  ?? '') !== '' ? __('lang.update') : __('lang.add')}}</span></button>
+                    <button class="btn content-background btn-sm px-4 text-white" name="submit" id="submitBtn" ><span>{{($announcmnent['id']  ?? '') !== '' ? __('lang.update') : __('lang.add')}}</span></button>
                 </div>
                 <div class="text-danger error-message" id="type-error"></div>
             </div>

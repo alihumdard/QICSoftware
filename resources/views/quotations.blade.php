@@ -31,7 +31,7 @@
                   <a >
                     <button class="btn content-background add-btn text-white" ><span><i class=" fa-regular fa-file-lines"></i> @lang('lang.create_quotation')</span></button>
                   </a>
-                  <a href="/create_trip">
+                  <a href="{{ route('add_quotation') }}">
                     <button class="btn add-btn text-white" style="background-color: #E95C20FF;"><span><i class="fa fa-plus"></i> @lang('lang.add_quotation')</span></button>
                   </a>
                 </div>
