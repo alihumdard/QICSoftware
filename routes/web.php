@@ -74,12 +74,6 @@ Route::get('/get_drivers/{id}', [UserController::class, 'get_drivers']);
         return view('sub_expired_driver');
     });
 
-
-
-
-
-
-
 // Route::match(['get', 'post'],'/', 'index');
 
 // Route::get('/client', 'clients')->middleware(CheckSubscription::class);

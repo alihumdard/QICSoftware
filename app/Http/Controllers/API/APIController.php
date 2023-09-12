@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use App\Models\User;
+use App\Models\Quotation;
 use App\Models\Announcement;
 use App\Models\Notification;
 use App\Models\Trip;
@@ -1282,5 +1283,54 @@ class APIController extends Controller
         }
     }
 
+    public function quotation_store(Request $request): JsonResponse
+    {
+        // $validator = Validator::make($request->all(), [
+        //     'title' => 'required',
+        //     'desc' => 'required',
+        //     'type' => 'required',
+        //     'price' => 'required',
+        //     'users' => 'required',
+        //     'drivers' => 'required',
+        //     'map_api_call' => 'required'
+        // ]);
     
+        // if ($validator->fails()) {
+        //     return response()->json(['status' => 'error', 'message' => $validator->errors()]);
+        // }
+    
+        try {
+            $quotation = ($request->id) ? Quotation::find($request->id) : new Quotation(); 
+             
+            $isExistQuotation = $quotation->exists;
+
+            $quotation->date        = $request->date;
+            $quotation->admin_id    = $request->admin_id;
+            $quotation->user_id     = $request->user_id;
+            $quotation->service_id  = $request->service_id;
+            $quotation->desc        = $request->desc;
+            $quotation->client_name = $request->client_name;
+            $quotation->amount      = $request->amount;
+    
+            if ($request->hasFile('file')) {
+                // if ($request->id && $oldComPicPath) {
+                //     Storage::disk('public')->delete($oldComPicPath);
+                // }
+    
+                $qfile = $request->file('file');
+                $qfilePath = $qfile->store('q_files', 'public');
+                $quotation->file = $qfilePath;
+            }
+
+            $quotation->created_by  = Auth::id();
+            $save = $quotation->save();
+    
+            $message = $isExistQuotation ? 'Quotation updated successfully' : 'Quotation saved successfully';
+            return response()->json(['status' => 'success', 'message' => $message, 'data' => $save]);
+    
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => 'Error storing Quotation', 'error' => $e->getMessage()], 500);
+        }
+    }
+ 
 }
