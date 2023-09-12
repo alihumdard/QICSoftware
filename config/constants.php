@@ -64,6 +64,13 @@ return [
         'Skipped' => 4
     ],
     
+    'SERVICES' => [
+        1 => 'Social Media',
+        2 => 'Word Press',
+        3 => 'Shopify',
+        4 => 'Costum Website',
+        5 => 'Other'
+    ],
 
     'PAYPAL' =>[
         'CLIENT_ID' => 'AX5AHiCaQb9E7Y01nr0-X_ibBPgRuuU5bb-K0K6xcS5Yo4zUOwSZh7nOJg-QgfD4-7EEosSR0BBdZ9Ki',

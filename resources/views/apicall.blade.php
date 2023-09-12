@@ -1503,31 +1503,22 @@ translatedData.forEach(function(address) {
   $tripDetailAddresses.append($tr);
 
 });
+                                  
+            }
+            
+            else if(response.status === 'error'){
+            
+                showAlert("Warning", "Please fill the form correctly", response.status);
+                console.log(response.message);
 
-
-
-
-
-
-
-
-                       
-                        
-                    }
-                    
-                    else if(response.status === 'error'){
-                    
-                        showAlert("Warning", "Please fill the form correctly", response.status);
-                        console.log(response.message);
-
-                    }
-                },
-                error: function(xhr, status, error) {
-                    console.log(status);
-                    showAlert("Error", 'Request Can not Procceed', 'Can not Procceed furhter');
-                }
-            });
-        });
+            }
+        },
+        error: function(xhr, status, error) {
+            console.log(status);
+            showAlert("Error", 'Request Can not Procceed', 'Can not Procceed furhter');
+        }
+    });
+    });
 
         $(document).on('click', '.duplicate_trip', function () {
          var id = $(this).data('id');

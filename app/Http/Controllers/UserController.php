@@ -33,6 +33,7 @@ use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB; 
+use App\Models\Quotation;
 use App;
 
 class UserController extends Controller
@@ -262,14 +263,8 @@ class UserController extends Controller
 
         if(isset($user->role) && $user->role == user_roles('1')){
 
-            $trips = Trip::join('users as drivers', 'drivers.id', '=', 'trips.driver_id')
-            ->join('users as clients', 'clients.id', '=', 'trips.client_id')
-            ->select('trips.*', 'drivers.id as driver_id', 'drivers.name as driver_name', 'drivers.user_pic as driver_pic', 'clients.user_pic as client_pic', 'clients.name as client_name')
-            ->orderBy('trips.id', 'desc')
-            ->get()
-            ->toArray();
-
-            return view('quotations', ['data' => $trips,'user'=>$user]);
+            $quotations = Quotation::orderBy('id', 'desc')->get()->toArray();
+            return view('quotations', ['data' => $quotations,'user'=>$user]);
         } 
 
         else if(isset($user->role) && $user->role == user_roles('2')){

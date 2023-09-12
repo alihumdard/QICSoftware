@@ -43,18 +43,16 @@
 
     .custom-button {
         width: 100%;
-        height: 30px;
+        height: 36px;
         display: inline-block;
-        padding: 30px 12px 30px 12px;
         background-color: #233A85;
         color: white;
         cursor: pointer;
-        /* border-radius: 4px; */
         border: none;
         text-align: center;
         text-decoration: none;
-        /* font-size: 16px; */
         border-radius: 3px;
+        padding:6px;
     }
 
     .custom-button:hover {
@@ -73,7 +71,9 @@
         margin-bottom: 0; 
     }
 </style>
-
+@php
+  $services = config('constants.SERVICES');
+@endphp
     <div class="content-wrapper py-0 my-2">
         <div style="border: none;">
             <div class="bg-white" style="border-radius: 20px;">
@@ -90,28 +90,20 @@
                 </div>
 
                 <div class="container" id="home">
-                    <form action="tripStore" id="saveTrip" method="post">
+                    <form action="quotationStore" id="formData" method="post">
                         <div class="row">
                             @csrf
-                            <div class="col-lg-{{ $user->role === 'Client' ? '4' : '3' }} col-sm-8 my-2">
-                                <label for="title">@lang('lang.title')</label>
-                                <input required type="text" maxlength="60" name="title" id="title" value="{{ $data['title'] ?? '' }}" placeholder="@lang('lang.title')" class="form-control">
-                                <span id="title_error" class="error-message text-danger"></span>
-                                <input type="hidden" name="id" id="trip_id" value="{{ ($duplicate_trip ==1) ? '' : ((isset($data['id'])) ? $data['id'] : '') }}" />
-                                <input type="hidden" name="duplicate_trip" id="duplicate_trip" value="{{ $duplicate_trip ?? ''}}" />
-
-                            </div>
-
-                            <div class="col-lg-{{ $user->role === 'Client' ? '4' : '3' }} col-sm-4 my-2">
-                                <label for="trip_date">@lang('lang.date')</label>
-                                <input required type="date" name="trip_date" id="trip_date" value="{{ ($duplicate_trip ?? '' == 1) ? date('Y-m-d') : ((isset($data['id'])) ? $data['trip_date'] : date('Y-m-d') ) }}" min="{{ ($duplicate_trip ?? '' == 1) ? date('Y-m-d') : ((isset($data['id'])) ? $data['trip_date'] : date('Y-m-d') ) }}" class="form-control">
-                                <span id="trip_date_error" class="error-message text-danger"></span>
+                            <div class="col-lg-{{ $user->role === 'Client' ? '6' : '4' }} col-sm-12 my-2">
+                                <label for="q_date">@lang('lang.date')</label>
+                                <input required type="date" name="date" id="q_date" value="{{ ($duplicate_trip ?? '' == 1) ? date('Y-m-d') : ((isset($data['id'])) ? $data['trip_date'] : date('Y-m-d') ) }}" min="{{ ($duplicate_trip ?? '' == 1) ? date('Y-m-d') : ((isset($data['id'])) ? $data['trip_date'] : date('Y-m-d') ) }}" class="form-control">
+                                <span id="q_date_error" class="error-message text-danger"></span>
+                                <input type="hidden" name="id" id="q_id" value="{{ ($duplicate_trip ==1) ? '' : ((isset($data['id'])) ? $data['id'] : '') }}" />
                             </div>
 
                             @if(isset($client_list) && $client_list != '')
-                            <div class="col-lg-{{ $user->role === 'Client' ? '4' : '3' }} my-2">
-                                <label for="client_id">@lang('lang.admins') </label>
-                                <select required name="client_id" id="client_id" class="form-select" onchange="getDrivers(this.value)">
+                            <div class="col-lg-{{ $user->role === 'Client' ? '6' : '4' }} my-2">
+                                <label for="admin_id">@lang('lang.admins') </label>
+                                <select required name="admin_id" id="admin_id" class="form-select" onchange="getDrivers(this.value)">
                                     <option disabled selected> Select @lang('lang.admins') </option>
                                     @foreach($client_list as $value)
                                     <option value="{{ $value['id'] }}" {{ isset($data['client_id']) && $data['client_id'] == $value['id'] ? 'selected' : '' }}>
@@ -119,13 +111,13 @@
                                     </option>
                                     @endforeach
                                 </select>
-                                <span id="client_id_error" class="error-message text-danger"></span>
+                                <span id="admin_id_error" class="error-message text-danger"></span>
                             </div>
                             @endif
 
-                            <div class="col-lg-{{ $user->role === 'Client' ? '4' : '3' }} my-2">
-                                <label for="driver_id">@lang('lang.users')</label>
-                                <select required name="driver_id" id="driver_id" class="form-select">
+                            <div class="col-lg-{{ $user->role === 'Client' ? '6' : '4' }} my-2">
+                                <label for="user_id">@lang('lang.users')</label>
+                                <select required name="user_id" id="user_id" class="form-select">
                                     <option disabled selected> Select @lang('lang.users')</option>
                                     @forelse($driver_list as $value)
                                     <option value="{{ $value['id'] }}" {{ isset($data['driver_id']) && $data['driver_id'] == $value['id'] ? 'selected' : '' }}>
@@ -135,39 +127,57 @@
                                     <!-- Code to handle the case when $driver_list is empty or null -->
                                     @endforelse
                                 </select>
-                                <span id="driver_id_error" class="error-message text-danger"></span>
+                                <span id="user_id_error" class="error-message text-danger"></span>
                             </div>
 
                             <div class="col-lg-12 mb-2">
-                                <label for="trip_desc">@lang('lang.quotation_desc')</label>
-                                <textarea name="desc" id="trip_desc" class="form-control" placeholder="@lang('lang.trip_description')">{{ $data['desc'] ?? '' }}</textarea>
+                                <label for="q_desc">@lang('lang.quotation_desc')</label>
+                                <textarea name="desc" id="q_desc" class="form-control" placeholder="@lang('lang.trip_description')">{{ $data['desc'] ?? '' }}</textarea>
                                 <p id="charCountContainer" class="text-secondary text-right" style="display: none;"><span id="charCount">250</span> /250</p>
                             </div>
 
-                            <div class="col-lg-4 col-sm-6">
-                                <label for="start_address">@lang('lang.client_name')</label>
-                                <input required type="text" maxlength="100" name="" id="" value="{{ $data['title'] ?? '' }}" placeholder="@lang('lang.client_name')" class="form-control">
+                            <div class="col-lg-3 col-md-6 col-sm-12">
+                                <label for="client_name">@lang('lang.client_name')</label>
+                                <input required type="text" maxlength="100" name="client_name" id="client_name" value="{{ $data['title'] ?? '' }}" placeholder="@lang('lang.client_name')" class="form-control">
                             </div>
 
-                            <div class="col-lg-4 col-sm-6">
-                                <label for="end_address">@lang('lang.quote_category')</label>
-                                <select required name="start_point"  class="form-select">
-                                <option disabled selected> Select @lang('lang.quote_category')</option>
+                            <div class="col-lg-3 col-md-6  col-sm-12">
+                                <label for="service_id">@lang('Qoute Service')</label>
+                                <select required name="service_id" id="service_id"  class="form-select">
+                                    <option disabled selected> Select @lang('lang.quote_category')</option>
+                                    @forelse($services as $key => $value)
+                                    <option value="{{ $key}}" {{ isset($data['driver_id']) && $data['driver_id'] == $value['id'] ? 'selected' : '' }}>
+                                        {{ $value }}
+                                    </option>
+                                    @empty
+                                    <!-- Code to handle the case when $driver_list is empty or null -->
+                                    @endforelse
                                 </select>
+                                <span id="service_id_error" class="error-message text-danger"></span>
+                            </div>
+                            
+                             <div class="col-lg-3 col-md-6 col-sm-12">
+                                <label for="q_amount">@lang('lang.quoted_amount')</label>
+                                <input required type="number" min="1" name="amount" id="q_amount" value="{{ $data['title'] ?? 1 }}" placeholder="@lang('lang.quoted_amount')" class="form-control">
                             </div>
 
-                            <div class="col-lg-4 col-sm-6">
-                                <label for="end_address">@lang('lang.quoted_amount')</label>
-                                <input required type="number" min="1" name="" id="" value="{{ $data['title'] ?? 1 }}" placeholder="@lang('lang.quoted_amount')" class="form-control">
+                            <div class="col-lg-3 col-md-6 col-sm-12">
+                                <label for="q_file" >@lang('Upload Quote File ')</label>
+                                <label for="q_file" class="custom-button">
+                                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M22.8 14.4C22.4817 14.4 22.1765 14.5264 21.9515 14.7515C21.7264 14.9765 21.6 15.2817 21.6 15.6V20.4C21.6 20.7183 21.4736 21.0235 21.2485 21.2485C21.0235 21.4736 20.7183 21.6 20.4 21.6H3.6C3.28174 21.6 2.97652 21.4736 2.75147 21.2485C2.52643 21.0235 2.4 20.7183 2.4 20.4V15.6C2.4 15.2817 2.27357 14.9765 2.04853 14.7515C1.82348 14.5264 1.51826 14.4 1.2 14.4C0.88174 14.4 0.576515 14.5264 0.351472 14.7515C0.126428 14.9765 0 15.2817 0 15.6V20.4C0 21.3548 0.379285 22.2705 1.05442 22.9456C1.72955 23.6207 2.64522 24 3.6 24H20.4C21.3548 24 22.2705 23.6207 22.9456 22.9456C23.6207 22.2705 24 21.3548 24 20.4V15.6C24 15.2817 23.8736 14.9765 23.6485 14.7515C23.4235 14.5264 23.1183 14.4 22.8 14.4ZM11.148 16.452C11.2621 16.5612 11.3967 16.6469 11.544 16.704C11.6876 16.7675 11.843 16.8003 12 16.8003C12.157 16.8003 12.3124 16.7675 12.456 16.704C12.6033 16.6469 12.7379 16.5612 12.852 16.452L17.652 11.652C17.878 11.426 18.0049 11.1196 18.0049 10.8C18.0049 10.4804 17.878 10.174 17.652 9.948C17.426 9.72204 17.1196 9.59509 16.8 9.59509C16.4804 9.59509 16.174 9.72204 15.948 9.948L13.2 12.708V1.2C13.2 0.88174 13.0736 0.576515 12.8485 0.351472C12.6235 0.126428 12.3183 0 12 0C11.6817 0 11.3765 0.126428 11.1515 0.351472C10.9264 0.576515 10.8 0.88174 10.8 1.2V12.708L8.052 9.948C7.94011 9.83611 7.80729 9.74736 7.6611 9.68681C7.51491 9.62626 7.35823 9.59509 7.2 9.59509C7.04177 9.59509 6.88509 9.62626 6.7389 9.68681C6.59271 9.74736 6.45989 9.83611 6.348 9.948C6.23611 10.0599 6.14736 10.1927 6.08681 10.3389C6.02626 10.4851 5.99509 10.6418 5.99509 10.8C5.99509 10.9582 6.02626 11.1149 6.08681 11.2611C6.14736 11.4073 6.23611 11.5401 6.348 11.652L11.148 16.452Z" fill="white" />
+                                    </svg>
+                                    <span>@lang('Upload')</span>
+                                </label>
+                                <input type="file" id="q_file" name="file"  multiple size="50" style="display: none;">
+                                <p class="float-right mr-3" style="font-size: smaller;"><a href="{{ asset('storage/excel_files/template_for_scooble.xlsx') }}" download="template_for_scooble.xlsx">@lang('lang.download_sample')!</a></p>
                             </div>
                         </div>
-
-                        <!-- table of address -->
-                        <div class="table-responsive   mt-3 ">
+                        <div class=" mt-3 ">
                             <div class=" offset-lg-10  offset-md-6 col-lg-2 col-md-6 col-sm-12 d-flex justify-content-end  text-right mt-2 mb-5">
-                                <button type="submit" id="btn_save_trip" class="btn btn-block active text-white" style="background-color:#184A45FF;  border-radius: 8px;">
+                                <button type="submit" id="btn_save_quotation" class="btn btn-block active text-white" style="background-color:#184A45FF;  border-radius: 8px;">
                                 <div class="spinner-border spinner-border-sm text-white d-none" id="spinner"></div>
-                                    <span id="text">@lang('lang.save_trip')</span>
+                                    <span id="text">@lang('Save Quotation')</span>
                                 </button>
                             </div>
                         </div>
@@ -176,381 +186,81 @@
             </div>
         </div>
     </div>
-    <!--add address Modal -->
-    <div class="modal fade" id="addAddressModal" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-sm">
-            <div class="modal-content bg-white" style="border-radius: 10px;">
-                <div class="modal-header" style="border: none;">
-                    <h5 class="modal-title" id="myModalLabel">@lang('lang.add_address')</h5>
-                    <!-- <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button> -->
-                </div>
-                <div class="modal-body" style="border: none;">
-                    <form id="address-from">
-                        <div class="form-group">
-                            <div class="input-group">
-                                <input type="text" required id="addressTile" class="form-control" maxlength="60" placeholder="@lang('lang.enter_address_name')" style="border-right: none;">
-                                <div class="input-group-append">
-                                    <button type="button" id="map_button" data-toggle="modal" data-target="#addlocation" onclick="addAddress_map()" class="input-group-text bg-white p-2" style="border: 1px solid #CED4DA; border-left: none;">
-                                        <svg width="15" height="20" viewBox="0 0 15 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M7.5 0C3.35 0 0 3.35 0 7.5C0 12.5 7.5 20 7.5 20C7.5 20 15 12.5 15 7.5C15 3.35 11.65 0 7.5 0ZM7.5 2.5C10.275 2.5 12.5 4.75 12.5 7.5C12.5 10.275 10.275 12.5 7.5 12.5C4.75 12.5 2.5 10.275 2.5 7.5C2.5 4.75 4.75 2.5 7.5 2.5Z" fill="#ACADAE" />
-                                        </svg>
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="validation-error-title"></div>
-                        </div>
-                        <div class="form-group">
-                            <textarea class="form-control" required="" id="addressDesc" placeholder="@lang('lang.enter_address_description')"></textarea>
-                            <p id="charCountContainer1" class="text-secondary text-right" style="display: none;"><span id="charCount1">250</span> /250</p>
-                            <div class="validation-error-desc"></div>
-                        </div>
-                        <div class="form-group">
-                            <div class="form-check">
-                                <input class="form-check-input" id="addressPicture" type="checkbox" />
-                                <label class="form-check-label" for="pictureCheckbox">@lang('lang.picture')</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" id="addressSignature" type="checkbox">
-                                <label class="form-check-label" for="signatureCheckbox">@lang('lang.signature')</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" id="addressNote" type="checkbox">
-                                <label class="form-check-label" for="noteCheckbox">@lang('lang.note')</label>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-                <button type="button" id="btn_address_detail" data-row-id='' class="btn btn-primary mr-3 ml-auto px-4 mb-3" style="background-color: #E45F00; border-radius: 5px;">@lang('lang.save')</button>
-            </div>
-        </div>
-    </div>
+
 </div>
-<!-- addlocation Modal -->
-<div class="modal fade" id="addlocation" tabindex="-1" aria-labelledby="viewlocationLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="viewlocationLabel"></h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div id="map"></div>
-                <div class="mt-3">
-                    <h6>@lang('lang.your_location')</h6>
-                </div>
-                <div class="row mt-3 text-center">
-                    <div class="col-lg-12">
-                        <button type="button" id="address_confirm" data-dismiss="modal" class="btn text-white" style="background-color: #233A85; width: 70%;">@lang('lang.confirm_location')</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- addlocation Modal End -->
-<!-- viewlocation Modal -->
-<div class="modal fade" id="viewlocation" tabindex="-1" aria-labelledby="viewlocationLabel" aria-hidden="true">
-    <div class="modal-dialog modal-xl">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="viewlocationLabel"></h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-            <div class="text-center">
-    <div class="spinner-border text-primary" role="status" id="map_spinner">
-      <span class="visually-hidden mt-5">Loading...</span>
-    </div>
-  </div>
-            <div class="d-view_map" id="view_map"></div>
-                <div class="mt-3">
-                    <h6>@lang('lang.address')</h6>
-                </div>
-                <!-- <div class="row mt-3 text-center">
-                    <div class="col-lg-12">
-                        <button type="button" id="address_confirm" data-dismiss="modal" class="btn text-white" style="background-color: #233A85; width: 70%;">@lang('lang.confirm_location')</button>
-                    </div>
-                </div> -->
-            </div>
-        </div>
-    </div>
-</div>
+
 <!-- viewlocation Modal End -->
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA3YWssMkDiW3F1noE6AVbiJEL40MR0IFU&libraries=places"></script>
 <script>
+    $(document).ready(function() {
 
-$(document).ready(function() {
+        const maxLength = 250;
+        const textarea = $('#trip_desc');
+        const charCountElement = $('#charCount');
+        const charCountContainer = $('#charCountContainer');
+        const submitButton = $('#btn_save_trip');
+        textarea.on('input', function() {
+            const currentLength = textarea.val().length;
+            const charCount = Math.max(maxLength - currentLength); 
+            charCountElement.text(charCount);
 
-
-    const maxLength = 250;
-    const textarea = $('#trip_desc');
-    const charCountElement = $('#charCount');
-    const charCountContainer = $('#charCountContainer');
-    const submitButton = $('#btn_save_trip');
-
-textarea.on('input', function() {
-    const currentLength = textarea.val().length;
-    const charCount = Math.max(maxLength - currentLength); // Ensure non-negative count
-
-    charCountElement.text(charCount);
-
-    if (currentLength > 0) {
-        charCountContainer.show();
-    } else {
-        charCountContainer.hide();
-    }
-
-    if (currentLength > maxLength) {  
-    const exceededCount = currentLength - maxLength;
-    charCountElement.css('color', 'red'); // Set text color to red
-    charCountElement.text(`Your limit exceeded by ${exceededCount} characters`);
-    submitButton.prop('disabled', true);
-} else if (currentLength === maxLength) {
-    charCountElement.css('color', ''); // Reset text color
-    charCountElement.text(''); // Clear the message
-    submitButton.prop('disabled', false);
-} else {
-    charCountElement.css('color', ''); // Reset text color
-    charCountElement.text(`${maxLength - currentLength}`);
-    submitButton.prop('disabled', false);
-}
-
-});
-
-
-const maximumLength = 250;
-    const textarea1 = $('#addressDesc');
-    const charCountElement1 = $('#charCount1');
-    const charCountContainer1 = $('#charCountContainer1');
-    const submitButton1 = $('#btn_address_detail');
-
-textarea1.on('input', function() {
-    const currentLength = textarea1.val().length;
-    const charCount = Math.max(maximumLength - currentLength); // Ensure non-negative count
-
-    charCountElement1.text(charCount);
-
-    if (currentLength > 0) {
-        charCountContainer1.show();
-    } else {
-        charCountContainer1.hide();
-    }
-
-    if (currentLength > maximumLength) {  
-    const exceededCount = currentLength - maximumLength;
-    charCountElement1.css('color', 'red'); // Set text color to red
-    charCountElement1.text(`Your limit exceeded by ${exceededCount} characters`);
-    submitButton1.prop('disabled', true);
-} else if (currentLength === maximumLength) {
-    charCountElement1.css('color', ''); // Reset text color
-    charCountElement1.text(''); // Clear the message
-    submitButton1.prop('disabled', false);
-} else {
-    charCountElement1.css('color', ''); // Reset text color
-    charCountElement1.text(`${maximumLength - currentLength}`);
-    submitButton1.prop('disabled', false);
-}
-
-});
-
-    $('#btn_save_trip').click(function(event) {
-        var title = $('#title').val();
-        var tripDate = $('#trip_date').val();
-        var clientId = $('#client_id').val();
-        var driverId = $('#driver_id').val();
-        var startPoint = $('#start_address').val();
-
-        // Reset error messages
-        $('.error-message text-danger').text('');
-
-        // Check if inputs are empty and display error messages
-        if (title === '') {
-            $('#title_error').text('*Please enter a title.');
-            event.preventDefault(); // Prevent form submission
-        }
-
-        if (tripDate === '') {
-            $('#trip_date_error').text('*Please enter a trip date.');
-            event.preventDefault(); // Prevent form submission
-        }
-
-        if (clientId === null) { // Modified condition to check if client is not selected
-            $('#client_id_error').text('*Please select a client.');
-            event.preventDefault(); // Prevent form submission
-        }
-
-        if (driverId === null) { // Modified condition to check if driver is not selected
-            $('#driver_id_error').text('*Please select a driver.');
-            event.preventDefault(); // Prevent form submission
-        }
-    });
-     // Hide error messages on input change
-     $('#title').on('input', function() {
-        $('#title_error').text('');
-    });
-
-    $('#trip_date').on('input', function() {
-        $('#trip_date_error').text('');
-    });
-
-    $('#client_id').on('input', function() {
-        $('#client_id_error').text('');
-    });
-
-    $('#driver_id').on('change', function() { // Updated event name to 'input'
-        $('#driver_id_error').text('');
-    });
-});
-
-function addAddress_map() {
-    // Set the initial location
-    var initialLocation = {
-        lat: 0,
-        lng: 0
-    };
-
-    // Create the map
-    var map = new google.maps.Map(document.getElementById('map'), {
-        center: initialLocation,
-        zoom: 12
-    });
-
-    // Initialize the marker variable
-    var marker = null;
-
-    // Check if there is an address in the input field
-    var inputAddress = $('#addressTile').val();
-
-    if (inputAddress.trim() !== '') {
-        // If there is an address in the input field, geocode and show that location
-        geocodeAddress(inputAddress);
-    } else {
-        // If the input is empty, get the user's current location
-        getUserLocation();
-    }
-
-    // Add a click event listener to the map
-    map.addListener('click', function (event) {
-        // Retrieve the clicked coordinates
-        var clickedLocation = event.latLng;
-
-        // Perform geocoding to get the value of the location
-        geocodeLatLng(clickedLocation);
-
-        // Remove previous marker, if any
-        if (marker) {
-            marker.setMap(null);
-        }
-
-        // Create a new marker at the clicked location
-        marker = new google.maps.Marker({
-            position: clickedLocation,
-            map: map,
-            title: 'Selected Location'
-        });
-
-        // Update the address input field with the selected location's address
-        updateAddressField(clickedLocation);
-    });
-
-    function geocodeAddress(address) {
-        var geocoder = new google.maps.Geocoder();
-
-        geocoder.geocode({ 'address': address }, function (results, status) {
-            if (status === 'OK' && results[0]) {
-                var location = results[0].geometry.location;
-
-                // Center the map on the geocoded location
-                map.setCenter(location);
-
-                // Create a marker at the geocoded location
-                marker = new google.maps.Marker({
-                    map: map,
-                    position: location,
-                    title: 'Selected Location'
-                });
+            if (currentLength > 0) {
+                charCountContainer.show();
             } else {
-                console.log('Geocode was not successful for the following reason: ' + status);
+                charCountContainer.hide();
+            }
+
+            if (currentLength > maxLength) {  
+            const exceededCount = currentLength - maxLength;
+            charCountElement.css('color', 'red'); 
+            charCountElement.text(`Your limit exceeded by ${exceededCount} characters`);
+            submitButton.prop('disabled', true);
+            } else if (currentLength === maxLength) {
+                charCountElement.css('color', ''); // Reset text color
+                charCountElement.text(''); // Clear the message
+                submitButton.prop('disabled', false);
+            } else {
+                charCountElement.css('color', ''); // Reset text color
+                charCountElement.text(`${maxLength - currentLength}`);
+                submitButton.prop('disabled', false);
             }
         });
-    }
 
-    function getUserLocation() {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(function (position) {
-                var userLocation = {
-                    lat: position.coords.latitude,
-                    lng: position.coords.longitude
-                };
+        $('#btn_save_trip').click(function(event) {
+            var qDate = $('#q_date').val();
+            var adminId = $('#admin_id').val();
+            var userId = $('#user_id').val();
 
-                // Center the map on the user's location
-                map.setCenter(userLocation);
+            // Reset error messages
+            $('.error-message text-danger').text('');
 
-                // Create a marker at the user's location
-                marker = new google.maps.Marker({
-                    position: userLocation,
-                    map: map,
-                    title: 'Your Location'
-                });
+            if (qDate === '') {
+                $('#q_date_error').text('*Please enter a quatation date.');
+                event.preventDefault(); 
+            }
 
-                // Update the address input field with the user's current address
-                geocodeLatLng(userLocation);
-            }, function () {
-                console.log('Error: The Geolocation service failed.');
-            });
-        } else {
-            console.log('Error: Your browser doesn\'t support geolocation.');
-        }
-    }
+            if (adminId === null) { 
+                $('#admin_id_error').text('*Please select a admin.');
+                event.preventDefault(); 
+            }
 
-    function geocodeLatLng(location) {
-        var geocoder = new google.maps.Geocoder();
-
-        geocoder.geocode({
-            'location': location
-        }, function (results, status) {
-            if (status === 'OK') {
-                if (results[0]) {
-                    var address = results[0].formatted_address;
-                    $('#addressTile').val(address);
-                    console.log('Selected location:', address);
-                } else {
-                    console.log('No results found');
-                }
-            } else {
-                console.log('Geocoder failed due to: ' + status);
+            if (userId === null) { 
+                $('#user_id_error').text('*Please select a user.');
+                event.preventDefault(); 
             }
         });
-    }
 
-    function updateAddressField(location) {
-        var geocoder = new google.maps.Geocoder();
-
-        geocoder.geocode({
-            'location': location
-        }, function (results, status) {
-            if (status === 'OK') {
-                if (results[0]) {
-                    var address = results[0].formatted_address;
-                    $('#addressTile').val(address);
-                    console.log('Selected location:', address);
-                } else {
-                    console.log('No results found');
-                }
-            } else {
-                console.log('Geocoder failed due to: ' + status);
-            }
+        $('#q_date').on('input', function() {
+            $('#q_date_error').text('');
         });
-    }
-}
 
+        $('#admin_id').on('input', function() {
+            $('#admin_id_error').text('');
+        });
 
+        $('#user_id').on('change', function() { 
+            $('#user_id_error').text('');
+        });
+    });
 
     function getDrivers(clientId) {
         $.ajax({
@@ -564,101 +274,18 @@ function addAddress_map() {
                     options += '<option value="' + driver.id + '">' + driver.name + '</option>';
                 });
                 if (options) {
-                    $('#driver_id_error').text('');
-                    $('#driver_id').html(options);
+                    $('#user_id_error').text('');
+                    $('#user_id').html(options);
                 }else{
-                    $('#driver_id_error').text('*Client do not have any driver.');
-                    $('#driver_id').html('');
+                    $('#user_id_error').text('*admin do not have any user.');
+                    $('#user_id').html('');
                 }
-
             },
             error: function(xhr, status, error) {
                 // Handle the error
             }
         });
     }
-</script>
-<script>
-    $(document).on('click', '.btnView-address', function() {
-    // Get the address from the second column of the clicked table row
-    var address = $(this).closest('tr').find('.address-name').text().trim();
-    
-    // Call the viewAddress_map function with the retrieved address
-    viewAddress_map(address);
-
-    });
-
-    function viewAddress_map(address) {
-  // Show the spinner
-  $('#map_spinner').show();
-  $('#view_map').removeClass('.d-view_map');
-
-  // Create the map
-  var map = new google.maps.Map(document.getElementById('view_map'), {
-    zoom: 12, // Set a default zoom level
-  });
-
-  // Create a geocoder instance
-  var geocoder = new google.maps.Geocoder();
-
-  // Geocode the provided address
-  geocoder.geocode({ address: address }, function (results, status) {
-    if (status === 'OK') {
-      // Get the location coordinates
-      var location = results[0].geometry.location;
-
-      // Define a custom zoom level lookup table
-      var zoomLevels = {
-        country: 6,
-        administrative_area_level_1: 8,
-        administrative_area_level_2: 10,
-        locality: 12,
-      };
-
-      // Calculate the zoom level based on the address type
-      var zoomLevel = 14; // Default zoom level
-      for (var i = 0; i < results[0].address_components.length; i++) {
-        var component = results[0].address_components[i];
-        if (component.types[0] in zoomLevels) {
-          zoomLevel = zoomLevels[component.types[0]];
-          break;
-        }
-      }
-
-      // Center the map on the location with the calculated zoom level
-      map.setCenter(location);
-      map.setZoom(zoomLevel);
-
-      // Create a marker at the location
-      var marker = new google.maps.Marker({
-        position: location,
-        map: map,
-        title: 'Selected Location',
-        draggable: false, // Disable dragging
-      });
-
-      // Hide the spinner once the map is loaded
-      $('#map_spinner').hide();
-      $('#view_map').addClass('.d-view_map');
-    } else {
-      console.log('Geocoder failed due to: ' + status);
-
-      // Hide the spinner if there's an error
-      $('#map_spinner').hide();
-      $('#view_map').addClass('.d-view_map');
-    }
-  });
-}
-
-
-
-$('#addAddressModal').on('hidden.bs.modal', function () {
-  alert('Working'); // Just for testing purposes
-  let form = $('#address-form'); // Fixed the typo here
-  form[0].reset();
-});
-
-
 </script>
 
 @endsection

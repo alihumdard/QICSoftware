@@ -82,11 +82,11 @@
                   <tr style="font-size: small;">
                     <th>#</th>
                     <th style="width: 100px;">@lang('lang.quoted_date')</th>
-                    <th>@lang('lang.quote_title')</th>
-                    <th>@lang('lang.quoted_amount')</th>
-                    <th>@lang('lang.quote_category')</th>
-                    <th>@lang('lang.description')</th>
                     <th>@lang('lang.client_name')</th>
+                    <th>@lang('lang.quoted_amount')</th>
+                    <th>@lang('Qoute Service')</th>
+                    <th>@lang('lang.description')</th>
+                    <th>@lang('File View')</th>
                     <th>@lang('lang.status')</th>
                     <th>@lang('lang.actions')</th>
                   </tr>
@@ -94,11 +94,12 @@
                 <tbody>
                   @foreach($data as $key => $value)
                   <tr style="font-size: small;">
-                    <td>{{ $value['id'] }}</td>
-                    <td>{{ date('M d, Y', strtotime($value['trip_date']))}}</td>
-                    <td>{{ $value['title'] }}</td>
-                    <td>{{ $value['start_point'] }}</td>
-                    <td>{{ $value['end_point'] }}</td>
+                    <td>{{ ++$key }}</td>
+                    <td>{{ date('M d, Y', strtotime($value['date']))}}</td>
+                    <!-- <td><img src="{{ (isset($value['driver_pic'])) ? asset('storage/' . $value['driver_pic']) : 'assets/images/user.png'}}" style="width: 45px; height: 45px; border-radius: 38px; object-fit: cover;" alt="text">{{ $value['driver_name'] ?? ''}} </td> -->
+                    <td>{{ $value['client_name'] }}</td>
+                    <td>{{ $value['amount'] }}</td>
+                    <td>{{ $value['service_id'] }}</td>
                     <td>
                       <div class="row">
                         <div class="col-12 col-sm-12 col-lg-6 my-auto">
@@ -106,9 +107,7 @@
                           </div>
                         </div>
                     </td>
-                    <td><img src="{{ (isset($value['driver_pic'])) ? asset('storage/' . $value['driver_pic']) : 'assets/images/user.png'}}" style="width: 45px; height: 45px; border-radius: 38px; object-fit: cover;" alt="text"></td>
-                    <td>{{ $value['driver_name'] ?? ''}} </td>
-
+                    <td> <a href="{{ asset($value['file']) }}" download="{{$value['file']}}">@lang('Download')</a></td>
                     <td>
                         <button class="btn btn_status">
                           @if ($value['status'] == $tripStatus['In Progress'])
