@@ -77,5 +77,28 @@ return [
         'CLIENT_ID' => 'AX5AHiCaQb9E7Y01nr0-X_ibBPgRuuU5bb-K0K6xcS5Yo4zUOwSZh7nOJg-QgfD4-7EEosSR0BBdZ9Ki',
         'CLIENT_SECRET' => 'EKIvOEbvrlTb3kdmxRMOtAHePyjViFWH2AveI8GX566SVcqxTVwA8CmSaOGS-sx-CZw9HLu__o-4ZcuT',
         'CURRENCY' => 'EUR'
-    ]
+    ],
+
+    // extra
+    
+    // in progress mean route is active...
+    'TRIP_STATUS_en' => [
+        1 => 'In Progress',
+        2 => 'Pending',
+        3 => 'Completed',
+        4 => 'Deleted'
+    ],
+
+    'TRIP_STATUS_es' => [
+        1 => 'Devam etmekte',
+        2 => 'Askıda Olması',
+        3 => 'Tamamlanmış',
+        4 => 'Silindi'
+    ],
+    'TRIP_STATUS' => [
+        'In Progress' => 1,
+        'Pending'     => 2,
+        'Completed'   => 3,
+        'Deleted'     => 4
+    ],
 ];
