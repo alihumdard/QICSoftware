@@ -32,7 +32,7 @@ use App\Jobs\SendEmailVerificationJob;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\DB; 
+use Illuminate\Support\Facades\DB;
 use App\Models\Quotation;
 use App;
 
@@ -48,7 +48,8 @@ class UserController extends Controller
     protected $userStatus;
     protected $curFormatDate;
 
-    public function __construct(){
+    public function __construct()
+    {
         $this->user = auth()->user();
         $this->api = new APIController();
         $this->gateway = Omnipay::create('PayPal_Rest');
@@ -62,41 +63,39 @@ class UserController extends Controller
 
     public function lang_change(Request $request)
     {
-       
+
         App::setLocale($request->lang);
         session()->put('locale', $request->lang);
 
         return redirect()->back();
-       
     }
 
     public function index(Request $request)
     {
         $user = auth()->user();
 
-        if($user){
+        if ($user) {
             session(['user_details' => $user]);
             $now = Carbon::now('Asia/Karachi');
             $current_date = $now->format('Y-m-d H:i:s');
             $currentDate = Carbon::now();
             // User roles: 1 for admin, 2 for client, 3 for driver
-            if(isset($user->role) && $user->role == user_roles('2')){
+            if (isset($user->role) && $user->role == user_roles('2')) {
 
-                if( $user->sub_exp_date){
-                    
+                if ($user->sub_exp_date) {
+
                     $expirationDate = Carbon::createFromFormat('Y-m-d', $user->sub_exp_date);
-                    if ($currentDate->gt($expirationDate)) { 
+                    if ($currentDate->gt($expirationDate)) {
 
                         return view('subscription_expired', ['user' => $user]);
-                    }
-                    else {
+                    } else {
 
                         // $data['announcements'] = Announcement::where('start_date', '<=', $current_date)->where('end_date', '>=', $current_date)->get()->toArray();
 
                         $data['user']           = $user;
                         $data['drivers'] = User::where(['role' => user_roles('3'), 'client_id' => $user->id, 'status' => $this->userStatus['Active']])
-                        ->select('id', 'name', 'user_pic')
-                        ->addSelect(DB::raw('ROUND(((
+                            ->select('id', 'name', 'user_pic')
+                            ->addSelect(DB::raw('ROUND(((
                             SELECT COUNT(*) 
                             FROM trips 
                             WHERE trips.driver_id = users.id 
@@ -109,18 +108,18 @@ class UserController extends Controller
                             AND DATE(trip_date) = CURDATE() 
                             AND status IN (1, 2)
                         )) * 100, 2) as driv_active_percentage'))
-                        ->get()
-                        ->toArray();
+                            ->get()
+                            ->toArray();
 
-                        $data['driversCount'] = count($data['drivers'] ?? []); 
+                        $data['driversCount'] = count($data['drivers'] ?? []);
 
                         $data['activeRoutes'] = Trip::with(['user:id,name', 'driver:id,name'])
-                        ->whereHas('user', function ($query) use ($user) {
-                            $query->where('id', $user->id);
-                        })->whereDate('trip_date', $this->curFormatDate)->where('status', $this->tripStatus['In Progress'])
-                        ->get(['id', 'title', 'desc', 'trip_date', 'driver_id', 'client_id', 'status'])
-                        ->toArray();
-                    
+                            ->whereHas('user', function ($query) use ($user) {
+                                $query->where('id', $user->id);
+                            })->whereDate('trip_date', $this->curFormatDate)->where('status', $this->tripStatus['In Progress'])
+                            ->get(['id', 'title', 'desc', 'trip_date', 'driver_id', 'client_id', 'status'])
+                            ->toArray();
+
 
                         $data['totalRoutes']     = Trip::where('client_id', $user->id)->count();
                         $data['totalAct_Routes'] = Trip::whereIn('status', [$this->tripStatus['Pending'], $this->tripStatus['In Progress']])->where('client_id', $user->id)->count();
@@ -135,29 +134,25 @@ class UserController extends Controller
 
                         return view('client_dashboard', $data);
                     }
-                }else{
+                } else {
                     return redirect('/login');
                 }
+            } else if (isset($user->role) && $user->role == user_roles('3')) {
 
-            }
-
-            else if(isset($user->role) && $user->role == user_roles('3')){
-                
                 $client = User::where(['role' => 'Client', 'id' => $user->client_id])->first();
 
                 if ($client) {
-                    if( $client->sub_exp_date){
+                    if ($client->sub_exp_date) {
                         $expirationDate = Carbon::createFromFormat('Y-m-d', $client->sub_exp_date);
-                    
+
                         if ($currentDate->gt($expirationDate)) {
                             return redirect('/subscription-expired_driver');
-                        }
-                        else{
+                        } else {
 
                             $data['activeRoutes'] = Trip::with('driver:id,name')
-                            ->whereHas('driver', function ($query) use ($user) {
-                                $query->where('id', $user->id);
-                            })->whereDate('trip_date', $this->curFormatDate)->get(['id', 'title', 'desc', 'trip_date', 'driver_id', 'client_id', 'status'])->toArray();
+                                ->whereHas('driver', function ($query) use ($user) {
+                                    $query->where('id', $user->id);
+                                })->whereDate('trip_date', $this->curFormatDate)->get(['id', 'title', 'desc', 'trip_date', 'driver_id', 'client_id', 'status'])->toArray();
 
                             $data['user']           = $user;
                             $data['totalRoutes']     = Trip::where('driver_id', $user->id)->count();
@@ -165,28 +160,24 @@ class UserController extends Controller
                             $data['activeTrips']     = Trip::where([['status', $this->tripStatus['In Progress']], ['driver_id', $user->id]])->count();
                             $data['PendingTrips']    = Trip::where([['status', $this->tripStatus['Pending']], ['driver_id', $user->id]])->count();
                             $data['completedTrips_detail']  = Trip::where([['status', $this->tripStatus['Completed']], ['driver_id', $user->id]])->get()->toArray();
-                        
+
                             $data['completedTrips'] = count($data['completedTrips_detail'] ?? []);
                             return view('driver_dashboard', $data);
                         }
-                    }else{
+                    } else {
                         return redirect('/subscription-expired_driver');
                     }
-
                 } else {
                     return redirect('/login');
                 }
-
-            }
-
-            else{
+            } else {
 
                 $data['user']           = $user;
                 $data['adminsCount']    = User::where('role', user_roles('1'))->count();
                 $data['clientsCount']   = User::where('role', user_roles('2'))->count();
                 $data['driversCount']   = User::where('role', user_roles('3'))->count();
                 $data['revenue']        = Payment::where('payment_status', 'approved')->where('transaction_status', 'approved')->sum('amount');
-               
+
                 $data['activeRoutes']   = Trip::with('user:id,name')->whereDate('trip_date', $this->curFormatDate)->where('status', $this->tripStatus['In Progress'])->get(['id', 'title', 'desc', 'trip_date', 'driver_id', 'client_id', 'status'])->toArray();
 
                 $data['totalRoutes']    = Trip::count();
@@ -194,33 +185,31 @@ class UserController extends Controller
                 $data['completedTrips'] = Trip::where('status', $this->tripStatus['Completed'])->whereDate('trip_date', $this->curFormatDate)->count();
                 $data['activeTrips']    = Trip::where('status', $this->tripStatus['In Progress'])->whereDate('trip_date', $this->curFormatDate)->count();
                 $data['PendingTrips']   = Trip::where('status', $this->tripStatus['Pending'])->whereDate('trip_date', $this->curFormatDate)->count();
-                
+
                 $data['compTrp_percentage'] = $data['totalTodayRout'] > 0 ? round(($data['completedTrips'] / $data['totalTodayRout']) * 100, 1) : 0;
                 $data['actvTrp_percentage'] = $data['totalTodayRout'] > 0 ? round(($data['activeTrips'] / $data['totalTodayRout']) * 100, 1) : 0;
                 $data['pendTrp_percentage'] = $data['totalTodayRout'] > 0 ? round(($data['PendingTrips'] / $data['totalTodayRout']) * 100, 1) : 0;
 
                 return view('index', $data);
             }
-        }
-        else {
+        } else {
             // $package = Package::orderBy('id', 'ASC')->get()->toArray();
             // return view('login', ['data' => $package]);
             return view('login');
         }
     }
-    
+
     public function clients()
     {
         $user = auth()->user();
         $page_name = 'clients';
 
-        if(!view_permission($page_name)){
-            return redirect()->back();  
+        if (!view_permission($page_name)) {
+            return redirect()->back();
         }
 
         $clients = User::where(['role' => user_roles('2')])->orderBy('id', 'desc')->get()->toArray();
-        return view('clients', ['data' => $clients,'user'=>$user ,'add_as_user'=> user_roles('2')]);
-
+        return view('clients', ['data' => $clients, 'user' => $user, 'add_as_user' => user_roles('2')]);
     }
 
     public function drivers()
@@ -228,28 +217,26 @@ class UserController extends Controller
         $user = auth()->user();
         $page_name = 'drivers';
 
-        if(!view_permission($page_name)){
-            return redirect()->back();  
+        if (!view_permission($page_name)) {
+            return redirect()->back();
         }
 
-        if(isset($user->role) && $user->role == user_roles('1')){
+        if (isset($user->role) && $user->role == user_roles('1')) {
 
             $drivers = User::join('users as c', 'users.client_id', '=', 'c.id')
-            ->where('users.role', 'Driver')
-            ->select('users.*', 'c.name as client_name', 'c.user_pic as client_pic','c.email as client_email')
-            ->orderBy('users.id', 'desc')
-            ->get()
-            ->toArray();
-            $client_list = User::where(['role' => 'Client'])->orderBy('id', 'desc')->select('id','name')->get()->toArray();   
-            
-            return view('drivers', ['data' => $drivers,'user'=>$user,'add_as_user'=> user_roles('3'), 'client_list'=>$client_list]);
-        } 
-        else{
+                ->where('users.role', 'Driver')
+                ->select('users.*', 'c.name as client_name', 'c.user_pic as client_pic', 'c.email as client_email')
+                ->orderBy('users.id', 'desc')
+                ->get()
+                ->toArray();
+            $client_list = User::where(['role' => 'Client'])->orderBy('id', 'desc')->select('id', 'name')->get()->toArray();
 
-            $derivers = User::where(['role' => user_roles('3'),'client_id' => $user->id])->orderBy('id', 'desc')->get()->toArray();
-            return view('drivers', ['data' => $derivers,'user'=>$user ,'add_as_user'=> user_roles('3')]); 
+            return view('drivers', ['data' => $drivers, 'user' => $user, 'add_as_user' => user_roles('3'), 'client_list' => $client_list]);
+        } else {
+
+            $derivers = User::where(['role' => user_roles('3'), 'client_id' => $user->id])->orderBy('id', 'desc')->get()->toArray();
+            return view('drivers', ['data' => $derivers, 'user' => $user, 'add_as_user' => user_roles('3')]);
         }
-
     }
 
     public function quotations()
@@ -257,36 +244,31 @@ class UserController extends Controller
         $user = auth()->user();
         $page_name = 'routes';
 
-        if(!view_permission($page_name)){
-            return redirect()->back();  
+        if (!view_permission($page_name)) {
+            return redirect()->back();
         }
 
-        if(isset($user->role) && $user->role == user_roles('1')){
+        if (isset($user->role) && $user->role == user_roles('1')) {
 
             $quotations = Quotation::orderBy('id', 'desc')->get()->toArray();
-            return view('quotations', ['data' => $quotations,'user'=>$user]);
-        } 
-
-        else if(isset($user->role) && $user->role == user_roles('2')){
+            return view('quotations', ['data' => $quotations, 'user' => $user]);
+        } else if (isset($user->role) && $user->role == user_roles('2')) {
             $trips = Trip::join('users', 'users.id', '=', 'trips.driver_id')
-            ->where('trips.client_id', $user->id)
-            ->select('trips.*', 'users.id as driver_id', 'users.name as driver_name', 'users.user_pic  as driver_pic')
-            ->orderBy('trips.id', 'desc')
-            ->get()
-            ->toArray();
-            return view('quotations', ['data' => $trips,'user'=>$user]);
-        }
-        
-        else {
+                ->where('trips.client_id', $user->id)
+                ->select('trips.*', 'users.id as driver_id', 'users.name as driver_name', 'users.user_pic  as driver_pic')
+                ->orderBy('trips.id', 'desc')
+                ->get()
+                ->toArray();
+            return view('quotations', ['data' => $trips, 'user' => $user]);
+        } else {
             $trips = Trip::join('users', 'users.id', '=', 'trips.client_id')
-            ->where('trips.driver_id', $user->id)
-            ->select('trips.*', 'users.id as client_id', 'users.name as client_name', 'users.user_pic  as client_pic')
-            ->orderBy('trips.id', 'desc')
-            ->get()
-            ->toArray();
-            return view('quotations', ['data' => $trips,'user'=>$user]);
-        } 
-
+                ->where('trips.driver_id', $user->id)
+                ->select('trips.*', 'users.id as client_id', 'users.name as client_name', 'users.user_pic  as client_pic')
+                ->orderBy('trips.id', 'desc')
+                ->get()
+                ->toArray();
+            return view('quotations', ['data' => $trips, 'user' => $user]);
+        }
     }
 
     public function contracts()
@@ -294,42 +276,37 @@ class UserController extends Controller
         $user = auth()->user();
         $page_name = 'routes';
 
-        if(!view_permission($page_name)){
-            return redirect()->back();  
+        if (!view_permission($page_name)) {
+            return redirect()->back();
         }
 
-        if(isset($user->role) && $user->role == user_roles('1')){
+        if (isset($user->role) && $user->role == user_roles('1')) {
 
             $trips = Trip::join('users as drivers', 'drivers.id', '=', 'trips.driver_id')
-            ->join('users as clients', 'clients.id', '=', 'trips.client_id')
-            ->select('trips.*', 'drivers.id as driver_id', 'drivers.name as driver_name', 'drivers.user_pic as driver_pic', 'clients.user_pic as client_pic', 'clients.name as client_name')
-            ->orderBy('trips.id', 'desc')
-            ->get()
-            ->toArray();
+                ->join('users as clients', 'clients.id', '=', 'trips.client_id')
+                ->select('trips.*', 'drivers.id as driver_id', 'drivers.name as driver_name', 'drivers.user_pic as driver_pic', 'clients.user_pic as client_pic', 'clients.name as client_name')
+                ->orderBy('trips.id', 'desc')
+                ->get()
+                ->toArray();
 
-            return view('contracts', ['data' => $trips,'user'=>$user]);
-        } 
-
-        else if(isset($user->role) && $user->role == user_roles('2')){
+            return view('contracts', ['data' => $trips, 'user' => $user]);
+        } else if (isset($user->role) && $user->role == user_roles('2')) {
             $trips = Trip::join('users', 'users.id', '=', 'trips.driver_id')
-            ->where('trips.client_id', $user->id)
-            ->select('trips.*', 'users.id as driver_id', 'users.name as driver_name', 'users.user_pic  as driver_pic')
-            ->orderBy('trips.id', 'desc')
-            ->get()
-            ->toArray();
-            return view('contracts', ['data' => $trips,'user'=>$user]);
-        }
-        
-        else {
+                ->where('trips.client_id', $user->id)
+                ->select('trips.*', 'users.id as driver_id', 'users.name as driver_name', 'users.user_pic  as driver_pic')
+                ->orderBy('trips.id', 'desc')
+                ->get()
+                ->toArray();
+            return view('contracts', ['data' => $trips, 'user' => $user]);
+        } else {
             $trips = Trip::join('users', 'users.id', '=', 'trips.client_id')
-            ->where('trips.driver_id', $user->id)
-            ->select('trips.*', 'users.id as client_id', 'users.name as client_name', 'users.user_pic  as client_pic')
-            ->orderBy('trips.id', 'desc')
-            ->get()
-            ->toArray();
-            return view('contracts', ['data' => $trips,'user'=>$user]);
-        } 
-
+                ->where('trips.driver_id', $user->id)
+                ->select('trips.*', 'users.id as client_id', 'users.name as client_name', 'users.user_pic  as client_pic')
+                ->orderBy('trips.id', 'desc')
+                ->get()
+                ->toArray();
+            return view('contracts', ['data' => $trips, 'user' => $user]);
+        }
     }
 
     public function invoices()
@@ -337,42 +314,37 @@ class UserController extends Controller
         $user = auth()->user();
         $page_name = 'routes';
 
-        if(!view_permission($page_name)){
-            return redirect()->back();  
+        if (!view_permission($page_name)) {
+            return redirect()->back();
         }
 
-        if(isset($user->role) && $user->role == user_roles('1')){
+        if (isset($user->role) && $user->role == user_roles('1')) {
 
             $trips = Trip::join('users as drivers', 'drivers.id', '=', 'trips.driver_id')
-            ->join('users as clients', 'clients.id', '=', 'trips.client_id')
-            ->select('trips.*', 'drivers.id as driver_id', 'drivers.name as driver_name', 'drivers.user_pic as driver_pic', 'clients.user_pic as client_pic', 'clients.name as client_name')
-            ->orderBy('trips.id', 'desc')
-            ->get()
-            ->toArray();
+                ->join('users as clients', 'clients.id', '=', 'trips.client_id')
+                ->select('trips.*', 'drivers.id as driver_id', 'drivers.name as driver_name', 'drivers.user_pic as driver_pic', 'clients.user_pic as client_pic', 'clients.name as client_name')
+                ->orderBy('trips.id', 'desc')
+                ->get()
+                ->toArray();
 
-            return view('invoices', ['data' => $trips,'user'=>$user]);
-        } 
-
-        else if(isset($user->role) && $user->role == user_roles('2')){
+            return view('invoices', ['data' => $trips, 'user' => $user]);
+        } else if (isset($user->role) && $user->role == user_roles('2')) {
             $trips = Trip::join('users', 'users.id', '=', 'trips.driver_id')
-            ->where('trips.client_id', $user->id)
-            ->select('trips.*', 'users.id as driver_id', 'users.name as driver_name', 'users.user_pic  as driver_pic')
-            ->orderBy('trips.id', 'desc')
-            ->get()
-            ->toArray();
-            return view('invoices', ['data' => $trips,'user'=>$user]);
-        }
-        
-        else {
+                ->where('trips.client_id', $user->id)
+                ->select('trips.*', 'users.id as driver_id', 'users.name as driver_name', 'users.user_pic  as driver_pic')
+                ->orderBy('trips.id', 'desc')
+                ->get()
+                ->toArray();
+            return view('invoices', ['data' => $trips, 'user' => $user]);
+        } else {
             $trips = Trip::join('users', 'users.id', '=', 'trips.client_id')
-            ->where('trips.driver_id', $user->id)
-            ->select('trips.*', 'users.id as client_id', 'users.name as client_name', 'users.user_pic  as client_pic')
-            ->orderBy('trips.id', 'desc')
-            ->get()
-            ->toArray();
-            return view('invoices', ['data' => $trips,'user'=>$user]);
-        } 
-
+                ->where('trips.driver_id', $user->id)
+                ->select('trips.*', 'users.id as client_id', 'users.name as client_name', 'users.user_pic  as client_pic')
+                ->orderBy('trips.id', 'desc')
+                ->get()
+                ->toArray();
+            return view('invoices', ['data' => $trips, 'user' => $user]);
+        }
     }
 
     public function add_quotation(Request $request)
@@ -381,19 +353,19 @@ class UserController extends Controller
         $data['user'] = $user;
         $page_name = 'create_trip';
 
-        if(!view_permission($page_name)){
-            return redirect()->back();  
+        if (!view_permission($page_name)) {
+            return redirect()->back();
         }
         $data['duplicate_trip'] = NULL;
         if ($request->has('id')) {
 
             $data['duplicate_trip'] = $request->duplicate_trip ?? NULL;
-            
-            if(isset($user->role) && ($user->role == user_roles('1'))){   
+
+            if (isset($user->role) && ($user->role == user_roles('1'))) {
                 $trip = Trip::with(['addresses' => function ($query) {
                     $query->orderBy('order_no', 'ASC');
                 }])->find($request->id);
-                
+
                 $data['data'] = $trip->toArray();
                 $data['data']['addresses'] = $trip->addresses->toArray();
                 //$data['client_list'] = User::where(['role' => user_roles('2'), 'status'=>auth_users()])->orderBy('id', 'desc')->select('id','name')->get()->toArray();
@@ -402,42 +374,39 @@ class UserController extends Controller
                     $data['client_list'] = User::where('id', $trip->client_id)->first();
                     $data['driver_list'] = User::where('id', $trip->driver_id)->first();
                     //dd($data);
-                     
-                return view('pdf_templates',$data);                    
-                }else{
-                    $data['client_list'] = User::where(['role' => user_roles('2'), 'status'=>auth_users()])->orderBy('id', 'desc')->select('id','name')->get()->toArray();
-                $data['driver_list'] = User::where(['role' => user_roles('3'),'client_id' => $data['data']['client_id']])->orderBy('id', 'desc')->get()->toArray();
-                    return view('add_quotation',$data);
+
+                    return view('pdf_templates', $data);
+                } else {
+                    $data['client_list'] = User::where(['role' => user_roles('2'), 'status' => auth_users()])->orderBy('id', 'desc')->select('id', 'name')->get()->toArray();
+                    $data['driver_list'] = User::where(['role' => user_roles('3'), 'client_id' => $data['data']['client_id']])->orderBy('id', 'desc')->get()->toArray();
+                    return view('add_quotation', $data);
                 }
-            }
-            
-            else{
+            } else {
                 $trip = Trip::with(['addresses' => function ($query) {
                     $query->orderBy('order_no', 'ASC');
                 }])->find($request->id);
-                
+
                 $data['data'] = $trip->toArray();
                 $data['data']['addresses'] = $trip->addresses->toArray();
-                
-                $data['driver_list'] = User::where(['role' => user_roles('3')])->orderBy('id', 'desc')->select('id','name')->get()->toArray();
+
+                $data['driver_list'] = User::where(['role' => user_roles('3')])->orderBy('id', 'desc')->select('id', 'name')->get()->toArray();
                 if ($request->dashboard_data == 1) {
                     $data['client_list'] = User::where('id', $trip->client_id)->first();
                     $data['driver_list'] = User::where('id', $trip->driver_id)->first();
                     dd($data);
-                    return view('pdf_templates',$data);                    
-                    }else{
-                        return view('add_quotation',$data);
-                    }
+                    return view('pdf_templates', $data);
+                } else {
+                    return view('add_quotation', $data);
+                }
             }
-        }
-        else{
-            if(isset($user->role) && $user->role == user_roles('1')){    
+        } else {
+            if (isset($user->role) && $user->role == user_roles('1')) {
                 $data['driver_list'] = [];
-                $data['client_list'] = User::where(['role' => user_roles('2'),'status' => auth_users()])->orderBy('id', 'desc')->select('id','name')->get()->toArray();
-                return view('add_quotation',$data);
-            }else{
-                $data['driver_list'] = User::where(['role' => user_roles('3'),'client_id' => $user->id])->orderBy('id', 'desc')->get()->toArray();
-                return view('add_quotation',$data);
+                $data['client_list'] = User::where(['role' => user_roles('2'), 'status' => auth_users()])->orderBy('id', 'desc')->select('id', 'name')->get()->toArray();
+                return view('add_quotation', $data);
+            } else {
+                $data['driver_list'] = User::where(['role' => user_roles('3'), 'client_id' => $user->id])->orderBy('id', 'desc')->get()->toArray();
+                return view('add_quotation', $data);
             }
         }
     }
@@ -448,19 +417,19 @@ class UserController extends Controller
         $data['user'] = $user;
         $page_name = 'create_trip';
 
-        if(!view_permission($page_name)){
-            return redirect()->back();  
+        if (!view_permission($page_name)) {
+            return redirect()->back();
         }
         $data['duplicate_trip'] = NULL;
         if ($request->has('id')) {
 
             $data['duplicate_trip'] = $request->duplicate_trip ?? NULL;
-            
-            if(isset($user->role) && ($user->role == user_roles('1'))){   
+
+            if (isset($user->role) && ($user->role == user_roles('1'))) {
                 $trip = Trip::with(['addresses' => function ($query) {
                     $query->orderBy('order_no', 'ASC');
                 }])->find($request->id);
-                
+
                 $data['data'] = $trip->toArray();
                 $data['data']['addresses'] = $trip->addresses->toArray();
                 //$data['client_list'] = User::where(['role' => user_roles('2'), 'status'=>auth_users()])->orderBy('id', 'desc')->select('id','name')->get()->toArray();
@@ -469,42 +438,39 @@ class UserController extends Controller
                     $data['client_list'] = User::where('id', $trip->client_id)->first();
                     $data['driver_list'] = User::where('id', $trip->driver_id)->first();
                     //dd($data);
-                     
-                return view('pdf_templates',$data);                    
-                }else{
-                    $data['client_list'] = User::where(['role' => user_roles('2'), 'status'=>auth_users()])->orderBy('id', 'desc')->select('id','name')->get()->toArray();
-                $data['driver_list'] = User::where(['role' => user_roles('3'),'client_id' => $data['data']['client_id']])->orderBy('id', 'desc')->get()->toArray();
-                    return view('add_contract',$data);
+
+                    return view('pdf_templates', $data);
+                } else {
+                    $data['client_list'] = User::where(['role' => user_roles('2'), 'status' => auth_users()])->orderBy('id', 'desc')->select('id', 'name')->get()->toArray();
+                    $data['driver_list'] = User::where(['role' => user_roles('3'), 'client_id' => $data['data']['client_id']])->orderBy('id', 'desc')->get()->toArray();
+                    return view('add_contract', $data);
                 }
-            }
-            
-            else{
+            } else {
                 $trip = Trip::with(['addresses' => function ($query) {
                     $query->orderBy('order_no', 'ASC');
                 }])->find($request->id);
-                
+
                 $data['data'] = $trip->toArray();
                 $data['data']['addresses'] = $trip->addresses->toArray();
-                
-                $data['driver_list'] = User::where(['role' => user_roles('3')])->orderBy('id', 'desc')->select('id','name')->get()->toArray();
+
+                $data['driver_list'] = User::where(['role' => user_roles('3')])->orderBy('id', 'desc')->select('id', 'name')->get()->toArray();
                 if ($request->dashboard_data == 1) {
                     $data['client_list'] = User::where('id', $trip->client_id)->first();
                     $data['driver_list'] = User::where('id', $trip->driver_id)->first();
                     dd($data);
-                    return view('pdf_templates',$data);                    
-                    }else{
-                        return view('add_contract',$data);
-                    }
+                    return view('pdf_templates', $data);
+                } else {
+                    return view('add_contract', $data);
+                }
             }
-        }
-        else{
-            if(isset($user->role) && $user->role == user_roles('1')){    
+        } else {
+            if (isset($user->role) && $user->role == user_roles('1')) {
                 $data['driver_list'] = [];
-                $data['client_list'] = User::where(['role' => user_roles('2'),'status' => auth_users()])->orderBy('id', 'desc')->select('id','name')->get()->toArray();
-                return view('add_contract',$data);
-            }else{
-                $data['driver_list'] = User::where(['role' => user_roles('3'),'client_id' => $user->id])->orderBy('id', 'desc')->get()->toArray();
-                return view('add_contract',$data);
+                $data['client_list'] = User::where(['role' => user_roles('2'), 'status' => auth_users()])->orderBy('id', 'desc')->select('id', 'name')->get()->toArray();
+                return view('add_contract', $data);
+            } else {
+                $data['driver_list'] = User::where(['role' => user_roles('3'), 'client_id' => $user->id])->orderBy('id', 'desc')->get()->toArray();
+                return view('add_contract', $data);
             }
         }
     }
@@ -515,19 +481,19 @@ class UserController extends Controller
         $data['user'] = $user;
         $page_name = 'create_trip';
 
-        if(!view_permission($page_name)){
-            return redirect()->back();  
+        if (!view_permission($page_name)) {
+            return redirect()->back();
         }
         $data['duplicate_trip'] = NULL;
         if ($request->has('id')) {
 
             $data['duplicate_trip'] = $request->duplicate_trip ?? NULL;
-            
-            if(isset($user->role) && ($user->role == user_roles('1'))){   
+
+            if (isset($user->role) && ($user->role == user_roles('1'))) {
                 $trip = Trip::with(['addresses' => function ($query) {
                     $query->orderBy('order_no', 'ASC');
                 }])->find($request->id);
-                
+
                 $data['data'] = $trip->toArray();
                 $data['data']['addresses'] = $trip->addresses->toArray();
                 //$data['client_list'] = User::where(['role' => user_roles('2'), 'status'=>auth_users()])->orderBy('id', 'desc')->select('id','name')->get()->toArray();
@@ -536,42 +502,39 @@ class UserController extends Controller
                     $data['client_list'] = User::where('id', $trip->client_id)->first();
                     $data['driver_list'] = User::where('id', $trip->driver_id)->first();
                     //dd($data);
-                     
-                return view('pdf_templates',$data);                    
-                }else{
-                    $data['client_list'] = User::where(['role' => user_roles('2'), 'status'=>auth_users()])->orderBy('id', 'desc')->select('id','name')->get()->toArray();
-                $data['driver_list'] = User::where(['role' => user_roles('3'),'client_id' => $data['data']['client_id']])->orderBy('id', 'desc')->get()->toArray();
-                    return view('add_invoice',$data);
+
+                    return view('pdf_templates', $data);
+                } else {
+                    $data['client_list'] = User::where(['role' => user_roles('2'), 'status' => auth_users()])->orderBy('id', 'desc')->select('id', 'name')->get()->toArray();
+                    $data['driver_list'] = User::where(['role' => user_roles('3'), 'client_id' => $data['data']['client_id']])->orderBy('id', 'desc')->get()->toArray();
+                    return view('add_invoice', $data);
                 }
-            }
-            
-            else{
+            } else {
                 $trip = Trip::with(['addresses' => function ($query) {
                     $query->orderBy('order_no', 'ASC');
                 }])->find($request->id);
-                
+
                 $data['data'] = $trip->toArray();
                 $data['data']['addresses'] = $trip->addresses->toArray();
-                
-                $data['driver_list'] = User::where(['role' => user_roles('3')])->orderBy('id', 'desc')->select('id','name')->get()->toArray();
+
+                $data['driver_list'] = User::where(['role' => user_roles('3')])->orderBy('id', 'desc')->select('id', 'name')->get()->toArray();
                 if ($request->dashboard_data == 1) {
                     $data['client_list'] = User::where('id', $trip->client_id)->first();
                     $data['driver_list'] = User::where('id', $trip->driver_id)->first();
                     dd($data);
-                    return view('pdf_templates',$data);                    
-                    }else{
-                        return view('add_invoice',$data);
-                    }
+                    return view('pdf_templates', $data);
+                } else {
+                    return view('add_invoice', $data);
+                }
             }
-        }
-        else{
-            if(isset($user->role) && $user->role == user_roles('1')){    
+        } else {
+            if (isset($user->role) && $user->role == user_roles('1')) {
                 $data['driver_list'] = [];
-                $data['client_list'] = User::where(['role' => user_roles('2'),'status' => auth_users()])->orderBy('id', 'desc')->select('id','name')->get()->toArray();
-                return view('add_invoice',$data);
-            }else{
-                $data['driver_list'] = User::where(['role' => user_roles('3'),'client_id' => $user->id])->orderBy('id', 'desc')->get()->toArray();
-                return view('add_invoice',$data);
+                $data['client_list'] = User::where(['role' => user_roles('2'), 'status' => auth_users()])->orderBy('id', 'desc')->select('id', 'name')->get()->toArray();
+                return view('add_invoice', $data);
+            } else {
+                $data['driver_list'] = User::where(['role' => user_roles('3'), 'client_id' => $user->id])->orderBy('id', 'desc')->get()->toArray();
+                return view('add_invoice', $data);
             }
         }
     }
@@ -582,40 +545,38 @@ class UserController extends Controller
             ->orderBy('id', 'desc')
             ->get()
             ->toArray();
-    
+
         return response()->json($driver_list);
     }
-    
+
 
     public function driver_map(Request $request)
     {
         $user = auth()->user();
         $page_name = 'driver_map';
 
-        if(!view_permission($page_name)){
+        if (!view_permission($page_name)) {
             return redirect('/');
         }
 
         if ($request->has('id')) {
-            
-            if(isset($user->role) && $user->role == user_roles('3')){   
+
+            if (isset($user->role) && $user->role == user_roles('3')) {
                 $trip = Trip::with(['addresses' => function ($query) {
                     $query->orderBy('order_no', 'ASC');
                 }])->find($request->id);
-                
+
                 $tripData = $trip->toArray();
                 $tripData['addresses'] = $trip->addresses->toArray();
-                
-                return view('driver_map',['data'=>$tripData, 'user'=>$user]);
+
+                return view('driver_map', ['data' => $tripData, 'user' => $user]);
             }
-        }    
-        else{
+        } else {
             return redirect('/routes');
-         }
-        
+        }
     }
-    
-    
+
+
 
     public function announcements_alerts()
     {
@@ -633,23 +594,22 @@ class UserController extends Controller
         if (session()->has('user_details')) {
 
             $user = auth()->user();
-        $page_name = 'home';
+            $page_name = 'home';
 
-        if(!view_permission($page_name)){
-            return redirect()->back();  
+            if (!view_permission($page_name)) {
+                return redirect()->back();
+            }
         }
-    }
-        
+
 
         if ($request->has('id')) {
-            
-            $package  = Package::where('id',$request->id)->first();
-            return view('subscription', ['data' => $package]);
-        } 
-        else {
 
-        $package = Package::orderBy('id', 'ASC')->get()->toArray();
-        return view('home', ['data' => $package]);
+            $package  = Package::where('id', $request->id)->first();
+            return view('subscription', ['data' => $package]);
+        } else {
+
+            $package = Package::orderBy('id', 'ASC')->get()->toArray();
+            return view('home', ['data' => $package]);
         }
     }
 
@@ -664,45 +624,39 @@ class UserController extends Controller
         $user = auth()->user();
         $page_name = 'calender';
 
-        if(!view_permission($page_name)){
-            return redirect()->back();  
+        if (!view_permission($page_name)) {
+            return redirect()->back();
         }
 
-        if(isset($user->role) && $user->role == user_roles('1')){
+        if (isset($user->role) && $user->role == user_roles('1')) {
             $data['trips'] = Trip::join('users as drivers', 'drivers.id', '=', 'trips.driver_id')
-            ->join('users as clients', 'clients.id', '=', 'trips.client_id')
-            ->select('trips.id', 'trips.trip_date','trips.title', 'trips.status', 'drivers.id as driver_id', 'drivers.name as driver_name')
-            ->orderBy('trips.trip_date', 'ASC')
-            ->get();   
-            
-            $data['dragable'] = 1;
-        } 
+                ->join('users as clients', 'clients.id', '=', 'trips.client_id')
+                ->select('trips.id', 'trips.trip_date', 'trips.title', 'trips.status', 'drivers.id as driver_id', 'drivers.name as driver_name')
+                ->orderBy('trips.trip_date', 'ASC')
+                ->get();
 
-        else if(isset($user->role) && $user->role == user_roles('2')){
+            $data['dragable'] = 1;
+        } else if (isset($user->role) && $user->role == user_roles('2')) {
             $data['trips'] = Trip::join('users', 'users.id', '=', 'trips.driver_id')
-            ->where('trips.client_id', $user->id)
-            ->select('trips.id', 'trips.trip_date','trips.title', 'trips.status', 'users.id as driver_id', 'users.name as driver_name')
-            ->orderBy('trips.trip_date', 'ASC')
-            ->get();
+                ->where('trips.client_id', $user->id)
+                ->select('trips.id', 'trips.trip_date', 'trips.title', 'trips.status', 'users.id as driver_id', 'users.name as driver_name')
+                ->orderBy('trips.trip_date', 'ASC')
+                ->get();
 
             $data['dragable'] = 1;
-
-        }
-        
-        else {
+        } else {
             $data['trips'] = Trip::join('users', 'users.id', '=', 'trips.client_id')
-            ->where('trips.driver_id', $user->id)
-            ->select('trips.id', 'trips.trip_date','trips.title', 'trips.status', 'users.id as client_id', 'users.name as  driver_name', 'users.role as  dragable')
-            ->orderBy('trips.trip_date', 'ASC')
-            ->get();
+                ->where('trips.driver_id', $user->id)
+                ->select('trips.id', 'trips.trip_date', 'trips.title', 'trips.status', 'users.id as client_id', 'users.name as  driver_name', 'users.role as  dragable')
+                ->orderBy('trips.trip_date', 'ASC')
+                ->get();
 
             $data['dragable'] = 2;
-
-        } 
+        }
 
         $data['user'] = $user;
-    
-        return view('calender',$data);
+
+        return view('calender', $data);
     }
 
     public function calendar_maintable()
@@ -710,40 +664,36 @@ class UserController extends Controller
         $user = auth()->user();
         $page_name = 'calendar_maintable';
 
-        if(!view_permission($page_name)){
-            return redirect()->back();  
+        if (!view_permission($page_name)) {
+            return redirect()->back();
         }
 
-        if(isset($user->role) && $user->role == user_roles('1')){
+        if (isset($user->role) && $user->role == user_roles('1')) {
 
             $trips = Trip::join('users as drivers', 'drivers.id', '=', 'trips.driver_id')
-            ->join('users as clients', 'clients.id', '=', 'trips.client_id')
-            ->select('trips.*', 'drivers.id as driver_id', 'drivers.name as driver_name', 'drivers.user_pic as driver_pic', 'clients.user_pic as client_pic', 'clients.name as client_name')
-            ->orderBy('trips.id', 'desc')
-            ->get()
-            ->toArray();
+                ->join('users as clients', 'clients.id', '=', 'trips.client_id')
+                ->select('trips.*', 'drivers.id as driver_id', 'drivers.name as driver_name', 'drivers.user_pic as driver_pic', 'clients.user_pic as client_pic', 'clients.name as client_name')
+                ->orderBy('trips.id', 'desc')
+                ->get()
+                ->toArray();
 
-            return view('calendar_maintable', ['data' => $trips,'user'=>$user]);
-        } 
-
-        else if(isset($user->role) && $user->role == user_roles('2')){
+            return view('calendar_maintable', ['data' => $trips, 'user' => $user]);
+        } else if (isset($user->role) && $user->role == user_roles('2')) {
             $trips = Trip::join('users', 'users.id', '=', 'trips.driver_id')
-            ->where('trips.client_id', $user->id)
-            ->select('trips.*', 'users.id as driver_id', 'users.name as driver_name', 'users.user_pic  as driver_pic')
-            ->orderBy('trips.id', 'desc')
-            ->get()
-            ->toArray();
-            return view('calendar_maintable', ['data' => $trips,'user'=>$user]);
-        }
-        
-        else {
+                ->where('trips.client_id', $user->id)
+                ->select('trips.*', 'users.id as driver_id', 'users.name as driver_name', 'users.user_pic  as driver_pic')
+                ->orderBy('trips.id', 'desc')
+                ->get()
+                ->toArray();
+            return view('calendar_maintable', ['data' => $trips, 'user' => $user]);
+        } else {
             $trips = Trip::join('users', 'users.id', '=', 'trips.client_id')
-            ->where('trips.driver_id', $user->id)
-            ->select('trips.*', 'users.id as client_id', 'users.name as client_name', 'users.user_pic  as client_pic')
-            ->orderBy('trips.id', 'desc')
-            ->get()
-            ->toArray();
-            return view('calendar_maintable', ['data' => $trips,'user'=>$user]);
+                ->where('trips.driver_id', $user->id)
+                ->select('trips.*', 'users.id as client_id', 'users.name as client_name', 'users.user_pic  as client_pic')
+                ->orderBy('trips.id', 'desc')
+                ->get()
+                ->toArray();
+            return view('calendar_maintable', ['data' => $trips, 'user' => $user]);
         }
     }
 
@@ -752,94 +702,90 @@ class UserController extends Controller
         $user = auth()->user();
         $page_name = 'users';
 
-        if(!view_permission($page_name)){
-            return redirect()->back();  
+        if (!view_permission($page_name)) {
+            return redirect()->back();
         }
 
         $users = User::where(['role' => 'Admin'])->orderBy('id', 'desc')->get()->toArray();
-        return view('users', ['data' => $users ,'user'=>$user ,'add_as_user'=> user_roles('1')]);
+        return view('users', ['data' => $users, 'user' => $user, 'add_as_user' => user_roles('1')]);
     }
 
     public function notifications(Request $request)
     {
         $user = auth()->user();
         $page_name = 'notifications';
-    
+
         if (!view_permission($page_name)) {
             return redirect()->back();
         }
 
-    $notifications = NULL;
-    if(isset($user->role) && $user->role == user_roles('1')){
-        if ($request->has('all_read')) {
-            Notification::where('status', '!=', 'seen') // Add any other condition if needed
-                        ->update(['status' => 'seen']);
-        
-            return redirect()->back();
-        }
-         
+        $notifications = NULL;
+        if (isset($user->role) && $user->role == user_roles('1')) {
+            if ($request->has('all_read')) {
+                Notification::where('status', '!=', 'seen') // Add any other condition if needed
+                    ->update(['status' => 'seen']);
+
+                return redirect()->back();
+            }
+
             $notifications  = Notification::orderBy('id', 'desc')->get()->toArray();
         }
-        return view('notifications', ['data'=>$notifications , 'user' => $user]);
+        return view('notifications', ['data' => $notifications, 'user' => $user]);
     }
 
     public function announcements(Request $request)
     {
         $user = auth()->user();
         $page_name = 'announcements';
-    
+
         if (!view_permission($page_name)) {
             return redirect()->back();
         }
-    
-        if ($request->has('id')) {
-            
-            $announcmnent  = Announcement::where('id',$request->id)->get()->toArray();
-            $announcmnents = Announcement::where('status','on')->orderBy('id', 'desc')->get()->toArray();
-            return view('announcements', ['data' => $announcmnents, 'user' => $user, 'announcmnent'=>$announcmnent[0]]);
-        } 
-        else {
 
-            $announcmnents = Announcement::where('status','on')->orderBy('id', 'desc')->get()->toArray();
+        if ($request->has('id')) {
+
+            $announcmnent  = Announcement::where('id', $request->id)->get()->toArray();
+            $announcmnents = Announcement::where('status', 'on')->orderBy('id', 'desc')->get()->toArray();
+            return view('announcements', ['data' => $announcmnents, 'user' => $user, 'announcmnent' => $announcmnent[0]]);
+        } else {
+
+            $announcmnents = Announcement::where('status', 'on')->orderBy('id', 'desc')->get()->toArray();
             return view('announcements', ['data' => $announcmnents, 'user' => $user]);
         }
-    
     }
 
     public function packages(Request $request)
     {
         $user = auth()->user();
         $page_name = 'packages';
-        
+
         if (!view_permission($page_name)) {
             return redirect()->back();
         }
-    
+
         if ($request->has('id')) {
-            
-            $package  = Package::where('id',$request->id)->get()->toArray();
-            $packages = Package::where('status','on')->orderBy('id', 'DESC')->get()->toArray();
-            return view('packages', ['data' => $packages, 'user' => $user, 'package'=>$package[0]]);
-        } 
-        else {
-            $packages = Package::where('status','on')->orderBy('id', 'DESC')->get()->toArray();
+
+            $package  = Package::where('id', $request->id)->get()->toArray();
+            $packages = Package::where('status', 'on')->orderBy('id', 'DESC')->get()->toArray();
+            return view('packages', ['data' => $packages, 'user' => $user, 'package' => $package[0]]);
+        } else {
+            $packages = Package::where('status', 'on')->orderBy('id', 'DESC')->get()->toArray();
             return view('packages', ['data' => $packages, 'user' => $user]);
         }
-    
     }
-    
+
 
     public function settings()
     {
         $user = auth()->user();
         $page_name = 'settings';
-    
+
         if (!view_permission($page_name)) {
             return redirect()->back();
         }
 
         $user = auth()->user();
-        return view('settings',['user' => $user]);
+        return view('settings', ['user' => $user]);
     }
 
     public function user_store(REQUEST $request)
@@ -879,7 +825,7 @@ class UserController extends Controller
                     'email',
                     Rule::unique('users')->ignore($request->id),
                 ],
-            ]);            
+            ]);
 
             if ($validator->fails()) {
                 return redirect()->back()->withErrors($validator)->withInput();
@@ -899,13 +845,13 @@ class UserController extends Controller
             $user->remember_token   = $verificationToken;
             $user->password = Hash::make($request->password);
             $save = $user->save();
-            if($save){
-                $notification =  new Notification(); 
-    
+            if ($save) {
+                $notification =  new Notification();
+
                 $notification->title      = 'New User Regisration';
                 $notification->user_id    = $user->id;
-                $notification->desc       = 'New User Mr/Mis. '.$user->name.' Regisration is created Now. With Email: '.$user->email;
-                $notification->status     = 'nseen' ;
+                $notification->desc       = 'New User Mr/Mis. ' . $user->name . ' Regisration is created Now. With Email: ' . $user->email;
+                $notification->status     = 'nseen';
                 $notification->created_by = $user->id;
                 $save = $notification->save();
 
@@ -917,15 +863,14 @@ class UserController extends Controller
                 ];
 
                 SendEmailVerificationJob::dispatch($emailData)->onQueue('emails');
-                
+
                 return redirect('/register')->with('success', 'Please Check your Email for Verification');
             }
-            
         } else {
             return view('register');
         }
     }
-  
+
     public function user_login(Request $request)
     {
         $user = auth()->user();
@@ -933,12 +878,12 @@ class UserController extends Controller
             if ($request->all()) {
                 $login = $this->api->user_login($request);
                 $responseData = json_decode($login->getContent(), true);
-    
+
                 if ($responseData['status'] == "success") {
                     session(['user' => $responseData['token']]);
                     session(['lang' => 'en']);
                 }
-    
+
                 echo $login->getContent();
             } else {
                 return view('login');
@@ -947,7 +892,7 @@ class UserController extends Controller
             return redirect('/');
         }
     }
-    
+
     public function logout(REQUEST $request)
     {
         session()->forget('lang');
@@ -959,8 +904,7 @@ class UserController extends Controller
     {
 
         $req = $request->all();
-        if (isset($req['no1']) || isset($req['no2']) || isset($req['no3']) || isset($req['no4']) || isset($req['no5'])) 
-        {
+        if (isset($req['no1']) || isset($req['no2']) || isset($req['no3']) || isset($req['no4']) || isset($req['no5'])) {
             $array = [$req["no1"], $req["no2"], $req["no3"], $req["no4"], $req["no5"]];
             $otp = implode('', $array);
 
@@ -968,16 +912,14 @@ class UserController extends Controller
             if ($user) {
                 Session::flash('email_temp', $user->email);
                 return redirect('/set_password');
-            } else {             
-        
+            } else {
+
                 Session::flash('invalid', "OTP is not Correct");
                 Session::flash('email', $req['email']);
 
-                return view('forgotPassword', ['email' => $req['email'] , 'no'=>$array]);
+                return view('forgotPassword', ['email' => $req['email'], 'no' => $array]);
             }
-        } 
-
-        else {
+        } else {
 
             if (isset($req['email']) && !empty($req['email'])) {
 
@@ -991,8 +933,8 @@ class UserController extends Controller
                     ];
                     $mail = new otpVerifcation($emailData);
 
-                                    
-                
+
+
                     try {
                         $user->reset_pswd_attempt = $user->reset_pswd_attempt ? ++$user->reset_pswd_attempt : 1;
 
@@ -1004,7 +946,7 @@ class UserController extends Controller
                                 $user->reset_pswd_attempt = 1;
                                 $user->reset_pswd_time = $currentTime;
                             } else {
-                                Session::forget(['status', 'message','otp']);
+                                Session::forget(['status', 'message', 'otp']);
                                 $remainingTime = $resetTime->diffInSeconds($currentTime);
                                 return view('forgotPassword', ['email' => $req['email'], 'forgot_pass' => 'You have exceeded the maximum password reset attempts. Please try again after ', 'remainingTime' => $remainingTime]);
                             }
@@ -1023,13 +965,12 @@ class UserController extends Controller
                     } catch (\Exception $e) {
                         echo "Failed to send email: " . $e->getMessage();
                     }
-
                 } else {
 
                     Session::flash('status', 'invalid');
                     Session::flash('message', 'this email is invalid');
                     Session::flash('email', $req['email']);
-                    
+
 
                     return view('forgotPassword', ['email' => $req['email']]);
                 }
@@ -1049,15 +990,15 @@ class UserController extends Controller
                     'confirm_password' => 'required|same:password',
                     'email' => 'required'
                 ]);
-    
+
                 if ($validator->fails()) {
                     return redirect()->back()->withErrors($validator)->withInput();
                 }
-    
+
                 $user = User::where('email', $req['email'])->first();
                 $user->password = Hash::make($request->password);
                 $save = $user->save();
-    
+
                 if ($save) {
                     return redirect('/login')->with('password_changed', "Password is successfully changed");;
                 }
@@ -1071,11 +1012,11 @@ class UserController extends Controller
 
     public function change_status(REQUEST $request)
     {
-        $user = User::where('id',$request->id)->first();
-        if($request->status == 1){
-        $user->status     = $request->status;
-        $save = $user->save();
-            if($save){
+        $user = User::where('id', $request->id)->first();
+        if ($request->status == 1) {
+            $user->status     = $request->status;
+            $save = $user->save();
+            if ($save) {
                 $emailData = [
                     'otp' => 'Account Activation',
                     'name' => $user->name,
@@ -1085,19 +1026,16 @@ class UserController extends Controller
 
                 try {
                     Mail::to($user->email)->send($mail);
-                     echo $save;
+                    echo $save;
                 } catch (\Exception $e) {
                     echo "Failed to send email: " . $e->getMessage();
                 }
-
             }
-        }
-        else{
+        } else {
             $user->status     = $request->status;
-            $save = $user->save(); 
+            $save = $user->save();
             echo $save;
         }
-        
     }
 
     public function pay(Request $request)
@@ -1113,42 +1051,39 @@ class UserController extends Controller
                 $payment->exp_date = Carbon::now()->addDays(30);
                 $payment->created_by = Auth::id();
                 $payment->save();
-    
+
                 $payment = Payment::where('created_by', Auth::id())->latest()->first();
-    
+
                 $response = $this->gateway->purchase(array(
                     'amount'    => $request->amount,
                     'currency'  => config('constants.PAYPAL.CURRENCY'),
                     'returnUrl' => url('/payment_success'),
                     'cancelUrl' => url('/payment_cancel')
                 ))->send();
-        
+
                 if ($response->isRedirect()) {
-                        $response->redirect();
-                } 
-    
-                else {
-    
+                    $response->redirect();
+                } else {
+
                     if ($payment) {
                         $this->fail_trans($response->getMessage(), null, null, 'error');
                     }
-    
+
                     return redirect()->back()->with('error', 'Payment could not proceed futher contact to Admin!!.');
                 }
-    
             } catch (\Throwable $th) {
-    
+
                 if ($payment) {
                     $this->fail_trans(null, $th->getMessage(), null, 'server_error');
                 }
-    
+
                 return redirect()->back()->with('error', 'PayPal is declined to Connet. Check Your Network or Contact to Admin.');
             }
-        }else{
+        } else {
             return redirect('/login');
         }
     }
-    
+
     public function payment_success(Request $request)
     {
         $payment = Payment::where('created_by', Auth::id())->latest()->first();
@@ -1184,7 +1119,7 @@ class UserController extends Controller
                     $user->status = 1;
                     $saved = $user->save();
 
-                    if($saved){
+                    if ($saved) {
                         $emailData = [
                             'package_name' => $payment->package->title,
                             'name' => $user->name,
@@ -1192,24 +1127,18 @@ class UserController extends Controller
                         ];
 
                         SendSubscriptionPurchasedEmail::dispatch($user, $payment)->onQueue('emails');
-    
                     }
-
-
                 }
 
                 return redirect('/')->with('subscription_active', 'Your subscription is now active.');
-
-            }
-            else{
+            } else {
                 if ($payment) {
                     $this->fail_trans($response->getMessage(), null, null, 'error');
                     $url = url('/home');
                     return redirect($url)->with('error', 'Payment Could Completed!!.');
                 }
             }
-        }
-        else{
+        } else {
             if ($payment) {
                 $this->fail_trans($response->getMessage(), null, null, 'error');
                 $url = url('/home');
@@ -1219,18 +1148,19 @@ class UserController extends Controller
     }
 
     public function payment_cancel(Request $request)
-    {  
+    {
         $this->fail_trans(null, null, $request->input('token'), 'cancel');
         $url = url('/home');
         return redirect($url)->with('error', 'Your Decliened Payment and Cancel Subscription.');
     }
-    
-    public function fail_trans($transaction_error=null, $server_error=null, $token=null, $status=null){
-        
+
+    public function fail_trans($transaction_error = null, $server_error = null, $token = null, $status = null)
+    {
+
         $payment = Payment::where('created_by', Auth::id())->latest()->first();
         if ($payment) {
             $payment->transaction_error = $transaction_error;
-            $payment->server_error      = $server_error;    
+            $payment->server_error      = $server_error;
             $payment->payment_token     = $token;
             $payment->payment_status    = $status;
             $payment->save();
@@ -1240,13 +1170,13 @@ class UserController extends Controller
     public function verify(Request $request, $hash)
     {
         $user = User::where('remember_token', $hash)->first();
-    
+
         if ($user) {
             if (!$user->hasVerifiedEmail()) {
                 $user->markEmailAsVerified();
                 $user->status = 1;
                 $user->save();
-    
+
                 return redirect('/login')->with('success', 'Email verified successfully. Please log in.');
             } else {
                 return redirect('/login')->with('success', 'Email already verified.');
@@ -1255,5 +1185,4 @@ class UserController extends Controller
             return redirect('/login')->with('error', 'Invalid verification link.');
         }
     }
-    
 }
