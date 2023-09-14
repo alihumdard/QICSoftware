@@ -55,10 +55,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::match(['post','get'],'/events', [APIController::class, 'events']);
     
     Route::match(['post','get'],'/eventStore', [APIController::class, 'storeEvent']);
-
-    Route::match(['post','get'],'/trip_charts', [APIController::class, 'tripCharts']);
-
-    Route::match(['post','get'],'/tripDetail', [APIController::class, 'tripDetail']);
     
     Route::match(['post','get'],'/quotationStore', [APIController::class, 'quotation_store']);
 
