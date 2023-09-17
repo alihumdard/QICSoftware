@@ -1308,6 +1308,7 @@ class APIController extends Controller
             $quotation->admin_id      = $request->admin_id;
             $quotation->user_id       = $request->user_id;
             $quotation->currency_code = $request->currency_code;
+            $quotation->location      = $request->location;
             $quotation->service_id    = $request->service_id;
             $quotation->desc          = $request->desc;
             $quotation->client_name   = $request->client_name;

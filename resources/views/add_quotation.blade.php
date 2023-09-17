@@ -75,6 +75,7 @@
 </style>
 @php
 $services = config('constants.SERVICES');
+$location = config('constants.LOCATIONS');
 $currencies = config('constants.CURRENCIES');
 @endphp
 <div class="content-wrapper py-0 my-2">
@@ -166,18 +167,33 @@ $currencies = config('constants.CURRENCIES');
                             <span id="service_id_error" class="error-message text-danger"></span>
                         </div>
 
-                        <div class="col-lg-3 col-md-6 col-sm-12">
+                        <div class="col-lg-3 col-md-6  col-sm-12">
+                            <label for="service_id">@lang('Qoute Location')</label>
+                            <select required name="location" id="location" class="form-select">
+                                <option disabled selected> Select @lang('lang.quote_category')</option>
+                                @forelse($location as $key => $value)
+                                <option value="{{ $key}}" {{ isset($data['location']) && $data['location'] == $key ? 'selected' : '' }}>
+                                    {{ $value }}
+                                </option>
+                                @empty
+                                <!-- Code to handle the case when $driver_list is empty or null -->
+                                @endforelse
+                            </select>
+                            <span id="location_error" class="error-message text-danger"></span>
+                        </div>
+
+                        <div class="col-lg-2 col-md-6 col-sm-12">
                             <label for="q_amount">@lang('lang.quoted_amount')</label>
                             <input required type="number" min="1" name="amount" id="q_amount" value="{{ $data['amount'] ?? 1 }}" placeholder="@lang('lang.quoted_amount')" class="form-control">
                             <span id="q_amount_error" class="error-message text-danger"></span>
                         </div>
-                        <div class="col-lg-3 col-md-6 col-sm-12">
+                        <div class="col-lg-2 col-md-6 col-sm-12">
                             <label for="currency_code">Currency Code</label>
                             <select required name="currency_code" id="currency_code" class="form-select">
-                                <option disabled selected> Select @lang('currency Code')</option>
+                                <option disabled selected> @lang('currency')</option>
                                 @forelse($currencies as $key => $value)
                                 <option value="{{ $key}}" {{ isset($data['currency_code']) && $data['currency_code'] == $key ? 'selected' : '' }}>
-                                    {{ $value }}
+                                    {{ $key }}
                                 </option>
                                 @empty
                                 <!-- Code to handle the case when $driver_list is empty or null -->
@@ -186,7 +202,7 @@ $currencies = config('constants.CURRENCIES');
                             <span id="currency_code_error" class="error-message text-danger"></span>
                         </div>
 
-                        <div class="col-lg-3 col-md-6 col-sm-12">
+                        <div class="col-lg-2 col-md-6 col-sm-12">
                             <label for="q_file">@lang('Upload Quote File ')</label>
                             <label for="q_file" class="custom-button">
                                 <svg width="10" height="10" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -268,6 +284,7 @@ $currencies = config('constants.CURRENCIES');
             var service_id = $('#service_id').val();
             var q_amount = $('#q_amount').val();
             var currency_code = $('#currency_code').val();
+            var location = $('#location').val();
 
             // Reset error messages
             $('.error-message text-danger').text('');
@@ -312,6 +329,11 @@ $currencies = config('constants.CURRENCIES');
                 event.preventDefault();
             }
 
+            if (location === null) {
+                $('#location_error').text('*Please select a location.');
+                event.preventDefault();
+            }
+
         });
 
 
@@ -343,8 +365,13 @@ $currencies = config('constants.CURRENCIES');
         $('#client_name').on('input', function() {
             $('#client_name_error').text('');
         });
+
         $('#q_desc').on('input', function() {
             $('#q_desc_error').text('');
+        });
+
+        $('#location').on('change', function() {
+            $('#location_error').text('');
         });
 
     });
