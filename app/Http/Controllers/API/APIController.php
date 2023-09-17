@@ -1304,18 +1304,19 @@ class APIController extends Controller
              
             $isExistQuotation = $quotation->exists;
 
-            $quotation->date        = $request->date;
-            $quotation->admin_id    = $request->admin_id;
-            $quotation->user_id     = $request->user_id;
-            $quotation->service_id  = $request->service_id;
-            $quotation->desc        = $request->desc;
-            $quotation->client_name = $request->client_name;
-            $quotation->amount      = $request->amount;
+            $quotation->date          = $request->date;
+            $quotation->admin_id      = $request->admin_id;
+            $quotation->user_id       = $request->user_id;
+            $quotation->currency_code = $request->currency_code;
+            $quotation->service_id    = $request->service_id;
+            $quotation->desc          = $request->desc;
+            $quotation->client_name   = $request->client_name;
+            $quotation->amount        = $request->amount;
     
             if ($request->hasFile('file')) {
-                // if ($request->id && $oldComPicPath) {
-                //     Storage::disk('public')->delete($oldComPicPath);
-                // }
+                if ($request->id) {
+                    Storage::disk('public')->delete($quotation->file);
+                }
     
                 $qfile = $request->file('file');
                 $qfilePath = $qfile->store('q_files', 'public');
@@ -1332,5 +1333,56 @@ class APIController extends Controller
             return response()->json(['status' => 'error', 'message' => 'Error storing Quotation', 'error' => $e->getMessage()], 500);
         }
     }
- 
+
+    public function update_qoute_status(Request $request): JsonResponse
+    {
+        $validator = Validator::make($request->all(), [
+            'id' => 'required',
+            'status' => 'required',
+        ]);
+    
+        if ($validator->fails()) {
+            return response()->json(['status' => 'error', 'message' => $validator->errors()]);
+        }
+    
+        try {
+
+            if ($request->has('id')) {
+                $qoute = Quotation::where('id', $request->id)->update(['status' => $request->status]);
+                $message = 'Qoute status updated successfully';
+                return response()->json(['status' => 'success', 'message' => $message, 'data' => $qoute]);
+            
+            }
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => 'Error updating status ', 'error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function quote_detail(Request $request): JsonResponse
+    {
+        $validator = Validator::make($request->all(), [
+            'id' => 'required',
+        ]);
+    
+        if ($validator->fails()) {
+            return response()->json(['status' => 'error', 'message' => $validator->errors()], 400);
+        }
+    
+        try {
+            if (isset($request->role) && $request->role == user_roles('1')) {
+
+                $quotations = Quotation::join('users as u', 'u.id', '=', 'quotations.user_id')
+                ->join('users as admins', 'admins.id', '=', 'quotations.admin_id')
+                ->select('quotations.*','u.name as user_name', 'u.user_pic as user_pic', 'admins.name as admin_name','admins.user_pic as admin_pic')
+                ->where('quotations.id',$request->id)
+                ->orderBy('quotations.id', 'desc')
+                ->first();    
+            }
+
+            return response()->json(['status' => 'success', 'message' => 'Quotation details are fetched', 'data' => $quotations]);
+    
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'warning', 'message' => 'Error storing user', 'error' => $e->getMessage()], 500);
+        }
+    }
 }

@@ -75,6 +75,7 @@
 </style>
 @php
 $services = config('constants.SERVICES');
+$currencies = config('constants.CURRENCIES');
 @endphp
 <div class="content-wrapper py-0 my-2">
     <div style="border: none;">
@@ -87,42 +88,44 @@ $services = config('constants.SERVICES');
                             <path d="M13.3333 8.88888H11.1111V6.66665C11.1111 6.37197 10.994 6.08935 10.7857 5.88098C10.5773 5.67261 10.2947 5.55554 9.99999 5.55554C9.7053 5.55554 9.42269 5.67261 9.21431 5.88098C9.00594 6.08935 8.88888 6.37197 8.88888 6.66665V8.88888H6.66665C6.37197 8.88888 6.08935 9.00594 5.88098 9.21431C5.67261 9.42269 5.55554 9.7053 5.55554 9.99999C5.55554 10.2947 5.67261 10.5773 5.88098 10.7857C6.08935 10.994 6.37197 11.1111 6.66665 11.1111H8.88888V13.3333C8.88888 13.628 9.00594 13.9106 9.21431 14.119C9.42269 14.3274 9.7053 14.4444 9.99999 14.4444C10.2947 14.4444 10.5773 14.3274 10.7857 14.119C10.994 13.9106 11.1111 13.628 11.1111 13.3333V11.1111H13.3333C13.628 11.1111 13.9106 10.994 14.119 10.7857C14.3274 10.5773 14.4444 10.2947 14.4444 9.99999C14.4444 9.7053 14.3274 9.42269 14.119 9.21431C13.9106 9.00594 13.628 8.88888 13.3333 8.88888Z" fill="white" />
                         </svg>
                     </span>
-                    <span>{{ ($duplicate_trip ?? '' ==1) ? 'Duplicate Quotation' : ((isset($data['id'])) ? 'Update Quotation' : 'Add Quotation') }}</span>
+                    <span>{{ ($duplicate_trip ?? '' == 1) ? 'Duplicate Quotation' : ((isset($data['id'])) ? 'Update Quotation' : 'Add Quotation') }}</span>
                 </h3>
             </div>
-
             <div class="container" id="home">
                 <form action="quotationStore" id="formData" method="post">
                     <div class="row">
                         @csrf
-                        <div class="col-lg-{{ $user->role === 'Client' ? '6' : '4' }} col-sm-12 my-2">
+                        <div class="col-lg-{{ ($user->role == user_roles('3')) ? (($user->role == user_roles('2')) ? '4' : '6') : '3' }} col-md-6 col-sm-12  my-2">
                             <label for="q_date">@lang('lang.date')</label>
-                            <input required type="date" name="date" id="q_date" value="{{ ($duplicate_trip ?? '' == 1) ? date('Y-m-d') : ((isset($data['id'])) ? $data['trip_date'] : date('Y-m-d') ) }}" min="{{ ($duplicate_trip ?? '' == 1) ? date('Y-m-d') : ((isset($data['id'])) ? $data['trip_date'] : date('Y-m-d') ) }}" class="form-control">
+                            <input required type="date" name="date" id="q_date" value="{{ ($duplicate_trip ?? '' == 1) ? date('Y-m-d') : ((isset($data['id'])) ? $data['date'] : date('Y-m-d') ) }}" min="{{ ($duplicate_trip ?? '' == 1) ? date('Y-m-d') : ((isset($data['id'])) ? $data['date'] : date('Y-m-d') ) }}" class="form-control">
                             <span id="q_date_error" class="error-message text-danger"></span>
-                            <input type="hidden" name="id" id="q_id" value="{{ ($duplicate_trip ==1) ? '' : ((isset($data['id'])) ? $data['id'] : '') }}" />
+                            <input type="hidden" name="id" id="q_id" value="{{ ($duplicate_trip == 1) ? '' : ((isset($data['id'])) ? $data['id'] : '') }}" />
                         </div>
 
-                        @if(isset($client_list) && $client_list != '')
-                        <div class="col-lg-{{ $user->role === 'Client' ? '6' : '4' }} my-2">
+                        @if(isset($user->role) && ($user->role == user_roles('1')))
+                        <div class="col-lg-{{ $user->role === 'Client' ? '4' : '3' }} col-md-6 col-sm-12 my-2">
                             <label for="admin_id">@lang('lang.admins') </label>
                             <select required name="admin_id" id="admin_id" class="form-select" onchange="getDrivers(this.value)">
                                 <option disabled selected> Select @lang('lang.admins') </option>
-                                @foreach($client_list as $value)
-                                <option value="{{ $value['id'] }}" {{ isset($data['client_id']) && $data['client_id'] == $value['id'] ? 'selected' : '' }}>
+                                @foreach($admins_list as $value)
+                                <option value="{{ $value['id'] }}" {{ isset($data['admin_id']) && $data['admin_id'] == $value['id'] ? 'selected' : '' }}>
                                     {{ $value['name'] }}
                                 </option>
                                 @endforeach
                             </select>
                             <span id="admin_id_error" class="error-message text-danger"></span>
                         </div>
+                        @else
+                        <input type="hidden" name="admin_id" id="admin_id" value="{{ ($user->role == user_roles('2')) ? $user->id : $user->client_id }}" />
                         @endif
 
-                        <div class="col-lg-{{ $user->role === 'Client' ? '6' : '4' }} my-2">
+                        @if (isset($user->role) && ($user->role == user_roles('1') || $user->role == user_roles('2')))
+                        <div class="col-lg-{{ $user->role === 'Client' ? '4' : '3' }} col-md-6 col-sm-12 my-2">
                             <label for="user_id">@lang('lang.users')</label>
                             <select required name="user_id" id="user_id" class="form-select">
                                 <option disabled selected> Select @lang('lang.users')</option>
-                                @forelse($driver_list as $value)
-                                <option value="{{ $value['id'] }}" {{ isset($data['driver_id']) && $data['driver_id'] == $value['id'] ? 'selected' : '' }}>
+                                @forelse($users_list as $value)
+                                <option value="{{ $value['id'] }}" {{ isset($data['user_id']) && $data['user_id'] == $value['id'] ? 'selected' : '' }}>
                                     {{ $value['name'] }}
                                 </option>
                                 @empty
@@ -131,16 +134,21 @@ $services = config('constants.SERVICES');
                             </select>
                             <span id="user_id_error" class="error-message text-danger"></span>
                         </div>
+                        @else
+                        <input type="hidden" name="user_id" id="user_id" value="{{$user->id}}" />               
+                        @endif
+
+                        <div class="col-lg-{{ ($user->role == user_roles('3')) ? (($user->role == user_roles('2')) ? '4' : '6') : '3' }} col-md-6 col-sm-12">
+                            <label for="client_name">@lang('lang.client_name')</label>
+                            <input required type="text" maxlength="100" name="client_name" id="client_name" value="{{ $data['client_name'] ?? '' }}" placeholder="@lang('lang.client_name')" class="form-control">
+                            <span id="client_name_error" class="error-message text-danger"></span>
+                        </div>
 
                         <div class="col-lg-12 mb-2">
                             <label for="q_desc">@lang('lang.quotation_desc')</label>
                             <textarea name="desc" id="q_desc" class="form-control" placeholder="@lang('lang.trip_description')">{{ $data['desc'] ?? '' }}</textarea>
                             <p id="charCountContainer" class="text-secondary text-right" style="display: none;"><span id="charCount">250</span> /250</p>
-                        </div>
-
-                        <div class="col-lg-3 col-md-6 col-sm-12">
-                            <label for="client_name">@lang('lang.client_name')</label>
-                            <input required type="text" maxlength="100" name="client_name" id="client_name" value="{{ $data['title'] ?? '' }}" placeholder="@lang('lang.client_name')" class="form-control">
+                            <span id="q_desc_error" class="error-message text-danger"></span>
                         </div>
 
                         <div class="col-lg-3 col-md-6  col-sm-12">
@@ -148,7 +156,7 @@ $services = config('constants.SERVICES');
                             <select required name="service_id" id="service_id" class="form-select">
                                 <option disabled selected> Select @lang('lang.quote_category')</option>
                                 @forelse($services as $key => $value)
-                                <option value="{{ $key}}" {{ isset($data['driver_id']) && $data['driver_id'] == $value['id'] ? 'selected' : '' }}>
+                                <option value="{{ $key}}" {{ isset($data['service_id']) && $data['service_id'] == $key ? 'selected' : '' }}>
                                     {{ $value }}
                                 </option>
                                 @empty
@@ -160,7 +168,22 @@ $services = config('constants.SERVICES');
 
                         <div class="col-lg-3 col-md-6 col-sm-12">
                             <label for="q_amount">@lang('lang.quoted_amount')</label>
-                            <input required type="number" min="1" name="amount" id="q_amount" value="{{ $data['title'] ?? 1 }}" placeholder="@lang('lang.quoted_amount')" class="form-control">
+                            <input required type="number" min="1" name="amount" id="q_amount" value="{{ $data['amount'] ?? 1 }}" placeholder="@lang('lang.quoted_amount')" class="form-control">
+                            <span id="q_amount_error" class="error-message text-danger"></span>
+                        </div>
+                        <div class="col-lg-3 col-md-6 col-sm-12">
+                            <label for="currency_code">Currency Code</label>
+                            <select required name="currency_code" id="currency_code" class="form-select">
+                                <option disabled selected> Select @lang('currency Code')</option>
+                                @forelse($currencies as $key => $value)
+                                <option value="{{ $key}}" {{ isset($data['currency_code']) && $data['currency_code'] == $key ? 'selected' : '' }}>
+                                    {{ $value }}
+                                </option>
+                                @empty
+                                <!-- Code to handle the case when $driver_list is empty or null -->
+                                @endforelse
+                            </select>
+                            <span id="currency_code_error" class="error-message text-danger"></span>
                         </div>
 
                         <div class="col-lg-3 col-md-6 col-sm-12">
@@ -175,14 +198,23 @@ $services = config('constants.SERVICES');
                             <p class="float-right mr-3" style="font-size: smaller;"><a href="{{ asset('storage/excel_files/template_for_scooble.xlsx') }}" download="template_for_scooble.xlsx">@lang('lang.download_sample')!</a></p>
                         </div>
                     </div>
-                    <div class=" mt-3 ">
-                        <div class=" offset-lg-10  offset-md-6 col-lg-2 col-md-6 col-sm-12 d-flex justify-content-end  text-right mt-2 mb-5">
-                            <button type="submit" id="btn_save_quotation" class="btn btn-block active text-white" style="background-color:#184A45FF;  border-radius: 8px;">
-                                <div class="spinner-border spinner-border-sm text-white d-none" id="spinner"></div>
-                                <span id="text">@lang('Save Quotation')</span>
-                            </button>
+
+                    <div class="mt-3">
+                        <div class="row justify-content-end mt-2  ">
+                            <div class="col-lg-2 col-md-6 col-sm-12 mb-3 mb-lg-4 ">
+                                <a href="/quotations" id="btn_cancel_quotation" class="btn btn-block btn-warning text-white" style="border-radius: 8px;">
+                                    <span id="text">@lang('Cancel')</span>
+                                </a>
+                            </div>
+                            <div class="col-lg-2 col-md-6 col-sm-12 mb-5 mb-md-5 mb-lg-4 text-right">
+                                <button type="submit" id="btn_save_quotation" class="btn btn-block  text-white" style="background-color: #184A45FF; border-radius: 8px;">
+                                    <div class="spinner-border spinner-border-sm text-white d-none" id="spinner"></div>
+                                    <span id="text">@lang('Save Quotation')</span>
+                                </button>
+                            </div>
                         </div>
                     </div>
+
                 </form>
             </div>
         </div>
@@ -196,10 +228,10 @@ $services = config('constants.SERVICES');
     $(document).ready(function() {
 
         const maxLength = 250;
-        const textarea = $('#trip_desc');
+        const textarea = $('#q_desc');
         const charCountElement = $('#charCount');
         const charCountContainer = $('#charCountContainer');
-        const submitButton = $('#btn_save_trip');
+        const submitButton = $('#btn_save_quotation');
         textarea.on('input', function() {
             const currentLength = textarea.val().length;
             const charCount = Math.max(maxLength - currentLength);
@@ -227,10 +259,15 @@ $services = config('constants.SERVICES');
             }
         });
 
-        $('#btn_save_trip').click(function(event) {
+        $('#btn_save_quotation').click(function(event) {
             var qDate = $('#q_date').val();
             var adminId = $('#admin_id').val();
             var userId = $('#user_id').val();
+            var client_name = $('#client_name').val();
+            var q_desc = $('#q_desc').val();
+            var service_id = $('#service_id').val();
+            var q_amount = $('#q_amount').val();
+            var currency_code = $('#currency_code').val();
 
             // Reset error messages
             $('.error-message text-danger').text('');
@@ -249,7 +286,35 @@ $services = config('constants.SERVICES');
                 $('#user_id_error').text('*Please select a user.');
                 event.preventDefault();
             }
+
+            if (client_name == '') {
+                $('#client_name_error').text('*Please enter client name.');
+                event.preventDefault();
+            }            
+            
+            if (q_desc == '') {
+                $('#q_desc_error').text('*Please enter client description.');
+                event.preventDefault();
+            }            
+            
+            if (service_id === null) {
+                $('#service_id_error').text('*Please select a service.');
+                event.preventDefault();
+            }
+
+            if (q_amount == '') {
+                $('#q_amount_error').text('*Please enter quoted ammount.');
+                event.preventDefault();
+            }
+
+            if (currency_code === null) {
+                $('#currency_code_error').text('*Please select a currency.');
+                event.preventDefault();
+            }
+
         });
+
+
 
         $('#q_date').on('input', function() {
             $('#q_date_error').text('');
@@ -262,11 +327,31 @@ $services = config('constants.SERVICES');
         $('#user_id').on('change', function() {
             $('#user_id_error').text('');
         });
+        
+        $('#currency_code').on('change', function() {
+            $('#currency_code_error').text('');
+        });
+
+        $('#service_id').on('change', function() {
+            $('#service_id_error').text('');
+        });
+
+        $('#q_amount').on('input', function() {
+            $('#q_amount_error').text('');
+        });
+
+        $('#client_name').on('input', function() {
+            $('#client_name_error').text('');
+        });
+        $('#q_desc').on('input', function() {
+            $('#q_desc_error').text('');
+        });
+
     });
 
     function getDrivers(clientId) {
         $.ajax({
-            url: '/get_drivers/' + clientId,
+            url: '/get_users/' + clientId,
             type: 'GET',
             success: function(response) {
                 var drivers = response;

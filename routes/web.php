@@ -47,7 +47,7 @@ Route::match(['post','get'],'/driver_map', [UserController::class, 'driver_map']
 Route::match(['post','get'],'/announcements_alerts', [UserController::class, 'announcements_alerts']);
 Route::match(['post','get'],'/pdf_templates', [UserController::class, 'pdf_templates']);
 Route::match(['post','get'],'/change_status', [UserController::class, 'change_status']);
-Route::get('/get_drivers/{id}', [UserController::class, 'get_drivers']);
+Route::get('/get_users/{id}', [UserController::class, 'get_users']);
 
 })->withoutMiddleware([CheckSubscription::class])->group(function () {
     Route::match(['post','get'],'/subscription', [UserController::class, 'subscription']);

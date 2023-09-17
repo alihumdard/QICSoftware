@@ -22,7 +22,8 @@ return new class extends Migration
             $table->string('client_name');
             $table->integer('service_id');
             $table->integer('amount');
-            $table->string('file')->nullable();;
+            $table->string('file')->nullable();
+            $table->string('currency_code')->nullable();
             $table->integer('status')->default(2);
             $table->integer('created_by');
             $table->integer('updated_by')->nullable();
