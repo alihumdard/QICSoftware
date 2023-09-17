@@ -242,33 +242,38 @@ class UserController extends Controller
     public function quotations()
     {
         $user = auth()->user();
-        $page_name = 'routes';
+        $page_name = 'quotations';
 
         if (!view_permission($page_name)) {
             return redirect()->back();
         }
-
         if (isset($user->role) && $user->role == user_roles('1')) {
+            $quotations = Quotation::join('users as u', 'u.id', '=', 'quotations.user_id')
+            ->join('users as admins', 'admins.id', '=', 'quotations.admin_id')
+            ->select('quotations.*','u.name as user_name','admins.name as admin_name')
+            ->orderBy('quotations.id', 'desc')
+            ->get()
+            ->toArray();
 
-            $quotations = Quotation::orderBy('id', 'desc')->get()->toArray();
-            return view('quotations', ['data' => $quotations, 'user' => $user]);
         } else if (isset($user->role) && $user->role == user_roles('2')) {
-            $trips = Trip::join('users', 'users.id', '=', 'trips.driver_id')
-                ->where('trips.client_id', $user->id)
-                ->select('trips.*', 'users.id as driver_id', 'users.name as driver_name', 'users.user_pic  as driver_pic')
-                ->orderBy('trips.id', 'desc')
-                ->get()
-                ->toArray();
-            return view('quotations', ['data' => $trips, 'user' => $user]);
+            $quotations = Quotation::join('users as u', 'u.id', '=', 'quotations.user_id')
+            ->join('users as admins', 'admins.id', '=', 'quotations.admin_id')
+            ->select('quotations.*','u.name as user_name','admins.name as admin_name')
+            ->where('quotations.admin_id',$user->id)
+            ->orderBy('quotations.id', 'desc')
+            ->get()
+            ->toArray();
         } else {
-            $trips = Trip::join('users', 'users.id', '=', 'trips.client_id')
-                ->where('trips.driver_id', $user->id)
-                ->select('trips.*', 'users.id as client_id', 'users.name as client_name', 'users.user_pic  as client_pic')
-                ->orderBy('trips.id', 'desc')
-                ->get()
-                ->toArray();
-            return view('quotations', ['data' => $trips, 'user' => $user]);
+            $quotations = Quotation::join('users as u', 'u.id', '=', 'quotations.user_id')
+            ->join('users as admins', 'admins.id', '=', 'quotations.admin_id')
+            ->select('quotations.*','u.name as user_name','admins.name as admin_name')
+            ->where('quotations.user_id',$user->id)
+            ->orderBy('quotations.id', 'desc')
+            ->get()
+            ->toArray();
         }
+
+        return view('quotations', ['data' => $quotations, 'user' => $user]);
     }
 
     public function contracts()
@@ -351,64 +356,41 @@ class UserController extends Controller
     {
         $user = auth()->user();
         $data['user'] = $user;
-        $page_name = 'create_trip';
+        $page_name = 'add_quotation';
 
         if (!view_permission($page_name)) {
             return redirect()->back();
         }
         $data['duplicate_trip'] = NULL;
+
         if ($request->has('id')) {
 
             $data['duplicate_trip'] = $request->duplicate_trip ?? NULL;
 
             if (isset($user->role) && ($user->role == user_roles('1'))) {
-                $trip = Trip::with(['addresses' => function ($query) {
-                    $query->orderBy('order_no', 'ASC');
-                }])->find($request->id);
-
-                $data['data'] = $trip->toArray();
-                $data['data']['addresses'] = $trip->addresses->toArray();
-                //$data['client_list'] = User::where(['role' => user_roles('2'), 'status'=>auth_users()])->orderBy('id', 'desc')->select('id','name')->get()->toArray();
-                //$data['driver_list'] = User::where(['role' => user_roles('3'),'client_id' => $data['data']['client_id']])->orderBy('id', 'desc')->get()->toArray();
-                if ($request->dashboard_data == 1) {
-                    $data['client_list'] = User::where('id', $trip->client_id)->first();
-                    $data['driver_list'] = User::where('id', $trip->driver_id)->first();
-                    //dd($data);
-
-                    return view('pdf_templates', $data);
-                } else {
-                    $data['client_list'] = User::where(['role' => user_roles('2'), 'status' => auth_users()])->orderBy('id', 'desc')->select('id', 'name')->get()->toArray();
-                    $data['driver_list'] = User::where(['role' => user_roles('3'), 'client_id' => $data['data']['client_id']])->orderBy('id', 'desc')->get()->toArray();
-                    return view('add_quotation', $data);
-                }
-            } else {
-                $trip = Trip::with(['addresses' => function ($query) {
-                    $query->orderBy('order_no', 'ASC');
-                }])->find($request->id);
-
-                $data['data'] = $trip->toArray();
-                $data['data']['addresses'] = $trip->addresses->toArray();
-
-                $data['driver_list'] = User::where(['role' => user_roles('3')])->orderBy('id', 'desc')->select('id', 'name')->get()->toArray();
-                if ($request->dashboard_data == 1) {
-                    $data['client_list'] = User::where('id', $trip->client_id)->first();
-                    $data['driver_list'] = User::where('id', $trip->driver_id)->first();
-                    dd($data);
-                    return view('pdf_templates', $data);
-                } else {
-                    return view('add_quotation', $data);
-                }
+                $quotation = Quotation::find($request->id); 
+                $data['data'] = $quotation->toArray();
+                $data['admins_list'] = User::where(['role' => user_roles('2'), 'status'=>active_users()])->orderBy('id', 'desc')->select('id','name')->get()->toArray();
+                $data['users_list'] = User::where(['role' => user_roles('3'),'status'=>active_users(), 'client_id' => $quotation->admin_id])->orderBy('id', 'desc')->get()->toArray();
+            }  
+            else if (isset($user->role) && ($user->role == user_roles('2'))) {
+                $data['data'] = Quotation::find($request->id)->toArray(); 
+                $data['users_list'] = User::where(['role' => user_roles('3'),'status'=>active_users(), 'client_id' => $user->id])->orderBy('id', 'desc')->get()->toArray();
             }
+            else{
+                $data['data'] = Quotation::find($request->id)->toArray(); 
+            } 
         } else {
             if (isset($user->role) && $user->role == user_roles('1')) {
-                $data['driver_list'] = [];
-                $data['client_list'] = User::where(['role' => user_roles('2'), 'status' => auth_users()])->orderBy('id', 'desc')->select('id', 'name')->get()->toArray();
-                return view('add_quotation', $data);
-            } else {
-                $data['driver_list'] = User::where(['role' => user_roles('3'), 'client_id' => $user->id])->orderBy('id', 'desc')->get()->toArray();
-                return view('add_quotation', $data);
-            }
+                $data['users_list'] = [];
+                $data['admins_list'] = User::where(['role' => user_roles('2'), 'status' => active_users()])->orderBy('id', 'desc')->select('id', 'name')->get()->toArray();
+            } 
+            else if (isset($user->role) && $user->role == user_roles('2')) {
+                $data['users_list'] = User::where(['role' => user_roles('3'), 'status' => active_users(), 'client_id' => $user->id])->orderBy('id', 'desc')->select('id', 'name')->get()->toArray();
+            } 
         }
+
+        return view('add_quotation', $data);
     }
 
     public function add_contract(Request $request)
@@ -539,9 +521,9 @@ class UserController extends Controller
         }
     }
 
-    public function get_drivers(Request $request)
+    public function get_users(Request $request)
     {
-        $driver_list = User::where(['role' => 'Driver', 'client_id' => $request->id])
+        $driver_list = User::where(['role' => 'Driver', 'client_id' => $request->id,'status'=>active_users()])
             ->orderBy('id', 'desc')
             ->get()
             ->toArray();

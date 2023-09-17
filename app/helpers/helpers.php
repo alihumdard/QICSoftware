@@ -31,6 +31,12 @@ function auth_users(){
     return $user_status;   
 }
 
+function active_users(){
+    // status : 1 for active , 2 for pending, 3 for suspended , 4 for unverified ,5 for delete ...
+    $user_status =  [1];
+    return $user_status;   
+}
+
 function user_role_no($role_no){
     switch ($role_no) {
         case 'Admin':
@@ -52,8 +58,10 @@ function view_permission($page_name) {
             switch ($page_name) {
                 case 'index':
                 case 'settings':
+                case 'quotations':
                 case 'clients':
                 case 'drivers':
+                case 'add_quotation':
                 // case 'calender':
                 case 'routes':    
                 case 'users':
@@ -75,8 +83,10 @@ function view_permission($page_name) {
             switch ($page_name) {
                 case 'index':
                 case 'settings':
+                case 'quotations':
                 case 'drivers':
                 case 'routes':
+                case 'add_quotation':
                 // case 'calender':      
                 // case 'notifications':    
                 case 'create_trip': 
@@ -93,7 +103,9 @@ function view_permission($page_name) {
         case 'Driver':
             switch ($page_name) {
                 case 'index':
-                case 'settings':    
+                case 'settings':
+                case 'quotations':
+                case 'add_quotation':
                 case 'routes': 
                 case 'create_trip': 
                 // case 'calender':    

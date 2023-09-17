@@ -9,16 +9,23 @@
 
 <script>
     $(document).ready(function() {
+        var services = @json(config('constants.SERVICES'));
+
+        $('.btn_status_q').on('click', function() {
+            var id = $(this).find('span').attr('data-qoute_id');
+            $('#qoute_id').val(id);
+            $('#qoute_sts_modal').modal('show');
+        });
 
         var login_alert;
         var canvasElement = document.getElementById('driver_signature');
         if (canvasElement) {
             var signaturePad = new SignaturePad(canvasElement);
-            document.getElementById('clear-btn').addEventListener('click', function () {
+            document.getElementById('clear-btn').addEventListener('click', function() {
                 signaturePad.clear();
-                });
+            });
         }
-      
+
         function updateFormFields() {
             const rows = $("#table_address tbody tr");
             const startAddressSelect = $("#start_address");
@@ -46,32 +53,6 @@
 
         updateFormFields();
 
-        // Draggable and Sortable functionality
-        // $(".draggable-row").draggable({
-        //     cursor: "grab",
-        //     axis: "y",
-        //     handle: "td:first-child",
-        //     opacity: 0.6,
-        //     containment: "parent",
-        //     start: function(event, ui) {
-        //         $(this).addClass("dragging");
-        //     },
-        //     stop: function(event, ui) {
-        //         $(this).removeClass("dragging");
-        //         updateFormFields(); 
-        //     }
-        // });
-
-        // $("tbody").sortable({
-        //     cursor: "move",
-        //     axis: "y",
-        //     handle: "td:first-child",
-        //     opacity: 0.6,
-        //     containment: "parent",
-        //     update: function(event, ui) {
-        //         updateFormFields(); 
-        //     }
-        // });
         $("tbody").sortable({
             cursor: "move",
             handle: ".first-column", // This specifies the handle to be the first column
@@ -123,7 +104,9 @@
                 });
                 const first_sheet_name = workbook.SheetNames[0];
                 const worksheet = workbook.Sheets[first_sheet_name];
-                const json = XLSX.utils.sheet_to_json(worksheet, { raw: true });
+                const json = XLSX.utils.sheet_to_json(worksheet, {
+                    raw: true
+                });
                 console.log(json);
 
                 // Loop through the JSON data and create table rows
@@ -134,24 +117,24 @@
                     const signature = json[i].signature === 1;
                     const note = json[i].note === 1;
                     var addressResult;
-                        verifyAddress(address)
-                            .then(function(result) {
-                                addressResult = result;
-                                insert_table_row(address, description, picture, signature, note, addressResult);
-                                console.log(result); // "Valid" or "Invalid"
-                            })
-                            .catch(function(error) {
-                                result = ''
-                                insert_table_row(address, description, picture, signature, note, result);
-                                console.error(error);
-                            });        
+                    verifyAddress(address)
+                        .then(function(result) {
+                            addressResult = result;
+                            insert_table_row(address, description, picture, signature, note, addressResult);
+                            console.log(result); // "Valid" or "Invalid"
+                        })
+                        .catch(function(error) {
+                            result = ''
+                            insert_table_row(address, description, picture, signature, note, result);
+                            console.error(error);
+                        });
                 }
             };
             reader.readAsBinaryString(input.files[0]);
         }
 
         function insert_table_row(addressName, addressDesc, picture, signature, note, addressResult) {
-            
+
             addressName = addressName || '';
             addressDesc = addressDesc || '';
             picture = picture || false;
@@ -159,7 +142,7 @@
             note = note || false;
             addressResult = addressResult || false;
 
-                    var newRow = '<tr>\
+            var newRow = '<tr>\
                                         <td class="draggable-row first-column">\
                                             <svg width="30" height="40"  viewBox="0 0 25 12" fill="none" xmlns="http://www.w3.org/2000/svg">\
                                                 <circle cx="19" cy="6" r="5.5" stroke="#230B34" />\
@@ -210,10 +193,10 @@
                                             </button>\
                                         </td>\
                                     </tr>';
-                    $('#importAddress').val('');
-                    $('#table_address').append(newRow);
-                    updateFormFields();
-                    // $('#addAddressModal').removeClass('show');
+            $('#importAddress').val('');
+            $('#table_address').append(newRow);
+            updateFormFields();
+            // $('#addAddressModal').removeClass('show');
         }
 
         $(".draggable-modal").draggable({
@@ -226,13 +209,13 @@
             var addressName = $('#addressTile').val();
             var addressDesc = $('#addressDesc').val();
             if (addressName === '' || addressDesc === '') {
-                (addressName === '') ? $('.validation-error-title').empty().append('<label class="text-danger">*Address name is required</label>') : $('.validation-error-title').empty();
-                (addressDesc === '') ? $('.validation-error-desc').empty().append('<label class="text-danger">*Address description is required</label>') : $('.validation-error-desc').empty();
+                (addressName === '') ? $('.validation-error-title').empty().append('<label class="text-danger">*Address name is required</label>'): $('.validation-error-title').empty();
+                (addressDesc === '') ? $('.validation-error-desc').empty().append('<label class="text-danger">*Address description is required</label>'): $('.validation-error-desc').empty();
             } else {
                 $('.validation-error-title').empty();
                 $('.validation-error-desc').empty();
                 $('#btn_address_detail').prop('disabled', true);
-                
+
                 var addressResult;
                 verifyAddress(addressName)
                     .then(function(result) {
@@ -267,9 +250,8 @@
                 row.find('input[name="signature"]').prop('checked', signature);
                 row.find('input[name="note"]').prop('checked', note);
                 row.find('td:nth-child(7)').html('<div style="width: 100%; height: 100%; padding-top: 5px; padding-bottom: 5px; padding-left: 24px; padding-right: 23px; background-color: ' + (addressResult ? '#31A6132E' : '#F3E8E9') + ' ; border-radius: 3px; justify-content: center; align-items: center; display: inline-flex"><div style="text-align: center; color: ' + (addressResult ? '31A613' : '#D11A2A') + ' ; font-size: 14px; font-weight: 500; word-wrap: break-word">' + (addressResult ? 'Valid' : 'Invalid') + '</div></div>');
-            }
-            else {
-                    var newRow = '<tr>\
+            } else {
+                var newRow = '<tr>\
                                         <td class="draggable-row first-column">\
                                             <svg width="30" height="40"  viewBox="0 0 25 12" fill="none" xmlns="http://www.w3.org/2000/svg">\
                                                 <circle cx="19" cy="6" r="5.5" stroke="#230B34" />\
@@ -321,18 +303,18 @@
                                         </td>\
                                     </tr>';
 
-                    $('#table_address').append(newRow);
-            }       
-                    $('#addressTile').val('');
-                    $('#addressDesc').val('');
-                    $('#addressPicture').prop('checked', false);
-                    $('#addressSignature').prop('checked', false);
-                    $('#addressNote').prop('checked', false);
-                    $('#btn_address_detail').prop('disabled', false).attr('data-row-index','');
-                    updateFormFields();
-                    // $('#addAddressModal').removeClass('show');
+                $('#table_address').append(newRow);
+            }
+            $('#addressTile').val('');
+            $('#addressDesc').val('');
+            $('#addressPicture').prop('checked', false);
+            $('#addressSignature').prop('checked', false);
+            $('#addressNote').prop('checked', false);
+            $('#btn_address_detail').prop('disabled', false).attr('data-row-index', '');
+            updateFormFields();
+            // $('#addAddressModal').removeClass('show');
         };
-      
+
         function verifyAddress(address) {
             return new Promise(function(resolve, reject) {
                 var geocoder = new google.maps.Geocoder();
@@ -374,10 +356,9 @@
             var password = $('#password').val();
 
             if (email === '' || password === '') {
-                (email === '') ? $('.validation-error-email').empty().append('<label class="text-danger">* email is required</label>') : $('.validation-error-email').empty();
-                (password === '') ? $('.validation-error-password').empty().append('<label class="text-danger">* password  is required</label>') : $('.validation-error-password').empty();
-            } 
-            else {
+                (email === '') ? $('.validation-error-email').empty().append('<label class="text-danger">* email is required</label>'): $('.validation-error-email').empty();
+                (password === '') ? $('.validation-error-password').empty().append('<label class="text-danger">* password  is required</label>'): $('.validation-error-password').empty();
+            } else {
                 $('.validation-error-email').empty();
                 $('.validation-error-password').empty();
                 $('#btn_user_login').prop('disabled', true);
@@ -401,7 +382,7 @@
                         showlogin('Wait', 'User Login...');
                     },
                     success: function(response) {
-                      
+
                         $('#btn_user_login').prop('disabled', false);;
                         var responseArray = JSON.parse(response);
                         console.log(responseArray);
@@ -409,23 +390,21 @@
                         $('#spinner').addClass('d-none');
                         if (responseArray.status === 'success') {
                             showAlert("Success", "Login Successfully", "success");
-                            
+
                             setTimeout(function() {
                                 window.location.replace('/');
                             }, 1200);
-                        } 
-                        else if(responseArray.status === 'error'){ 
-                        // console.log(response.message);
+                        } else if (responseArray.status === 'error') {
+                            // console.log(response.message);
                             $('.error-label').remove();
                             $.each(responseArray.message, function(field, errorMessages) {
                                 $.each(errorMessages, function(index, errorMessage) {
-                                    (field == 'email') ? $('.validation-error-email').empty().append('<label class="text-danger">*'+errorMessage+'</label>') : $('.validation-error-email').empty();
-                                    (field == 'password') ? $('.validation-error-password').empty().append('<label class="text-danger">*'+errorMessage+'</label>') : $('.validation-error-password').empty();
+                                    (field == 'email') ? $('.validation-error-email').empty().append('<label class="text-danger">*' + errorMessage + '</label>'): $('.validation-error-email').empty();
+                                    (field == 'password') ? $('.validation-error-password').empty().append('<label class="text-danger">*' + errorMessage + '</label>'): $('.validation-error-password').empty();
                                 });
                             });
 
-                        }
-                        else {
+                        } else {
                             showAlert(responseArray.status, responseArray.message, "warning");
                         }
                     },
@@ -439,7 +418,7 @@
                     }
 
                 });
-        }
+            }
         });
 
         // saving trip in through the api...
@@ -455,7 +434,7 @@
 
             const form = $(this);
             const table = form.find('table');
-            
+
             table.find('tbody tr').each(function() {
 
                 const row = $(this);
@@ -558,7 +537,7 @@
                     if (response.status === 'success') {
                         $('#addclient').modal('hide');
                         showAlert("Success", response.message, response.status);
-                        
+
                         setTimeout(function() {
                             window.location.href = document.referrer;
                         }, 1500);
@@ -614,26 +593,32 @@
                     if (response.status === 'success') {
 
                         // $('#formData')[0].reset();
-                        
+
                         const lastSegment = location.href.substring(location.href.lastIndexOf("/") + 1);
-                        
-                        if(lastSegment =='settings' || lastSegment == 'announcements'){
-                            setTimeout(function() {
-                                window.location.href = window.location.href;
-                            }, 1500);
-                        }else{
+
+                        if (lastSegment == 'settings' || lastSegment == 'announcements' || lastSegment == 'quotations' || lastSegment == 'add_quotation') {
+                            if (lastSegment == 'add_quotation') {
+                                setTimeout(function() {
+                                    window.location.href = document.referrer;
+                                }, 1500);
+                            } else {
+                                $('#closeicon').trigger('click');
+                                setTimeout(function() {
+                                    window.location.href = window.location.href;
+                                }, 1500);
+                            }
+
+                        } else {
                             $('#tableData').load(location.href + " #tableData > *");
                             $('#formData').load(location.href + " #formData > *");
                             $('#closeicon').trigger('click');
                         }
-                       
+
                         $('#addclient').modal('hide');
                         showAlert("Success", response.message, response.status);
                         // $('#formData').trigger('reset');
-                    }
-                    
-                    else if(response.status === 'error'){
-                       
+                    } else if (response.status === 'error') {
+
                         showAlert("Warning", "Please fill the form correctly", response.status);
                         console.log(response.message);
                         $('.error-label').remove();
@@ -674,7 +659,7 @@
             var apiurl = "{{ end_url('') }}" + apiname;
             var formData = new FormData(this);
             var bearerToken = "{{session('user')}}";
-            
+
             $.ajax({
                 url: apiurl,
                 type: 'POST',
@@ -698,51 +683,48 @@
 
                     if (response.status === 'success') {
                         $('#DeleteData')[0].reset();
-                        if(response.tripDleted){
-                            if(response.tripDleted == 'yes'){
+                        if (response.tripDleted) {
+                            if (response.tripDleted == 'yes') {
                                 $('#routes-table').load(location.href + " #routes-table > *");
                                 $('#deleteroute').modal('hide');
                                 showAlert("Success", response.message, response.status);
                             }
 
                         }
-                        if(response.announcementDeleted){
-                            if(response.announcementDeleted == 'yes'){
+                        if (response.announcementDeleted) {
+                            if (response.announcementDeleted == 'yes') {
                                 $('#users-table').load(location.href + " #users-table > *");
                                 $('#deleteAnnoncement').modal('hide');
                                 showAlert("Success", response.message, response.status);
                             }
 
                         }
-                        if(response.packageDeleted){
-                            if(response.packageDeleted == 'yes'){
+                        if (response.packageDeleted) {
+                            if (response.packageDeleted == 'yes') {
                                 $('#users-table').load(location.href + " #users-table > *");
                                 $('#deletePackage').modal('hide');
                                 showAlert("Success", response.message, response.status);
                             }
 
-                        }
-                        else{
-                            if(response.role ==3){
+                        } else {
+                            if (response.role == 3) {
                                 $('#drivers-table').load(location.href + " #drivers-table > *");
-                            }else{
+                            } else {
                                 $('#users-table').load(location.href + " #users-table > *");
                             }
-                                $('#closeicon').trigger('click');
-    
+                            $('#closeicon').trigger('click');
+
                             $('#userDeleteModal').modal('hide');
                             showAlert("Success", response.message, response.status);
-                            
-                            if(response.logout){
-                              setTimeout(function() {
-                                window.location.href = '/logout';
-                              }, 2000);
+
+                            if (response.logout) {
+                                setTimeout(function() {
+                                    window.location.href = '/logout';
+                                }, 2000);
                             }
                         }
-                    }
-                    
-                    else if(response.status === 'error'){
-                    
+                    } else if (response.status === 'error') {
+
                         showAlert("Warning", "Please fill the form correctly", response.status);
                         console.log(response.message);
                         $('.error-label').remove();
@@ -769,10 +751,10 @@
                 }
             });
         });
-    
+
         // check the ongoing address ??
         function ongoing_address(complete_alert = 'yes') {
-            var end_trip = []; 
+            var end_trip = [];
 
             $(".draggable").each(function() {
                 let addressSt = $(this).find('input[data-address-status]').attr('data-address-status');
@@ -783,45 +765,43 @@
                 let waypoint_desc = $(this).find('input[data-address-desc]').attr('data-address-desc');
 
                 if (addressSt == 1) {
-                    
+
                     $("#way_point_title").text(waypoint_title);
                     $("#text_address-desc").text(waypoint_desc);
 
                     let addressId = this.id.replace("address_card_", "");
-                    if(addressId){
+                    if (addressId) {
                         $('#complete_add_id').val(addressId);
                     }
 
                     if (tripPic == 1) {
                         $("#pic_required").removeClass('d-none');
-                        $('#required-fields').attr('data-trip-pic','1');                        
+                        $('#required-fields').attr('data-trip-pic', '1');
                     } else {
                         $("#pic_required").addClass('d-none');
-                        $('#required-fields').attr('data-trip-pic','0');
+                        $('#required-fields').attr('data-trip-pic', '0');
                     }
 
                     if (tripSignature == 1) {
                         $("#signature_required").removeClass('d-none');
-                        $('#required-fields').attr('data-trip-signature','1');
+                        $('#required-fields').attr('data-trip-signature', '1');
                     } else {
                         $("#signature_required").addClass('d-none');
-                        $('#required-fields').attr('data-trip-signature','0');
+                        $('#required-fields').attr('data-trip-signature', '0');
                     }
 
                     if (tripNote == 1) {
                         $("#note_required").removeClass('d-none');
-                        $('#required-fields').attr('data-trip-note','1');
+                        $('#required-fields').attr('data-trip-note', '1');
                     } else {
                         $("#note_required").addClass('d-none');
-                        $('#required-fields').attr('data-trip-note','0');
+                        $('#required-fields').attr('data-trip-note', '0');
                     }
 
                     end_trip.push('no');
-                } 
-                else if (addressSt == 2) {
+                } else if (addressSt == 2) {
                     end_trip.push('no');
-                }
-                else {
+                } else {
                     end_trip.push('yes');
                 }
             });
@@ -831,7 +811,7 @@
                 $("#btn-update_address").removeClass('d-none');
                 return 'no';
             } else {
-                if(complete_alert == 'yes'){
+                if (complete_alert == 'yes') {
                     showAlert("Trip Completed", "Click on the 'End Trip' to Exit safely!", 'success');
                     $("#way_point_title").text('');
                     $("#text_address-desc").text('');
@@ -840,9 +820,9 @@
                     $("#note_required").addClass('d-none');
                     $("#btn-optimize_address").addClass('d-none');
                     $("#btn-update_address").addClass('d-none');
-                    $('#btn-next_waypoint').attr('data-address_id','').addClass('d-none');
-                    $('#btn-waypoint_details').attr('data-address_id','').addClass('d-none');
-                    $('#btn-complete_waypoint').attr('data-address_id','').addClass('d-none');
+                    $('#btn-next_waypoint').attr('data-address_id', '').addClass('d-none');
+                    $('#btn-waypoint_details').attr('data-address_id', '').addClass('d-none');
+                    $('#btn-complete_waypoint').attr('data-address_id', '').addClass('d-none');
                     $('#nextpointmodal').modal('hide');
                     $('#btn-next_waypoint').modal('hide');
                 }
@@ -854,7 +834,7 @@
         function disable_dragable() {
             // Remove event listeners
             var draggableItems = document.querySelectorAll('.draggablecards');
-            draggableItems.forEach(function (item) {
+            draggableItems.forEach(function(item) {
                 item.removeEventListener('dragstart', handleDragStart, false);
                 item.removeEventListener('dragover', handleDragOver, false);
                 item.removeEventListener('dragleave', handleDragLeave, false);
@@ -863,7 +843,7 @@
 
             // Remove 'dragging' class from any element that has it
             var draggingItems = document.querySelectorAll('.dragging');
-            draggingItems.forEach(function (item) {
+            draggingItems.forEach(function(item) {
                 item.classList.remove('dragging');
             });
             $('[id^="address_card_"]').removeClass('draggablecards');
@@ -876,7 +856,7 @@
             $('#addressPicture').prop('checked', false);
             $('#addressSignature').prop('checked', false);
             $('#addressNote').prop('checked', false);
-            $('#btn_address_detail').prop('disabled', false).attr('data-row-id','');
+            $('#btn_address_detail').prop('disabled', false).attr('data-row-id', '');
             $('#addAddressModal').modal('show');
         });
 
@@ -901,13 +881,12 @@
             $('#deleteAnnoncement').modal('show');
         });
 
-                // deleting packages ... calling modals
+        // deleting packages ... calling modals
         $(document).on('click', '.btn_dell_package', function() {
             let package_id = $(this).attr('data-id');
             $('#deletePackage #package_id').val(package_id);
             $('#deletePackage').modal('show');
         });
-
 
         // Updating trip status in through the api...
         $('.status_update').on('submit', function(e) {
@@ -921,12 +900,11 @@
             var formData = new FormData(this);
             var skipedAddressDescValue = formData.get('skiped_address_desc');
 
-            if(skipedAddressDescValue === ''){
+            if (skipedAddressDescValue === '') {
                 $('#error_message').text('*This field is required. Please write a reason.').show();
-            }
-            else{ 
+            } else {
                 $('#error_message').text('*This field is required. Please write a reason.').hide();
-                
+
                 $.ajax({
                     url: apiurl,
                     type: 'POST',
@@ -947,124 +925,113 @@
                         if (response.status === 'success') {
                             form[0].reset();
 
-                            if(response.data.tripStarted == 'yes'){
+                            if (response.data.tripStarted == 'yes') {
                                 $('#btn-optimize_address').hide();
-                                $('#btn-update_address').hide();  
-                                disable_dragable();                          
+                                $('#btn-update_address').hide();
+                                disable_dragable();
                             }
-                            
-                            if(response.data.waypoint){
-                                if(response.data.waypoint.address_status == 4) {
+
+                            if (response.data.waypoint) {
+                                if (response.data.waypoint.address_status == 4) {
                                     $('#skipwaypointmodal').modal('hide');
-                                }
-                                else if(response.data.waypoint.address_status == 3) {
+                                } else if (response.data.waypoint.address_status == 3) {
                                     $('#completepointmodal').modal('hide');
-                                }
-                                else if(response.data.waypoint.address_status == 1) {
+                                } else if (response.data.waypoint.address_status == 1) {
                                     $('#nextpointmodal').modal('hide');
                                     $('#btn_start-trip').replaceWith('<button id="btn_started-trip" class="btn btn-warning text-white btn-md"><span>Trip Started</span></button>');
                                     $('#btn_status-close').trigger('click');
-                                    
-                                }      
-                                else if(response.data.ongoing){
+
+                                } else if (response.data.ongoing) {
+                                    $('#btn_start-trip').replaceWith('<button id="btn_started-trip" class="btn btn-warning text-white btn-md"><span>Trip Started</span></button>');
+                                    $('#btn_status-close').trigger('click');
+                                }
+                            } else if (response.data.ongoing) {
                                 $('#btn_start-trip').replaceWith('<button id="btn_started-trip" class="btn btn-warning text-white btn-md"><span>Trip Started</span></button>');
                                 $('#btn_status-close').trigger('click');
-                            }
-                            }
-                            else if(response.data.ongoing){
-                                $('#btn_start-trip').replaceWith('<button id="btn_started-trip" class="btn btn-warning text-white btn-md"><span>Trip Started</span></button>');
-                                $('#btn_status-close').trigger('click');
-                            }
-                            else if (response.data.endTrip == 'yes'){
+                            } else if (response.data.endTrip == 'yes') {
                                 $('#nextpointmodal').modal('hide');
                                 $('#btn-next_waypoint').modal('hide');
                                 ongoing_address();
-                            }
-                            else{
+                            } else {
                                 $('#btn-trip_manage').html('<button class="btn btn-sm text-white" style="background-color: #233A85; border-radius: 6px;">Trip Compelted</button>');
                                 $('#tripend').modal('hide');
                                 $('#btn_status-close').trigger('click');
                             }
-                            
 
-                        setTimeout(function () {
 
-                            if(response.data.waypoint){
+                            setTimeout(function() {
 
-                                if(response.data.waypoint.address_status == 4) {
-                                    let SkippedaddressId = response.data.waypoint.id;
-                                    $('#address_card_' + SkippedaddressId).addClass('opacity-50');
-                                    $('#address_card_' + SkippedaddressId + ' #span_address_status').text('Skipped');
-                                    $('#address_card_' + SkippedaddressId + ' #svg_skip_address').removeClass('skip_address');
-                                    $('#address_card_' + SkippedaddressId).find('input[data-address-status]').attr('data-address-status', '4'); 
-                                    $('#address_card_' + SkippedaddressId).addClass('zoom-in');  
-                                    
+                                if (response.data.waypoint) {
 
-                                    setTimeout(function () {
+                                    if (response.data.waypoint.address_status == 4) {
+                                        let SkippedaddressId = response.data.waypoint.id;
+                                        $('#address_card_' + SkippedaddressId).addClass('opacity-50');
+                                        $('#address_card_' + SkippedaddressId + ' #span_address_status').text('Skipped');
+                                        $('#address_card_' + SkippedaddressId + ' #svg_skip_address').removeClass('skip_address');
+                                        $('#address_card_' + SkippedaddressId).find('input[data-address-status]').attr('data-address-status', '4');
+                                        $('#address_card_' + SkippedaddressId).addClass('zoom-in');
+
+
+                                        setTimeout(function() {
                                             $('#address_card_' + SkippedaddressId).removeClass('zoom-in');
-                                            if(response.data.activeAddress == 'yes'){
-                                                $('#btn-waypoint_details').fadeOut('slow').attr('data-address_id','').addClass('d-none');
-                                                $('#btn-next_waypoint').removeClass('d-none').attr('data-address_id',SkippedaddressId).fadeIn('fast');
+                                            if (response.data.activeAddress == 'yes') {
+                                                $('#btn-waypoint_details').fadeOut('slow').attr('data-address_id', '').addClass('d-none');
+                                                $('#btn-next_waypoint').removeClass('d-none').attr('data-address_id', SkippedaddressId).fadeIn('fast');
                                             }
-                                    }, 500);
+                                        }, 500);
 
-                                    $("#snackbar").text('Address Successfully Skipped.');
-                
-                                    showtoast('#17a2b8');
-                                }
-                                
-                                else if(response.data.waypoint.address_status == 3) {
-                                    let CompletedAddressId = response.data.waypoint.id;
-                                    $('#address_card_' + CompletedAddressId + ' #span_address_status').text('Completed');
-                                    $('#address_card_' + CompletedAddressId + ' #svg_skip_address').removeClass('skip_address');
-                                    $('#address_card_' + CompletedAddressId).find('input[data-address-status]').attr('data-address-status', '3'); 
-                                    $('#address_card_' + CompletedAddressId).addClass('zoom-in'); 
-                                    $('#btn-complete_waypoint').fadeOut('slow').attr('data-address_id','').addClass('d-none');
-                                    $('#btn-next_waypoint').removeClass('d-none').attr('data-address_id',CompletedAddressId).fadeIn('fast'); 
-                                    ongoing_address();
+                                        $("#snackbar").text('Address Successfully Skipped.');
 
-                                    setTimeout(function () {
+                                        showtoast('#17a2b8');
+                                    } else if (response.data.waypoint.address_status == 3) {
+                                        let CompletedAddressId = response.data.waypoint.id;
+                                        $('#address_card_' + CompletedAddressId + ' #span_address_status').text('Completed');
+                                        $('#address_card_' + CompletedAddressId + ' #svg_skip_address').removeClass('skip_address');
+                                        $('#address_card_' + CompletedAddressId).find('input[data-address-status]').attr('data-address-status', '3');
+                                        $('#address_card_' + CompletedAddressId).addClass('zoom-in');
+                                        $('#btn-complete_waypoint').fadeOut('slow').attr('data-address_id', '').addClass('d-none');
+                                        $('#btn-next_waypoint').removeClass('d-none').attr('data-address_id', CompletedAddressId).fadeIn('fast');
+                                        ongoing_address();
+
+                                        setTimeout(function() {
                                             $('#address_card_' + CompletedAddressId).removeClass('zoom-in');
-                                    }, 500);
+                                        }, 500);
 
-                                    $("#snackbar").text(' Address Successfully Completed.');
-                                    showtoast('#28a745');
-                                }
+                                        $("#snackbar").text(' Address Successfully Completed.');
+                                        showtoast('#28a745');
+                                    } else if (response.data.ongoing) {
+                                        let ongoingAddressId = response.data.ongoing.id;
+                                        $('#address_card_' + ongoingAddressId + ' #span_address_status').text('On Going');
+                                        $('#address_card_' + ongoingAddressId).find('input[data-address-status]').attr('data-address-status', '1');
+                                        ongoing_address();
 
-                                else if (response.data.ongoing){
+                                        $('#address_card_' + ongoingAddressId).addClass('zoom-in');
+                                        setTimeout(function() {
+                                            $('#address_card_' + ongoingAddressId).removeClass('zoom-in');
+                                            $('#btn-next_waypoint').fadeOut('slow').attr('data-address_id', '').addClass('d-none');
+                                            $('#btn-waypoint_details').removeClass('d-none').attr('data-address_id', ongoingAddressId).fadeIn('fast');
+                                        }, 500);
+                                    }
+                                } else if (response.data.ongoing) {
                                     let ongoingAddressId = response.data.ongoing.id;
                                     $('#address_card_' + ongoingAddressId + ' #span_address_status').text('On Going');
-                                    $('#address_card_' + ongoingAddressId).find('input[data-address-status]').attr('data-address-status','1');
+                                    $('#address_card_' + ongoingAddressId).find('input[data-address-status]').attr('data-address-status', '1');
                                     ongoing_address();
 
                                     $('#address_card_' + ongoingAddressId).addClass('zoom-in');
-                                    setTimeout(function () {
+                                    setTimeout(function() {
                                         $('#address_card_' + ongoingAddressId).removeClass('zoom-in');
-                                        $('#btn-next_waypoint').fadeOut('slow').attr('data-address_id','').addClass('d-none');
-                                        $('#btn-waypoint_details').removeClass('d-none').attr('data-address_id',ongoingAddressId).fadeIn('fast');
+                                        $('#btn-next_waypoint').fadeOut('slow').attr('data-address_id', '').addClass('d-none');
+                                        $('#btn-waypoint_details').removeClass('d-none').attr('data-address_id', ongoingAddressId).fadeIn('fast');
                                     }, 500);
                                 }
-                            }
-                            else if (response.data.ongoing){
-                                let ongoingAddressId = response.data.ongoing.id;
-                                $('#address_card_' + ongoingAddressId + ' #span_address_status').text('On Going');
-                                $('#address_card_' + ongoingAddressId).find('input[data-address-status]').attr('data-address-status','1');
-                                ongoing_address();
-
-                                $('#address_card_' + ongoingAddressId).addClass('zoom-in');
-                                setTimeout(function () {
-                                    $('#address_card_' + ongoingAddressId).removeClass('zoom-in');
-                                    $('#btn-next_waypoint').fadeOut('slow').attr('data-address_id','').addClass('d-none');
-                                    $('#btn-waypoint_details').removeClass('d-none').attr('data-address_id',ongoingAddressId).fadeIn('fast');
-                                }, 500);
-                            }
 
                             }, 500);
                         }
-                        
+
                     },
                     error: function(xhr, status, error) {
-                            console.log(error)
+                        console.log(error)
                     }
                 });
             }
@@ -1080,36 +1047,34 @@
             let pic_required = $('#required-fields').attr('data-trip-pic');
             let signature_required = $('#required-fields').attr('data-trip-signature');
             let note_required = $('#required-fields').attr('data-trip-note');
-            
-            var form = $(this); 
+
+            var form = $(this);
             var apiname = form.attr('action');
             var apiurl = "{{ end_url('') }}" + apiname;
             var bearerToken = "{{session('user')}}";
 
-            var formData = new FormData(this);            
+            var formData = new FormData(this);
 
-            if(pic_required == 1){
+            if (pic_required == 1) {
                 let address_pic = formData.get('address_pic');
-                if(address_pic && address_pic.size <= 0){
+                if (address_pic && address_pic.size <= 0) {
                     $('#error_message_pic').removeClass('d-none');
                     requirment_filled.push('no');
-                }else{
+                } else {
                     $('#error_message_pic').addClass('d-none');
                     requirment_filled.push('yes');
-                }        
-            }            
-            else{
-                    requirment_filled.push('yes');
-            }        
+                }
+            } else {
+                requirment_filled.push('yes');
+            }
 
-            if(signature_required == 1){
-                if(signaturePad.isEmpty()){
+            if (signature_required == 1) {
+                if (signaturePad.isEmpty()) {
                     $('#error_message_sigature').removeClass('d-none');
                     requirment_filled.push('no');
-                }
-                else{
+                } else {
                     const signatureDataUrl = signaturePad.toDataURL();
-                    
+
                     // const downloadLink = document.createElement('a');
                     // downloadLink.href = signatureDataUrl;
                     // downloadLink.download = 'signature.png';
@@ -1117,70 +1082,68 @@
                     // downloadLink.click();
                     // document.body.removeChild(downloadLink);
 
-                    formData.set('driv_signature',signatureDataUrl);
+                    formData.set('driv_signature', signatureDataUrl);
                     $('#error_message_sigature').addClass('d-none');
                     requirment_filled.push('yes');
-                }        
-            }            
-            else{
-                    requirment_filled.push('yes');
-            }        
+                }
+            } else {
+                requirment_filled.push('yes');
+            }
 
-            if(note_required == 1){
+            if (note_required == 1) {
                 let driv_note = formData.get('address_note');
-                if(driv_note == ''){
+                if (driv_note == '') {
                     $('#error_message_note').removeClass('d-none');
                     requirment_filled.push('no');
-                }else{
+                } else {
                     $('#error_message_note').addClass('d-none');
                     requirment_filled.push('yes');
-                }        
+                }
+            } else {
+                requirment_filled.push('yes');
             }
-            else{
-                    requirment_filled.push('yes');
-            }        
 
-            if(!requirment_filled.includes('no')){
+            if (!requirment_filled.includes('no')) {
 
-                    $.ajax({
-                        url: apiurl,
-                        type: 'POST',
-                        data: formData,
-                        headers: {
-                            'Authorization': 'Bearer ' + bearerToken
-                        },
-                        contentType: false,
-                        processData: false,
-                        beforeSend: function() {
-                            form.find('.btn_statusUpdate').prop('disabled', true);
-                            form.find('.btn_statusUpdate #spinner').removeClass('d-none');
-                        },
-                        success: function(response) {
-                            form.find('.btn_statusUpdate #spinner').addClass('d-none');
-                            form.find('.btn_statusUpdate').prop('disabled', false);
-    
-                            if (response.status === 'success') {
-                                console.log(response.data.waypoint);
-                                if (response.data.waypoint.id) {
-                                    $('#btn_complete_add').trigger('click');
-                                    form[0].reset();
-                                    $('#clear-btn').trigger('click');
-                                    $('.upload-text').text('Upload Image')
-                                    $('#btn-waypoint_details').fadeOut('slow').attr('data-address_id','').addClass('d-none');
-                                    $('#btn-complete_waypoint').removeClass('d-none').attr('data-address_id',response.data.waypoint.id).fadeIn('fast');
-                                    $('.close').trigger('click');
-                                    
-                                    $("#snackbar").text('Address  details Added Successfully. ');
-                                    showtoast('#28a745');
-                                }
-    
+                $.ajax({
+                    url: apiurl,
+                    type: 'POST',
+                    data: formData,
+                    headers: {
+                        'Authorization': 'Bearer ' + bearerToken
+                    },
+                    contentType: false,
+                    processData: false,
+                    beforeSend: function() {
+                        form.find('.btn_statusUpdate').prop('disabled', true);
+                        form.find('.btn_statusUpdate #spinner').removeClass('d-none');
+                    },
+                    success: function(response) {
+                        form.find('.btn_statusUpdate #spinner').addClass('d-none');
+                        form.find('.btn_statusUpdate').prop('disabled', false);
+
+                        if (response.status === 'success') {
+                            console.log(response.data.waypoint);
+                            if (response.data.waypoint.id) {
+                                $('#btn_complete_add').trigger('click');
+                                form[0].reset();
+                                $('#clear-btn').trigger('click');
+                                $('.upload-text').text('Upload Image')
+                                $('#btn-waypoint_details').fadeOut('slow').attr('data-address_id', '').addClass('d-none');
+                                $('#btn-complete_waypoint').removeClass('d-none').attr('data-address_id', response.data.waypoint.id).fadeIn('fast');
+                                $('.close').trigger('click');
+
+                                $("#snackbar").text('Address  details Added Successfully. ');
+                                showtoast('#28a745');
                             }
-                            
-                        },
-                        error: function(xhr, status, error) {
-                                console.log(error)
+
                         }
-                    });
+
+                    },
+                    error: function(xhr, status, error) {
+                        console.log(error)
+                    }
+                });
             }
 
         });
@@ -1210,20 +1173,20 @@
                     // showlogin('Wait', 'loading......');
                 },
                 success: function(response) {
- 
+
                     if (response.status === 'success') {
-                        
+
                         let responseData = response.data[0];
                         let formattedDateTime = moment(responseData.created_at).format("YYYY-MM-DDTHH:mm");
-                        $('#addclient #btn_save').html('<div class="spinner-border spinner-border-sm text-white d-none" id="spinner"></div><span id="add_btn">'+ "{{ trans('lang.save') }}"+'</span>').css('background-color', '#233A85');
-                        if(responseData.user_pic){
+                        $('#addclient #btn_save').html('<div class="spinner-border spinner-border-sm text-white d-none" id="spinner"></div><span id="add_btn">' + "{{ trans('lang.save') }}" + '</span>').css('background-color', '#233A85');
+                        if (responseData.user_pic) {
                             $('#addclient #user_pic').attr('src', "{{ asset('storage') }}/" + responseData.user_pic).removeClass('d-none');
-                        }else{
+                        } else {
                             $('#addclient #user_pic').attr('src', "assets/images/user.png").removeClass('d-none');
                         }
-                        if(responseData.com_pic){
+                        if (responseData.com_pic) {
                             $('#addclient #com_pic').attr('src', "{{ asset('storage') }}/" + responseData.com_pic).removeClass('d-none');
-                        }else{
+                        } else {
                             $('#addclient #com_pic').attr('src', "assets/images/user.png").removeClass('d-none');
                         }
                         $('#addclient #id').val(responseData.id);
@@ -1249,7 +1212,7 @@
                 }
             });
         });
-   
+
         $(document).on('click', '.skip_address', function() {
             let add_id = $(this).data('address_id');
             $('#address_id').val(add_id);
@@ -1268,10 +1231,10 @@
 
         $(document).on('click', '#btn-end_trip', function() {
             let End_trip = ongoing_address('no');
-            if(End_trip == 'yes'){
+            if (End_trip == 'yes') {
                 $('#tripend').modal('show');
-            }else{
-                showAlert('Uncomplete Trip', 'Your Trips is Uncomplete Yet!', 'warning'); 
+            } else {
+                showAlert('Uncomplete Trip', 'Your Trips is Uncomplete Yet!', 'warning');
             }
         });
 
@@ -1280,30 +1243,30 @@
             $('#formData')[0].reset();
         }
 
-        function showAlert(title, message, type) {  
-            
-                swal({
-                    title: title,
-                    text: message,
-                    icon: type,
-                    showClass: {
-                        popup: 'swal2-show',
-                        backdrop: 'swal2-backdrop-show',
-                        icon: 'swal2-icon-show'
-                    },
-                    hideClass: {
-                        popup: 'swal2-hide',
-                        backdrop: 'swal2-backdrop-hide',
-                        icon: 'swal2-icon-hide'
-                    },
-                    onOpen: function() {
-                        $('.swal2-popup').css('animation', 'swal2-show 0.5s');
-                    },
-                    onClose: function() {
-                        $('.swal2-popup').css('animation', 'swal2-hide 0.5s');
-                    }
-                });
-            
+        function showAlert(title, message, type) {
+
+            swal({
+                title: title,
+                text: message,
+                icon: type,
+                showClass: {
+                    popup: 'swal2-show',
+                    backdrop: 'swal2-backdrop-show',
+                    icon: 'swal2-icon-show'
+                },
+                hideClass: {
+                    popup: 'swal2-hide',
+                    backdrop: 'swal2-backdrop-hide',
+                    icon: 'swal2-icon-hide'
+                },
+                onOpen: function() {
+                    $('.swal2-popup').css('animation', 'swal2-show 0.5s');
+                },
+                onClose: function() {
+                    $('.swal2-popup').css('animation', 'swal2-hide 0.5s');
+                }
+            });
+
         }
 
         function showlogin(title, message) {
@@ -1341,36 +1304,36 @@
             var eyeButton = passwordInput.next(".input-group-append").find("#eye");
 
             eyeButton.on("keydown", function(event) {
-            if (event.key === "Tab" && !event.shiftKey) {
-                event.preventDefault();
-                passwordInput.focus();
-            }
+                if (event.key === "Tab" && !event.shiftKey) {
+                    event.preventDefault();
+                    passwordInput.focus();
+                }
             });
 
             passwordInput.on("keydown", function(event) {
-            if (event.key === "Tab" && !event.shiftKey) {
-                event.preventDefault();
-                var formInputs = $("input");
-                var currentIndex = formInputs.index(this);
+                if (event.key === "Tab" && !event.shiftKey) {
+                    event.preventDefault();
+                    var formInputs = $("input");
+                    var currentIndex = formInputs.index(this);
 
-                var nextInput = formInputs.eq(currentIndex + 1);
-                while (nextInput.length && !nextInput.is(":visible")) {
-                nextInput = formInputs.eq(currentIndex + 2);
-                currentIndex++;
-                }
+                    var nextInput = formInputs.eq(currentIndex + 1);
+                    while (nextInput.length && !nextInput.is(":visible")) {
+                        nextInput = formInputs.eq(currentIndex + 2);
+                        currentIndex++;
+                    }
 
-                if (nextInput.length) {
-                nextInput.focus();
-                } else {
-                formInputs.eq(0).focus();
+                    if (nextInput.length) {
+                        nextInput.focus();
+                    } else {
+                        formInputs.eq(0).focus();
+                    }
                 }
-            }
             });
         });
 
         //user status
-        $(document).on('click', '.btn_status', function () {
-         var id = $(this).find('span').attr('data-client_id');
+        $(document).on('click', '.btn_status', function() {
+            var id = $(this).find('span').attr('data-client_id');
             $('#user_sts_modal').modal('show');
             $('#user_sts').data('id', id);
         });
@@ -1381,16 +1344,16 @@
             $('#userDeleteModal').modal('show');
         });
 
-        $(document).on('submit', '#user_sts', function (event) {
+        $(document).on('submit', '#user_sts', function(event) {
             event.preventDefault();
             var id = $('#user_sts').data('id');
             var status = $('#status').val();
             var _token = $(this).find('input[name="_token"]').val();
-        
+
             $.ajax({
                 url: '/change_status',
                 method: 'POST',
-                beforeSend: function () {
+                beforeSend: function() {
 
                     $('#change_sts').prop('disabled', true);
                     $('#change_sts #spinner').removeClass('d-none');
@@ -1401,9 +1364,9 @@
                     '_token': _token,
                     'status': status
                 },
-                success: function (response) {
+                success: function(response) {
                     if (response) {
-                        
+
                         $('#change_sts').prop('disabled', false);
                         $('#spinner').addClass('d-none');
                         $('#add_btn').removeClass('d-none');
@@ -1416,116 +1379,84 @@
             });
         });
 
-        // Trip Detail  data in through the api...
-        $('.tripDetail_view').on('click', function(e) {
+        // Quote Detail  data in through the api...
+        $('.quoteDetail_view').on('click', function(e) {
             e.preventDefault();
-            var tripDetail_view = $(this);
-            var tripId = tripDetail_view.attr('data-id');
-            //alert(tripId);
+            var quoteDetail = $(this);
+            var quoteId = quoteDetail.attr('data-id');
 
-            var apiname = 'tripDetail';
+            var apiname = 'quoteDetail';
             var apiurl = "{{ end_url('') }}" + apiname;
-            var formData = new FormData();
-            formData.set('id', tripId);
-            // formData.get('id');
-            console.log(formData);
+            var payload = {
+                id: quoteId,
+                role: 'Admin',
+            };
+
             var bearerToken = "{{session('user')}}";
-            
+
             $.ajax({
                 url: apiurl,
                 type: 'POST',
-                data: formData,
+                data: JSON.stringify(payload),
                 headers: {
+                    'Content-Type': 'application/json',
                     'Authorization': 'Bearer ' + bearerToken
                 },
-                contentType: false,
-                processData: false,
                 beforeSend: function() {
-
+                    $('#data-qouteDetails').addClass('d-none');
+                    $('#mdl-spinner').removeClass('d-none');
                 },
                 success: function(response) {
-                    
+
                     if (response.status === 'success') {
-                        if(response.data.user.user_pic){
-                            $('#tripDetail_clientimg').attr('src', "{{ asset('storage') }}/" + response.data.user.user_pic);
-                        }else{
+                        let s_id =response.data.service_id;
+                        if (response.data.admin_pic) {
+                            $('#tripDetail_clientimg').attr('src', "{{ asset('storage') }}/" + response.data.admin_pic);
+                        } else {
                             $('#tripDetail_clientimg').attr('src', "assets/images/user.png")
                         }
-                        if(response.data.driver.user_pic){
-                            $('#tripDetail_driverimg').attr('src', "{{ asset('storage') }}/" + response.data.driver.user_pic);
-                        }else{
+
+                        if (response.data.user_pic) {
+                            $('#tripDetail_driverimg').attr('src', "{{ asset('storage') }}/" + response.data.user_pic);
+                        } else {
                             $('#tripDetail_driverimg').attr('src', "assets/images/user.png")
                         }
-                        $("#tripDetail_client").val(response.data.user.name);
-                        $("#tripDetail_driver").val(response.data.driver.name);
-                        $("#tripDetail_title").val(response.data.title);
+
+                        $("#tripDetail_client").val(response.data.admin_name);
+                        $("#tripDetail_driver").val(response.data.user_name);
+                        $("#tripDetail_title").val(response.data.client_name);
                         $("#tripDetail_description").val(response.data.desc);
-                        $("#tripDetail_date").val(response.data.trip_date);
-                        $("#tripDetail_startpoint").val(response.data.start_point);
-                        $("#tripDetail_endpoint").val(response.data.end_point);
+                        $("#tripDetail_date").val(response.data.date);
+                        $("#tripDetail_startpoint").val(response.data.amount + ' (' + response.data.currency_code + ')');
+                        $("#tripDetail_endpoint").val(services[s_id]);
+                        setTimeout(function() {
+                            $('#mdl-spinner').addClass('d-none');
+                            $('#data-qouteDetails').removeClass('d-none');
+                        }, 500);
 
-                        // Assuming you have the translated JSON data stored in the variable 'translatedData'
+                    } else if (response.status === 'error') {
 
-                        
-                        var translatedData = response.data.addresses;
+                        showAlert("Warning", "Please fill the form correctly", response.status);
+                        console.log(response.message);
 
-// Select the target element
-var $tripDetailAddresses = $("#gettripdata");
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.log(status);
+                    showAlert("Error", 'Request Can not Procceed', 'Can not Procceed furhter');
+                }
+            });
+        });
 
-// Clear any previous content
-$tripDetailAddresses.empty();
 
-function convertToYesNo(value) {
-  return value === "1" ? `<svg width="24" height="18" viewBox="0 0 24 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                          <path fill-rule="evenodd" clip-rule="evenodd" d="M22 0C21.44 0 20.94 0.22 20.58 0.58L8 13.18L3.42 8.58C3.06 8.22 2.56 8 2 8C0.9 8 0 8.9 0 10C0 10.56 0.22 11.06 0.58 11.42L6.58 17.42C6.94 17.78 7.44 18 8 18C8.56 18 9.06 17.78 9.42 17.42L23.42 3.42C23.78 3.06 24 2.56 24 2C24 0.9 23.1 0 22 0Z" fill="#452C88"/>
-                                        </svg>` : "";
-}
 
-// Loop through each address and create a <tr> element
-translatedData.forEach(function(address) {
-  var $tr = $("<tr>");
 
-  // Add columns (td) with address information
-
-  $tr.append($("<td class='text-wrap'>").text(address.title));
-  $tr.append($("<td class='text-wrap'>").text(address.desc));
-
-  // Convert and add pic column
-  $tr.append($("<td>").html(convertToYesNo(address.trip_pic)));
-
-  // Convert and add signature column
-  $tr.append($("<td>").html(convertToYesNo(address.trip_signature)));
-
-  // Convert and add note column
-  $tr.append($("<td>").html(convertToYesNo(address.trip_note)));
-
-  // Append the <tr> element to the table
-  $tripDetailAddresses.append($tr);
-
-});
-                                  
-            }
-            
-            else if(response.status === 'error'){
-            
-                showAlert("Warning", "Please fill the form correctly", response.status);
-                console.log(response.message);
-
-            }
-        },
-        error: function(xhr, status, error) {
-            console.log(status);
-            showAlert("Error", 'Request Can not Procceed', 'Can not Procceed furhter');
-        }
-    });
-    });
-
-        $(document).on('click', '.duplicate_trip', function () {
-         var id = $(this).data('id');
+        $(document).on('click', '.duplicate_trip', function() {
+            var id = $(this).data('id');
             $('#duplicateroute').modal('show');
             $('#inp_trip').val(id);
         });
-    
+
 
         // datatables only for client table and users table
         var users_table = $('#users-table').DataTable();
@@ -1543,24 +1474,26 @@ translatedData.forEach(function(address) {
         $('#btn_cancel').click(function() {
             $('#addclient').modal('hide');
         });
-        
-        function showtoast(bg_color){
-                if(bg_color){
-                    $('#snackbar').css('background-color',bg_color)
-                }
-                let xid = document.getElementById("snackbar");
-                xid.className = "show";
-                setTimeout(function(){ xid.className = xid.className.replace("show", ""); }, 3000);
+
+        function showtoast(bg_color) {
+            if (bg_color) {
+                $('#snackbar').css('background-color', bg_color)
+            }
+            let xid = document.getElementById("snackbar");
+            xid.className = "show";
+            setTimeout(function() {
+                xid.className = xid.className.replace("show", "");
+            }, 3000);
         }
 
 
-// Extra code pending ,Log Terms goals.. for future usage....
+        // Extra code pending ,Log Terms goals.. for future usage....
 
         // get_waypoint();
         // loadTables('users','Client');
         // loadTables('users','Admin');
 
-                // loading tables 
+        // loading tables 
         // function loadTables(apiname, role) {
 
         //     var apiurl = "{{ end_url('') }}" + apiname;
@@ -1689,15 +1622,15 @@ translatedData.forEach(function(address) {
 
         // }
         $('.closeModalButton').click(function() {
-    // Get the modal ID from the clicked button's parent modal
-    var modalId = $(this).closest('.modal').attr('id');
-    
-    // Reset the form inside the modal
-    $('#formData').load(location.href + " #formData > *");
+            // Get the modal ID from the clicked button's parent modal
+            var modalId = $(this).closest('.modal').attr('id');
 
-    // Close the corresponding modal using the extracted ID
-    $('#' + modalId).modal('hide');
-});
-     
+            // Reset the form inside the modal
+            $('#formData').load(location.href + " #formData > *");
+
+            // Close the corresponding modal using the extracted ID
+            $('#' + modalId).modal('hide');
+        });
+
     });
 </script>
