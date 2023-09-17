@@ -73,6 +73,20 @@ return [
         6 => 'Other'
     ],
 
+    'LOCATIONS' => [
+        'PK' => 'Pakistan',
+        'ISB' => 'Islamabad',
+        'LHR' => 'Lahore',
+        'UAE' => 'United Arab Emirates',
+        'USA' => 'United States',
+        'UK' => 'United Kingdom',
+        'SA' => 'Saudi Arabia',
+        'CAN' => 'Canada',
+        'AUS' => 'Australia',
+        'ERU' => 'Europe',
+        'CHN' => 'China'
+    ],
+    
     'CURRENCIES' => [
         'PKR' => 'Pakistani Rupee',
         'USD' => 'United States Dollar',

@@ -24,6 +24,7 @@ return new class extends Migration
             $table->integer('amount');
             $table->string('file')->nullable();
             $table->string('currency_code')->nullable();
+            $table->string('location')->nullable();
             $table->integer('status')->default(2);
             $table->integer('created_by');
             $table->integer('updated_by')->nullable();

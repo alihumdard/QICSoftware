@@ -5,6 +5,7 @@
 $qouteStatus = config('constants.QUOTE_STATUS');
 $qouteStatus_trans = config('constants.QUOTE_STATUS_' . app()->getLocale());
 $services = config('constants.SERVICES');
+$location = config('constants.LOCATIONS');
 @endphp
 <!-- partial -->
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA3YWssMkDiW3F1noE6AVbiJEL40MR0IFU&libraries=places"></script>
@@ -28,7 +29,7 @@ $services = config('constants.SERVICES');
           <!-- <div class="col-lg-4"></div> -->
           <div class="col-lg-12">
             <div class="row mx-1">
-              <div class="col-lg-9 col-sm-6 mb-1 pr-0" style="text-align: right;">
+              <div class="col-lg-6 col-md-12 col-sm-12 my-2 pr-0" style="text-align: right;">
                 <a>
                   <button class="btn content-background add-btn text-white"><span><i class=" fa-regular fa-file-lines"></i> @lang('lang.create_quotation')</span></button>
                 </a>
@@ -36,7 +37,26 @@ $services = config('constants.SERVICES');
                   <button class="btn add-btn text-white" style="background-color: #E95C20FF;"><span><i class="fa fa-plus"></i> @lang('lang.add_quotation')</span></button>
                 </a>
               </div>
-              <div class="col-lg-3 col-sm-6 pr-0">
+              <div class="col-lg-3  col-md-6 col-sm-12 pr-0 my-2">
+                <div class="input-group">
+                  <div class="input-group-prepend d-none d-md-block d-sm-block d-lg-block">
+                    <div class="input-group-text bg-white" style="border-right: none; border: 1px solid #DDDDDD;">
+                      <svg width="11" height="15" viewBox="0 0 11 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M7.56221 14.0648C7.58971 14.3147 7.52097 14.5814 7.36287 14.7563C7.29927 14.8336 7.22373 14.8949 7.14058 14.9367C7.05742 14.9785 6.96827 15 6.87825 15C6.78822 15 6.69907 14.9785 6.61592 14.9367C6.53276 14.8949 6.45722 14.8336 6.39363 14.7563L3.63713 11.4151C3.56216 11.3263 3.50516 11.2176 3.47057 11.0977C3.43599 10.9777 3.42477 10.8496 3.43779 10.7235V6.45746L0.145116 1.34982C0.0334875 1.17612 -0.0168817 0.955919 0.005015 0.737342C0.0269117 0.518764 0.119294 0.319579 0.261975 0.183308C0.392582 0.0666576 0.536937 0 0.688166 0H10.3118C10.4631 0 10.6074 0.0666576 10.738 0.183308C10.8807 0.319579 10.9731 0.518764 10.995 0.737342C11.0169 0.955919 10.9665 1.17612 10.8549 1.34982L7.56221 6.45746V14.0648ZM2.09047 1.66644L4.81259 5.88254V10.4819L6.1874 12.1484V5.8742L8.90953 1.66644H2.09047Z" fill="#323C47" />
+                      </svg>
+                    </div>
+                  </div>
+                  <select name="filter_by_loc" id="filter_by_loc" class="form-select select-group">
+                    <option value="">
+                      @lang('Filter By Locations')
+                    </option>
+                    @foreach($location as $key => $value)
+                    <option value="{{$value}}">{{ $value }}</option>
+                    @endforeach
+                  </select>
+                </div>
+              </div>
+              <div class="col-lg-3 col-md-6 col-sm-12 pr-0 my-2">
                 <div class="input-group">
                   <div class="input-group-prepend d-none d-md-block d-sm-block d-lg-block">
                     <div class="input-group-text bg-white" style="border-right: none; border: 1px solid #DDDDDD;">
@@ -55,23 +75,6 @@ $services = config('constants.SERVICES');
                   </select>
                 </div>
               </div>
-              <!-- <div class="col-lg-4 px-1">
-                  <div class="input-group">
-                    <div class="input-group-prepend">
-                      <div class="input-group-text bg-white" style="border-right: none; border: 1px solid #DDDDDD;">
-                        <svg width="18" height="15" viewBox="0 0 18 15" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <path d="M13.6752 0.558058C13.4311 0.313981 13.0354 0.313981 12.7913 0.558058L8.81386 4.53553C8.56978 4.77961 8.56978 5.17534 8.81386 5.41942C9.05794 5.6635 9.45366 5.6635 9.69774 5.41942L13.2333 1.88388L16.7688 5.41942C17.0129 5.6635 17.4086 5.6635 17.6527 5.41942C17.8968 5.17534 17.8968 4.77961 17.6527 4.53553L13.6752 0.558058ZM12.6083 14C12.6083 14.3452 12.8881 14.625 13.2333 14.625C13.5785 14.625 13.8583 14.3452 13.8583 14H12.6083ZM12.6083 1V14H13.8583V1H12.6083Z" fill="#323C47" />
-                          <path d="M5.625 1C5.625 0.654822 5.34518 0.375 5 0.375C4.65482 0.375 4.375 0.654822 4.375 1H5.625ZM4.55806 14.4419C4.80214 14.686 5.19786 14.686 5.44194 14.4419L9.41942 10.4645C9.6635 10.2204 9.6635 9.82466 9.41942 9.58058C9.17534 9.3365 8.77961 9.3365 8.53553 9.58058L5 13.1161L1.46447 9.58058C1.22039 9.3365 0.82466 9.3365 0.580583 9.58058C0.336505 9.82466 0.336505 10.2204 0.580583 10.4645L4.55806 14.4419ZM4.375 1V14H5.625V1H4.375Z" fill="#323C47" />
-                        </svg>
-                      </div>
-                    </div>
-                    <select name="sort_by" id="sort_by" class="form-select" style="border-left: none;">
-                      <option value="">
-                        @lang('lang.sort_by')
-                      </option>
-                    </select>
-                  </div>
-                </div> -->
             </div>
           </div>
         </div>
@@ -90,6 +93,7 @@ $services = config('constants.SERVICES');
                   <th>@lang('User Name')</th>
                   @endif
                   <th>@lang('lang.client_name')</th>
+                  <th>@lang('Location')</th>
                   <th>@lang('lang.quoted_amount')</th>
                   <th>@lang('Qoute Service')</th>
                   <th>@lang('Qoute Status')</th>
@@ -109,6 +113,7 @@ $services = config('constants.SERVICES');
                   <td>{{ $value['user_name'] ?? ''}} </td>
                   @endif
                   <td>{{ $value['client_name'] ?? '' }}</td>
+                  <td>{{ $location[$value['location']] ?? ''}}</td>
                   <td>{{ $value['amount'].' ('.$value['currency_code'].') ' ?? '' }}</td>
                   <td>{{ $services[$value['service_id']] }}</td>
                   <td>
@@ -236,15 +241,25 @@ $services = config('constants.SERVICES');
 
   $('#filter_by_sts_routes').on('change', function() {
     var selectedStatus = $(this).val();
-    users_table.column(7).search(selectedStatus).draw();
+    users_table.column(8).search(selectedStatus).draw();
   });
+
+  $('#filter_by_loc').on('change', function() {
+    var selectedLocation = $(this).val();
+    users_table.column(5).search(selectedLocation).draw();
+  });
+
 </script>
 @elseif($user->role == user_roles('2'))
 <script>
   var users_table = $('#qoute-table').DataTable();
   $('#filter_by_sts_routes').on('change', function() {
     var selectedStatus = $(this).val();
-    users_table.column(6).search(selectedStatus).draw();
+    users_table.column(7).search(selectedStatus).draw();
+  });
+  $('#filter_by_loc').on('change', function() {
+    var selectedLocation = $(this).val();
+    users_table.column(4).search(selectedLocation).draw();
   });
 </script>
 @elseif($user->role == user_roles('3'))
@@ -252,7 +267,11 @@ $services = config('constants.SERVICES');
   var users_table = $('#qoute-table').DataTable();
   $('#filter_by_sts_routes').on('change', function() {
     var selectedStatus = $(this).val();
-    users_table.column(5).search(selectedStatus).draw();
+    users_table.column(6).search(selectedStatus).draw();
+  });
+  $('#filter_by_loc').on('change', function() {
+    var selectedLocation = $(this).val();
+    users_table.column(3).search(selectedLocation).draw();
   });
 </script>
 @endif
