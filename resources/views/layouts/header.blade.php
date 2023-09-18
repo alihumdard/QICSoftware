@@ -168,10 +168,10 @@ if(isset($user->role) && $user->role == user_roles('1')){
       <img src="assets/images/scooble.png" style="width: 100%; height: 100%;" alt="">
     </div> -->
     <div class="navbar-brand brand-logo d-none mx-5 px-2 mb-2" id="logo-full-img">
-      <img src="assets/images/Logo.png" alt="logo">
+      <img src="assets/images/Logo.svg" alt="logo">
     </div>
     <div class="navbar-brand brand-logo mb-2 mx-2" id="logo-img">
-      <img src="assets/images/scooble.png" style="width: 100%; " alt="logo">
+      <img src="assets/images/scooble.svg" style="width: 100%; " alt="logo">
     </div>
     <div class="logo_details py-2" style="border-top: 1px solid #FFFFFF45; border-bottom: 1px solid #FFFFFF45;">
       <!-- <i class="bx bxl-audible icon"></i> -->
@@ -181,7 +181,7 @@ if(isset($user->role) && $user->role == user_roles('1')){
       <div class="logo_name d-none" id="logo-name">
         <div class="nav-profile-text d-flex flex-column text-wrap">
           <span class="mb-1" style="font-size: small;">{{(isset($user->name)) ? $user->name : 'Guest'}}</span>
-          <span class="text-secondary text-white text-small">{{(isset($user->role)) ? $user->role : 'Guest'}}</span>
+          <!-- <span class="text-secondary text-white text-small">{{(isset($user->role)) ? $user->role : 'Guest'}}</span> -->
         </div>
       </div>
     </div>
