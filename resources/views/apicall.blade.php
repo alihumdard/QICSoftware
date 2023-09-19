@@ -9,6 +9,8 @@
 <script>
     $(document).ready(function() {
         var services = @json(config('constants.SERVICES'));
+        var locations = @json(config('constants.LOCATIONS'));
+        var contracts = @json(config('constants.CONTRACTS'));
 
         $(document).on('click','.btn_status_q', function() {
             var id = $(this).find('span').attr('data-qoute_id');
@@ -588,8 +590,8 @@
 
                         const lastSegment = location.href.substring(location.href.lastIndexOf("/") + 1);
 
-                        if (lastSegment == 'settings' || lastSegment == 'announcements' || lastSegment == 'add_quotation') {
-                            if (lastSegment == 'add_quotation') {
+                        if (lastSegment == 'settings' || lastSegment == 'announcements' || lastSegment == 'add_quotation' || lastSegment == 'add_contract' || lastSegment == 'add_invoice') {
+                            if (lastSegment == 'add_quotation' || lastSegment == 'add_contract' || lastSegment == 'add_invoice') {
                                 setTimeout(function() {
                                     window.location.href = document.referrer;
                                 }, 1500);
@@ -1440,8 +1442,145 @@
             });
         });
 
+        // Contract Detail  data in through the api...
+        $(document).on('click', '.contractDetail_view',function(e) {
+            e.preventDefault();
+            var quoteDetail = $(this);
+            var quoteId = quoteDetail.attr('data-id');
 
+            var apiname = 'contractDetail';
+            var apiurl = "{{ end_url('') }}" + apiname;
+            var payload = {
+                id: quoteId,
+                role: 'Admin',
+            };
 
+            var bearerToken = "{{session('user')}}";
+
+            $.ajax({
+                url: apiurl,
+                type: 'POST',
+                data: JSON.stringify(payload),
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + bearerToken
+                },
+                beforeSend: function() {
+                    $('#data-qouteDetails').addClass('d-none');
+                    $('#mdl-spinner').removeClass('d-none');
+                },
+                success: function(response) {
+
+                    if (response.status === 'success') {
+                        let s_id =response.data.service_id;
+                        if (response.data.admin_pic) {
+                            $('#tripDetail_clientimg').attr('src', "{{ asset('storage') }}/" + response.data.admin_pic);
+                        } else {
+                            $('#tripDetail_clientimg').attr('src', "assets/images/user.png")
+                        }
+
+                        if (response.data.user_pic) {
+                            $('#tripDetail_driverimg').attr('src', "{{ asset('storage') }}/" + response.data.user_pic);
+                        } else {
+                            $('#tripDetail_driverimg').attr('src', "assets/images/user.png")
+                        }
+
+                        $("#tripDetail_client").val(response.data.admin_name);
+                        $("#tripDetail_driver").val(response.data.user_name);
+                        $("#tripDetail_title").val(response.data.client_name);
+                        $("#tripDetail_description").val(response.data.desc);
+                        $("#c_start_date").val(response.data.start_date);
+                        $("#c_end_date").val(response.data.end_date);
+                        $("#c_location").val(locations[response.data.location]);
+                        $("#c_ammount").val(response.data.amount + ' (' + response.data.currency_code + ')');
+                        $("#c_category").val(contracts[s_id]);
+                        setTimeout(function() {
+                            $('#mdl-spinner').addClass('d-none');
+                            $('#data-qouteDetails').removeClass('d-none');
+                        }, 500);
+
+                    } else if (response.status === 'error') {
+
+                        showAlert("Warning", "Please fill the form correctly", response.status);
+                        console.log(response.message);
+
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.log(status);
+                    showAlert("Error", 'Request Can not Procceed', 'Can not Procceed furhter');
+                }
+            });
+        });
+
+                // Quote Detail  data in through the api...
+        $(document).on('click', '.invoiceDetail_view',function(e) {
+            e.preventDefault();
+            var quoteDetail = $(this);
+            var quoteId = quoteDetail.attr('data-id');
+
+            var apiname = 'invoiceDetail';
+            var apiurl = "{{ end_url('') }}" + apiname;
+            var payload = {
+                id: quoteId,
+                role: 'Admin',
+            };
+
+            var bearerToken = "{{session('user')}}";
+
+            $.ajax({
+                url: apiurl,
+                type: 'POST',
+                data: JSON.stringify(payload),
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + bearerToken
+                },
+                beforeSend: function() {
+                    $('#data-qouteDetails').addClass('d-none');
+                    $('#mdl-spinner').removeClass('d-none');
+                },
+                success: function(response) {
+
+                    if (response.status === 'success') {
+                        let s_id =response.data.service_id;
+                        if (response.data.admin_pic) {
+                            $('#tripDetail_clientimg').attr('src', "{{ asset('storage') }}/" + response.data.admin_pic);
+                        } else {
+                            $('#tripDetail_clientimg').attr('src', "assets/images/user.png")
+                        }
+
+                        if (response.data.user_pic) {
+                            $('#tripDetail_driverimg').attr('src', "{{ asset('storage') }}/" + response.data.user_pic);
+                        } else {
+                            $('#tripDetail_driverimg').attr('src', "assets/images/user.png")
+                        }
+
+                        $("#tripDetail_client").val(response.data.admin_name);
+                        $("#tripDetail_driver").val(response.data.user_name);
+                        $("#tripDetail_title").val(response.data.client_name);
+                        $("#tripDetail_description").val(response.data.desc);
+                        $("#tripDetail_date").val(response.data.date);
+                        $("#tripDetail_startpoint").val(response.data.amount + ' (' + response.data.currency_code + ')');
+                        $("#tripDetail_endpoint").val(services[s_id]);
+                        setTimeout(function() {
+                            $('#mdl-spinner').addClass('d-none');
+                            $('#data-qouteDetails').removeClass('d-none');
+                        }, 500);
+
+                    } else if (response.status === 'error') {
+
+                        showAlert("Warning", "Please fill the form correctly", response.status);
+                        console.log(response.message);
+
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.log(status);
+                    showAlert("Error", 'Request Can not Procceed', 'Can not Procceed furhter');
+                }
+            });
+        });
 
         $(document).on('click', '.duplicate_trip', function() {
             var id = $(this).data('id');

@@ -153,7 +153,7 @@ $currencies = config('constants.CURRENCIES');
 
                         <div class="col-lg-12 mb-2">
                             <label for="q_desc">@lang('lang.contract_desc')</label>
-                            <textarea name="desc" id="q_desc" class="form-control" placeholder="@lang('lang.contract_desc')">{{ $data['desc'] ?? '' }}</textarea>
+                            <textarea rows="2"  name="desc" id="q_desc" class="form-control" placeholder="@lang('lang.contract_desc')">{{ $data['desc'] ?? '' }}</textarea>
                             <p id="charCountContainer" class="text-secondary text-right" style="display: none;"><span id="charCount">250</span> /250</p>
                             <span id="q_desc_error" class="error-message text-danger"></span>
                         </div>
@@ -224,7 +224,7 @@ $currencies = config('constants.CURRENCIES');
                     <div class="mt-3">
                         <div class="row justify-content-end mt-2  ">
                             <div class="col-lg-2 col-md-6 col-sm-12 mb-3 mb-lg-4 ">
-                                <a href="/quotations" id="btn_cancel_quotation" class="btn btn-block btn-warning text-white" style="border-radius: 8px;">
+                                <a href="/contracts" id="btn_cancel_quotation" class="btn btn-block btn-warning text-white" style="border-radius: 8px;">
                                     <span id="text">@lang('Cancel')</span>
                                 </a>
                             </div>

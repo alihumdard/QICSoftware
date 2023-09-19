@@ -296,6 +296,6 @@ $location = config('constants.LOCATIONS');
     link.click();
   }
 </script>
-@include('qoutedetail_modal')
+@include('contractdetail_modal')
 
 @endsection

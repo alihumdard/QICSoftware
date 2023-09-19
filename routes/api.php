@@ -57,6 +57,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::match(['post','get'],'/eventStore', [APIController::class, 'storeEvent']);
     
     Route::match(['post','get'],'/quotationStore', [APIController::class, 'quotation_store']);
+
+    Route::match(['post','get'],'/invoiceStore', [APIController::class, 'invoice_store']);
     
     Route::match(['post','get'],'/contractStore', [APIController::class, 'contract_store']);
     
@@ -64,7 +66,13 @@ Route::middleware('auth:sanctum')->group(function () {
     
     Route::match(['post','get'],'/contractStatus', [APIController::class, 'update_contract_status']);
 
+    Route::match(['post','get'],'/invoiceStatus', [APIController::class, 'update_invoice_status']);
+
     Route::match(['post','get'],'/quoteDetail', [APIController::class, 'quote_detail']);
+   
+    Route::match(['post','get'],'/invoiceDetail', [APIController::class, 'invoice_detail']);
+
+    Route::match(['post','get'],'/contractDetail', [APIController::class, 'contract_detail']);
     
 
 });
