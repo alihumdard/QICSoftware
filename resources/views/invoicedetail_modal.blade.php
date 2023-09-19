@@ -1,9 +1,9 @@
                       <!-- qoute Detail Modal -->
-                      <div class="modal fade" id="qoutedetail" tabindex="-1" aria-labelledby="qoutedetaillable" aria-hidden="true">
+                      <div class="modal fade" id="invoicedetail" tabindex="-1" aria-labelledby="invoicedetaillable" aria-hidden="true">
                         <div class="modal-dialog modal-lg">
                           <div class="modal-content" style="border-radius: 12px;">
                             <div class="modal-header" style="background: #452C88; border-radius: 12px 12px 0px 0px;">
-                              <h5 class="modal-title mx-auto text-white" id="qoutedetaillable"><span>@lang('Quotation Details')</span></h5>
+                              <h5 class="modal-title mx-auto text-white" id="qoutedetaillable"><span>@lang('Invoice Details')</span></h5>
                               <button class="btn p-0" data-dismiss="modal">
                                 <svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                   <path d="M18.8403 6L6.84033 18M6.84033 6L18.8403 18" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
@@ -54,25 +54,25 @@
                                   </div>
                                   <div class="col-lg-4">
                                     <div class="pr-lg-4 pr-sm-0 pr-0">
-                                      <label for="trip_title" class="mb-0"><span style="color: #452C88;">@lang('Qouted Date')</span></label>
+                                      <label for="trip_title" class="mb-0"><span style="color: #452C88;">@lang('Invoice Date')</span></label>
                                       <input type="text" disabled class="form-control" id="tripDetail_date" value="">
                                     </div>
                                   </div>
                                   <div class="col-lg-12 mt-2">
                                     <div class="px-lg-4 px-sm-0 px-0">
-                                      <label for="trip_desc" class="mb-0"><span style="color: #452C88;">@lang('Quotation Description')</span></label>
-                                      <textarea rows="5" name="" id="tripDetail_description" class="form-control" disabled></textarea>
+                                      <label for="trip_desc" class="mb-0"><span style="color: #452C88;">@lang('Invoice Description')</span></label>
+                                      <textarea name="" rows="5" id="tripDetail_description" class="form-control" disabled></textarea>
                                     </div>
                                   </div>
                                   <div class="col-lg-6 mt-2 pr-0">
                                     <div class="pl-lg-4 pr-lg-2 pl-sm-0 pr-sm-3 pl-0 pr-3">
-                                      <label for="trip_desc" class="mb-0"><span style="color: #452C88;">@lang('Qouted Ammount')</span></label>
+                                      <label for="trip_desc" class="mb-0"><span style="color: #452C88;">@lang('Invoice Ammount')</span></label>
                                       <input type="text" id="tripDetail_startpoint" class="form-control" disabled value="">
                                     </div>
                                   </div>
                                   <div class="col-lg-6 mt-2 pl-0">
                                     <div class="pr-lg-4 pl-lg-2 pl-sm-3 pr-sm-0 pl-3 pr-0">
-                                      <label for="trip_desc" class="mb-0"><span style="color: #452C88;">@lang('Qouted Service')</span></label>
+                                      <label for="trip_desc" class="mb-0"><span style="color: #452C88;">@lang('Invoice Service')</span></label>
                                       <input type="text" id="tripDetail_endpoint" class="form-control" disabled value="">
                                     </div>
                                   </div>

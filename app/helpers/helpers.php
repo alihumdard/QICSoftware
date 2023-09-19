@@ -59,10 +59,12 @@ function view_permission($page_name) {
                 case 'index':
                 case 'settings':
                 case 'quotations':
+                case 'invoices':
                 case 'clients':
                 case 'drivers':
                 case 'add_quotation':
                 case 'add_contract':
+                case 'add_invoice':
                 case 'contracts':
                 // case 'calender':
                 case 'routes':    
@@ -86,10 +88,12 @@ function view_permission($page_name) {
                 case 'index':
                 case 'settings':
                 case 'quotations':
+                case 'invoices':
                 case 'drivers':
                 case 'routes':
                 case 'add_quotation':
                 case 'add_contract':
+                case 'add_invoice':
                 case 'contracts':
                 // case 'calender':      
                 // case 'notifications':    
@@ -109,7 +113,9 @@ function view_permission($page_name) {
                 case 'index':
                 case 'settings':
                 case 'quotations':
+                case 'invoices':
                 case 'add_quotation':
+                case 'add_invoice':
                 case 'add_contract':
                 case 'routes': 
                 case 'create_trip': 

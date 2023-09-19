@@ -83,6 +83,16 @@ return [
         6 => 'Other'
     ],
 
+    
+    'INVOICES' => [
+        1 => 'Weekly',
+        2 => 'Monthly',
+        3 => 'On-time',
+        4 => '6 months',
+        5 => 'Yearly',
+        6 => 'Other'
+    ],
+
     'LOCATIONS' => [
         'PK' => 'Pakistan',
         'ISB' => 'Islamabad',
@@ -110,8 +120,6 @@ return [
         'AED' => 'United Arab Emirates Dirham',
     ],
         
-    
-
     'PAYPAL' => [
         'CLIENT_ID' => 'AX5AHiCaQb9E7Y01nr0-X_ibBPgRuuU5bb-K0K6xcS5Yo4zUOwSZh7nOJg-QgfD4-7EEosSR0BBdZ9Ki',
         'CLIENT_SECRET' => 'EKIvOEbvrlTb3kdmxRMOtAHePyjViFWH2AveI8GX566SVcqxTVwA8CmSaOGS-sx-CZw9HLu__o-4ZcuT',

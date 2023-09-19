@@ -25,6 +25,7 @@ use Illuminate\Foundation\Auth\Authenticatable;
 use App\Jobs\UserProfileEmail;
 use Illuminate\Support\Str;
 use App\Models\Event;
+use App\Models\Invoice;
 
 class APIController extends Controller
 {
@@ -1462,5 +1463,139 @@ class APIController extends Controller
             return response()->json(['status' => 'error', 'message' => 'Error updating status ', 'error' => $e->getMessage()], 500);
         }
     }
+
+    public function contract_detail(Request $request): JsonResponse
+    {
+        $validator = Validator::make($request->all(), [
+            'id' => 'required',
+        ]);
+    
+        if ($validator->fails()) {
+            return response()->json(['status' => 'error', 'message' => $validator->errors()], 400);
+        }
+    
+        try {
+            if (isset($request->role) && $request->role == user_roles('1')) {
+
+                $contracts = Contract::join('users as u', 'u.id', '=', 'contracts.user_id')
+                ->join('users as admins', 'admins.id', '=', 'contracts.admin_id')
+                ->select('contracts.*','u.name as user_name', 'u.user_pic as user_pic', 'admins.name as admin_name','admins.user_pic as admin_pic')
+                ->where('contracts.id',$request->id)
+                ->orderBy('contracts.id', 'desc')
+                ->first();    
+            }
+
+            return response()->json(['status' => 'success', 'message' => 'Quotation details are fetched', 'data' => $contracts]);
+    
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'warning', 'message' => 'Error storing user', 'error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function invoice_store(Request $request): JsonResponse
+    {
+        // $validator = Validator::make($request->all(), [
+        //     'title' => 'required',
+        //     'desc' => 'required',
+        //     'type' => 'required',
+        //     'price' => 'required',
+        //     'users' => 'required',
+        //     'drivers' => 'required',
+        //     'map_api_call' => 'required'
+        // ]);
+    
+        // if ($validator->fails()) {
+        //     return response()->json(['status' => 'error', 'message' => $validator->errors()]);
+        // }
+    
+        try {
+            $invoices = ($request->id) ? Invoice::find($request->id) : new Invoice(); 
+             
+            $isExistInvoice = $invoices->exists;
+
+            $invoices->date          = $request->date;
+            $invoices->admin_id      = $request->admin_id;
+            $invoices->user_id       = $request->user_id;
+            $invoices->currency_code = $request->currency_code;
+            $invoices->location      = $request->location;
+            $invoices->service_id    = $request->service_id;
+            $invoices->desc          = $request->desc;
+            $invoices->client_name   = $request->client_name;
+            $invoices->amount        = $request->amount;
+    
+            if ($request->hasFile('file')) {
+                if ($request->id) {
+                    Storage::disk('public')->delete($invoices->file);
+                }
+    
+                $ifile = $request->file('file');
+                $infilePath = $ifile->store('in_files', 'public');
+                $invoices->file = $infilePath;
+            }
+
+            $invoices->created_by  = Auth::id();
+            $save = $invoices->save();
+    
+            $message = $isExistInvoice ? 'Invoice updated successfully' : 'Invoice saved successfully';
+            return response()->json(['status' => 'success', 'message' => $message, 'data' => $save]);
+    
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => 'Error storing Invoice', 'error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function update_invoice_status(Request $request): JsonResponse
+    {
+        $validator = Validator::make($request->all(), [
+            'id' => 'required',
+            'status' => 'required',
+        ]);
+    
+        if ($validator->fails()) {
+            return response()->json(['status' => 'error', 'message' => $validator->errors()]);
+        }
+    
+        try {
+
+            if ($request->has('id')) {
+                $invoice = Invoice::where('id', $request->id)->update(['status' => $request->status]);
+                $message = 'Invoice status updated successfully';
+                return response()->json(['status' => 'success', 'message' => $message, 'data' => $invoice]);
+            }
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => 'Error updating status ', 'error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function invoice_detail(Request $request): JsonResponse
+    {
+        $validator = Validator::make($request->all(), [
+            'id' => 'required',
+        ]);
+    
+        if ($validator->fails()) {
+            return response()->json(['status' => 'error', 'message' => $validator->errors()], 400);
+        }
+    
+        try {
+            if (isset($request->role) && $request->role == user_roles('1')) {
+
+                $invoices = Invoice::join('users as u', 'u.id', '=', 'invoices.user_id')
+                ->join('users as admins', 'admins.id', '=', 'invoices.admin_id')
+                ->select('invoices.*','u.name as user_name', 'u.user_pic as user_pic', 'admins.name as admin_name','admins.user_pic as admin_pic')
+                ->where('invoices.id',$request->id)
+                ->orderBy('invoices.id', 'desc')
+                ->first();    
+            }
+
+            return response()->json(['status' => 'success', 'message' => 'Invoice details are fetched', 'data' => $invoices]);
+    
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'warning', 'message' => 'Error storing user', 'error' => $e->getMessage()], 500);
+        }
+    }
+
+
+
 
 }
