@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use App\Models\User;
 use App\Models\Quotation;
+use App\Models\Contract;
 use App\Models\Announcement;
 use App\Models\Notification;
 use App\Models\Trip;
@@ -114,7 +115,6 @@ class APIController extends Controller
         }
     }
     
-
     public function user_login(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
@@ -178,7 +178,6 @@ class APIController extends Controller
             ], 500);
         }
     }
-    
     
     public function user_store(Request $request): JsonResponse
     {
@@ -1386,4 +1385,82 @@ class APIController extends Controller
             return response()->json(['status' => 'warning', 'message' => 'Error storing user', 'error' => $e->getMessage()], 500);
         }
     }
+
+    public function contract_store(Request $request): JsonResponse
+    {
+        // $validator = Validator::make($request->all(), [
+        //     'title' => 'required',
+        //     'desc' => 'required',
+        //     'type' => 'required',
+        //     'price' => 'required',
+        //     'users' => 'required',
+        //     'drivers' => 'required',
+        //     'map_api_call' => 'required'
+        // ]);
+    
+        // if ($validator->fails()) {
+        //     return response()->json(['status' => 'error', 'message' => $validator->errors()]);
+        // }
+    
+        try {
+            $contract = ($request->id) ? Contract::find($request->id) : new Contract(); 
+             
+            $isExistContract = $contract->exists;
+
+            $contract->start_date    = $request->start_date;
+            $contract->end_date      = $request->end_date;
+            $contract->admin_id      = $request->admin_id;
+            $contract->user_id       = $request->user_id;
+            $contract->currency_code = $request->currency_code;
+            $contract->location      = $request->location;
+            $contract->service_id    = $request->service_id;
+            $contract->desc          = $request->desc;
+            $contract->client_name   = $request->client_name;
+            $contract->amount        = $request->amount;
+    
+            if ($request->hasFile('file')) {
+                if ($request->id) {
+                    Storage::disk('public')->delete($contract->file);
+                }
+    
+                $cfile = $request->file('file');
+                $cfilePath = $cfile->store('c_files', 'public');
+                $contract->file = $cfilePath;
+            }
+
+            $contract->created_by  = Auth::id();
+            $save = $contract->save();
+    
+            $message = $isExistContract ? 'Contract updated successfully' : 'Contract saved successfully';
+            return response()->json(['status' => 'success', 'message' => $message, 'data' => $save]);
+    
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => 'Error storing Contract', 'error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function update_contract_status(Request $request): JsonResponse
+    {
+        $validator = Validator::make($request->all(), [
+            'id' => 'required',
+            'status' => 'required',
+        ]);
+    
+        if ($validator->fails()) {
+            return response()->json(['status' => 'error', 'message' => $validator->errors()]);
+        }
+    
+        try {
+
+            if ($request->has('id')) {
+                $qoute = Contract::where('id', $request->id)->update(['status' => $request->status]);
+                $message = 'Status Changed successfully';
+                return response()->json(['status' => 'success', 'message' => $message, 'data' => $qoute]);
+            
+            }
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => 'Error updating status ', 'error' => $e->getMessage()], 500);
+        }
+    }
+
 }

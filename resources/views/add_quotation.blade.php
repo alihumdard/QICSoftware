@@ -147,7 +147,7 @@ $currencies = config('constants.CURRENCIES');
 
                         <div class="col-lg-12 mb-2">
                             <label for="q_desc">@lang('lang.quotation_desc')</label>
-                            <textarea name="desc" id="q_desc" class="form-control" placeholder="@lang('lang.trip_description')">{{ $data['desc'] ?? '' }}</textarea>
+                            <textarea name="desc" id="q_desc" class="form-control" placeholder="@lang('lang.quotation_desc')">{{ $data['desc'] ?? '' }}</textarea>
                             <p id="charCountContainer" class="text-secondary text-right" style="display: none;"><span id="charCount">250</span> /250</p>
                             <span id="q_desc_error" class="error-message text-danger"></span>
                         </div>
@@ -155,7 +155,7 @@ $currencies = config('constants.CURRENCIES');
                         <div class="col-lg-3 col-md-6  col-sm-12">
                             <label for="service_id">@lang('Qoute Service')</label>
                             <select required name="service_id" id="service_id" class="form-select">
-                                <option disabled selected> Select @lang('lang.quote_category')</option>
+                                <option disabled selected> Select @lang('quote service')</option>
                                 @forelse($services as $key => $value)
                                 <option value="{{ $key}}" {{ isset($data['service_id']) && $data['service_id'] == $key ? 'selected' : '' }}>
                                     {{ $value }}
@@ -170,7 +170,7 @@ $currencies = config('constants.CURRENCIES');
                         <div class="col-lg-3 col-md-6  col-sm-12">
                             <label for="service_id">@lang('Qoute Location')</label>
                             <select required name="location" id="location" class="form-select">
-                                <option disabled selected> Select @lang('lang.quote_category')</option>
+                                <option disabled selected> Select @lang('lang.quote location')</option>
                                 @forelse($location as $key => $value)
                                 <option value="{{ $key}}" {{ isset($data['location']) && $data['location'] == $key ? 'selected' : '' }}>
                                     {{ $value }}

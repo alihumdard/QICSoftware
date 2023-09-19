@@ -62,6 +62,8 @@ function view_permission($page_name) {
                 case 'clients':
                 case 'drivers':
                 case 'add_quotation':
+                case 'add_contract':
+                case 'contracts':
                 // case 'calender':
                 case 'routes':    
                 case 'users':
@@ -87,6 +89,8 @@ function view_permission($page_name) {
                 case 'drivers':
                 case 'routes':
                 case 'add_quotation':
+                case 'add_contract':
+                case 'contracts':
                 // case 'calender':      
                 // case 'notifications':    
                 case 'create_trip': 
@@ -106,11 +110,12 @@ function view_permission($page_name) {
                 case 'settings':
                 case 'quotations':
                 case 'add_quotation':
+                case 'add_contract':
                 case 'routes': 
                 case 'create_trip': 
                 // case 'calender':    
                 // case 'notifications':    
-                // case 'driver_map':    
+                case 'contracts':    
                 case 'logout':
                 // case 'calendar_maintable':
                     return true;

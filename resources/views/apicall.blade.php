@@ -4,27 +4,19 @@
 <script src="https://cdn.rawgit.com/SheetJS/js-xlsx/master/dist/xlsx.full.min.js"></script>
 <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
-<script src="https://unpkg.com/signature_pad"></script>
 
 
 <script>
     $(document).ready(function() {
         var services = @json(config('constants.SERVICES'));
 
-        $('.btn_status_q').on('click', function() {
+        $(document).on('click','.btn_status_q', function() {
             var id = $(this).find('span').attr('data-qoute_id');
             $('#qoute_id').val(id);
             $('#qoute_sts_modal').modal('show');
         });
 
         var login_alert;
-        var canvasElement = document.getElementById('driver_signature');
-        if (canvasElement) {
-            var signaturePad = new SignaturePad(canvasElement);
-            document.getElementById('clear-btn').addEventListener('click', function() {
-                signaturePad.clear();
-            });
-        }
 
         function updateFormFields() {
             const rows = $("#table_address tbody tr");
@@ -596,7 +588,7 @@
 
                         const lastSegment = location.href.substring(location.href.lastIndexOf("/") + 1);
 
-                        if (lastSegment == 'settings' || lastSegment == 'announcements' || lastSegment == 'quotations' || lastSegment == 'add_quotation') {
+                        if (lastSegment == 'settings' || lastSegment == 'announcements' || lastSegment == 'add_quotation') {
                             if (lastSegment == 'add_quotation') {
                                 setTimeout(function() {
                                     window.location.href = document.referrer;
@@ -1380,7 +1372,7 @@
         });
 
         // Quote Detail  data in through the api...
-        $('.quoteDetail_view').on('click', function(e) {
+        $(document).on('click', '.quoteDetail_view',function(e) {
             e.preventDefault();
             var quoteDetail = $(this);
             var quoteId = quoteDetail.attr('data-id');

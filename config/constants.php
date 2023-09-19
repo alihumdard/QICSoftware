@@ -44,6 +44,7 @@ return [
         'Completed'   => 3,
         'Deleted'     => 4
     ],
+    
 
     'ADDRESS_STATUS_en' => [
         1 => 'On Going',
@@ -70,6 +71,15 @@ return [
         3 => 'Website Development',
         4 => 'Search Engine Optimization',
         5 => 'App Development',
+        6 => 'Other'
+    ],
+
+    'CONTRACTS' => [
+        1 => 'Monthly',
+        2 => 'One-time',
+        3 => '3 Months',
+        4 => '6 months',
+        5 => 'Yearly',
         6 => 'Other'
     ],
 
