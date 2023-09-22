@@ -42,8 +42,8 @@
                             -moz-box-shadow: 0px 0px 4px 1px rgba(0,0,0,0.3);">
                             <div class="d-flex justify-content-between">
                                 <div>
-                                    <h6 style="color: #452C88;"><span>@lang('lang.total_routes')</span></h6>
-                                    <h5 style="color: #E45F00;">{{ $totalRoutes ?? $totalRoutes }}</h5>
+                                    <h6 style="color: #452C88;"><span>@lang('Total Quotations')</span></h6>
+                                    <h5 style="color: #E45F00;">{{ $totalQuotion ?? '' }}</h5>
                                 </div>
                                 <div>
                                     <svg width="70" height="70" viewBox="0 0 70 70" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -61,8 +61,8 @@
                             -moz-box-shadow: 0px 0px 4px 1px rgba(0,0,0,0.3);">
                             <div class="d-flex justify-content-between">
                                 <div>
-                                    <h6 style="color: #452C88;"><span>@lang('lang.pending_routes')</span></h6>
-                                    <h5 style="color: #E45F00;">{{ $PendingTrips ?? $PendingTrips}}</h5>
+                                    <h6 style="color: #452C88;"><span>@lang('Total Contracts')</span></h6>
+                                    <h5 style="color: #E45F00;">{{ $totalContract ?? ''}}</h5>
                                 </div>
                                 <div>
                                     <svg width="70" height="70" viewBox="0 0 70 70" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -80,8 +80,8 @@
                             -moz-box-shadow: 0px 0px 4px 1px rgba(0,0,0,0.3);">
                             <div class="d-flex justify-content-between">
                                 <div>
-                                    <h6 style="color: #452C88;"><span>@lang('lang.completed_trips')</span></h6>
-                                    <h5 style="color: #E45F00;">{{ $completedTrips ?? $completedTrips}}</h5>
+                                    <h6 style="color: #452C88;"><span>@lang('Total Invoices')</span></h6>
+                                    <h5 style="color: #E45F00;">{{ $totalInvoice ?? ''}}</h5>
                                 </div>
                                 <div>
                                     <svg width="70" height="70" viewBox="0 0 70 70" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -98,7 +98,7 @@
                         <div class="row">
                             <div class="col-lg-5 col-md-5">
                                 <div>
-                                    <b>@lang('lang.completed_trips')</b>
+                                    <b>@lang('Closed Contracts')</b>
                                 </div>
                             </div>
                         </div>
@@ -108,38 +108,22 @@
                             <table class="table">
                                 <thead style="background-color: #E9EAEF;">
                                     <tr>
-                                        <th>@lang('lang.trip_title')</th>
-                                        <th>@lang('lang.trip_date')</th>
-                                        <th>@lang('lang.start_point')</th>
-                                        <th>@lang('lang.end_point')</th>
-                                        <th>@lang('lang.status')</th>
+                                        <th>@lang('Start date')</th>
+                                        <th>@lang('End date')</th>
+                                        <th>@lang('Client name')</th>
+                                        <th>@lang('Ammount')</th>
+                                        <th>@lang('Location')</th>
                                         <th></th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                 @foreach($completedTrips_detail as $key => $value)
+                                 @foreach($completedCOT_detail as $key => $value)
                                     <tr>
-                                        <td>{{ $value['title'] ?? ''}}</td>
-                                        <td>{{ $value['trip_date'] ?? ''}}</td>
-                                        <td class="text-wrap">{{ $value['start_point'] ?? ''}}</td>
-                                        <td class="text-wrap">{{ $value['end_point'] ?? ''}}</td>
-                                        <td>
-                                            <span class="badge p-2" style="background-color: #31A6132E; color: #31A613;">@lang('lang.completed')</span>
-                                        </td>
-                                        <td>
-                                @if($user->role == user_roles('3'))
-                                    <form method="POST" action="/driver_map" class="mb-0">
-                                     @csrf
-                                    <input type="hidden" name="id" value="{{$value['id']}}">
-                                            <button class="btn p-0">
-                                                <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                    <circle opacity="0.1" cx="18" cy="18" r="18" fill="#ACADAE" />
-                                                    <path d="M17.7167 13C13.5 13 11 18 11 18C11 18 13.5 23 17.7167 23C21.8333 23 24.3333 18 24.3333 18C24.3333 18 21.8333 13 17.7167 13ZM17.6667 14.6667C19.5167 14.6667 21 16.1667 21 18C21 19.85 19.5167 21.3333 17.6667 21.3333C15.8333 21.3333 14.3333 19.85 14.3333 18C14.3333 16.1667 15.8333 14.6667 17.6667 14.6667ZM17.6667 16.3333C16.75 16.3333 16 17.0833 16 18C16 18.9167 16.75 19.6667 17.6667 19.6667C18.5833 19.6667 19.3333 18.9167 19.3333 18C19.3333 17.8333 19.2667 17.6833 19.2333 17.5333C19.1 17.8 18.8333 18 18.5 18C18.0333 18 17.6667 17.6333 17.6667 17.1667C17.6667 16.8333 17.8667 16.5667 18.1333 16.4333C17.9833 16.3833 17.8333 16.3333 17.6667 16.3333Z" fill="black" />
-                                                </svg>
-                                            </button>
-                                    </form>
-                                @endif
-                                        </td>
+                                        <td>{{ $value['start_date'] ?? ''}}</td>
+                                        <td>{{ $value['end_date'] ?? ''}}</td>
+                                        <td class="text-wrap">{{ $value['client_name'] ?? ''}}</td>
+                                        <td class="text-wrap">{{ $value['amount'] ?? ''}}</td>
+                                        <td class="text-wrap">{{ $value['location'] ?? ''}}</td>
                                     </tr>
                                  @endforeach
                                 </tbody>
@@ -147,7 +131,7 @@
                         </div>
                     </div>
                     <div class="col-lg-12 col-md-12 col-xl-4 mt-4">
-                        <h5>@lang('lang.today_trips')</h5>
+                        <h5>@lang('Today Quotations')</h5>
                         @include('aside')
                     </div>
                 </div>

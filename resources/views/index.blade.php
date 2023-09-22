@@ -183,8 +183,8 @@ span#procent2::after {
             -moz-box-shadow: 0px 0px 4px 1px rgba(0,0,0,0.3);">
               <div class="d-flex justify-content-between">
                 <div>
-                  <h6 style="color: #452C88;"><span>@lang('lang.total_quotations')</span></h6>
-                  <h5 style="color: #E45F00;">{{ $totalRoutes ?? $totalRoutes}}</h5>
+                  <h6 style="color: #452C88;"><span>@lang('Total Quotations')</span></h6>
+                  <h5 style="color: #E45F00;">{{ $totalQuotion ?? $totalRoutes}}</h5>
                 </div>
                 <div>
                   <svg width="70" height="70" viewBox="0 0 70 70" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -203,7 +203,7 @@ span#procent2::after {
               <div class="d-flex justify-content-between">
                 <div>
                   <h6 style="color: #452C88;"><span>@lang('lang.completed_contracts')</span></h6>
-                  <h5 style="color: #E45F00;">{{ $completedTrips ?? $completedTrips}}</h5>
+                  <h5 style="color: #E45F00;">{{ $completedContract ?? $completedContract}}</h5>
                 </div>
                 <div>
                   <svg width="70" height="70" viewBox="0 0 70 70" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -221,7 +221,7 @@ span#procent2::after {
               <div class="d-flex justify-content-between">
                 <div>
                   <h6 style="color: #452C88;"><span>@lang('lang.total_invoices')</span></h6>
-                  <h5 style="color: #E45F00;">{{ $adminsCount ?? $adminsCount}}</h5>
+                  <h5 style="color: #E45F00;">{{ $totalInvoice ?? $totalInvoice}}</h5>
                 </div>
                 <div>
                   <svg width="70" height="70" viewBox="0 0 70 70" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -254,7 +254,7 @@ span#procent2::after {
                 <div class="prgrss-chart pb-4" style="box-shadow: 0px 0px 3px 0.75px rgba(0,0,0,0.25); 
             -webkit-box-shadow: 0px 0px 3px 0.75px rgba(0,0,0,0.25);
             -moz-box-shadow: 0px 0px 3px 0.75px rgba(0,0,0,0.25);">
-                  <p class="progress_para pt-2 mb-0">@lang('lang.active_contracts') </p>
+                  <p class="progress_para pt-2 mb-0">@lang('Quotations sent') </p>
                   <div class="mt-5">
                     <div class="d-flex justify-content-center">
                       <canvas id="canvas" class="progress_charts" style="position: relative;" ></canvas>
@@ -324,9 +324,9 @@ span#procent2::after {
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.1.4/Chart.min.js"></script>
 <script>
     
-    drawChart("canvas", "procent",{{ $actvTrp_percentage }});
-    drawChart("canvas1", "procent1",{{ $compTrp_percentage }});
-    drawChart("canvas2", "procent2",{{ $pendTrp_percentage }});
+    drawChart("canvas", "procent",{{ $sentQuote_percent }});
+    drawChart("canvas1", "procent1",{{ $compCT_percent }});
+    drawChart("canvas2", "procent2",{{ $compINV_percent }});
 
 
     function drawChart(canvasId, spanId,percentage) {

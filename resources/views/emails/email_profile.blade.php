@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Subscription Success</title>
+    <title>Account Created</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -49,7 +49,7 @@
 <body style="background-color: #f9f9f9;">
     <div class="container" style="text-align: center;">
         <div class="logo" style="margin-left: 42%;">
-            <img src="{{ $message->embed(public_path('assets/images/Group5.png')) }}" alt="logo" />
+            <img src="{{ $message->embed(public_path('assets/images/Logo.png')) }}" alt="logo" />
         </div>
         <h3>Dear, {{ $emailData['name'] }}</h3>
         <div class="message">

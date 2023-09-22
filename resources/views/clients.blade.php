@@ -88,7 +88,7 @@
                       <th> @lang('lang.email') </th>
                       <th></th>
                       <th> @lang('lang.company_name') </th>
-                      <th> @lang('lang.expiry_date') </th>
+                      <!-- <th> @lang('lang.expiry_date') </th> -->
                       <th> @lang('lang.status') </th>
                       <th>@lang('lang.actions')</th>
                     </tr>
@@ -104,7 +104,7 @@
                       <td>{{ $value['email'] }}</td>
                       <td><img src="{{ (isset($value['com_pic'])) ? asset('storage/' . $value['com_pic']) : 'assets/images/user.png'}}" style="width: 45px; height: 45px; border-radius: 38px; object-fit: cover;" alt="text"></td>
                       <td> {{ $value['com_name'] }}</td>
-                      <td>{{ $value['sub_exp_date'] }}</td>
+                      <!-- <td>{{ $value['sub_exp_date'] }}</td> -->
                       @if($value['status'] == 1)
                       <td>
                         <button class="btn btn_status">
