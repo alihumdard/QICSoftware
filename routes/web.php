@@ -18,7 +18,7 @@ use App\Http\Middleware\CheckSubscription;
 
 
 
-Route::middleware('check.userAuthCheck','check.subscription')->group(function () {
+Route::middleware('check.userAuthCheck')->group(function () {
 
 Route::match(['post','get'],'/client', [UserController::class, 'clients']);
 Route::match(['post','get'],'/drivers', [UserController::class, 'drivers']);
@@ -41,20 +41,21 @@ Route::match(['post','get'],'/edit/{id}', [UserController::class, 'user_edit']);
 Route::match(['post','get'],'/user_store', [UserController::class, 'user_store']);
 Route::match(['post','get'],'/lang_change', [UserController::class, 'lang_change']);
 
-
-
 Route::match(['post','get'],'/driver_map', [UserController::class, 'driver_map']);
 Route::match(['post','get'],'/announcements_alerts', [UserController::class, 'announcements_alerts']);
 Route::match(['post','get'],'/pdf_templates', [UserController::class, 'pdf_templates']);
 Route::match(['post','get'],'/change_status', [UserController::class, 'change_status']);
 Route::get('/get_users/{id}', [UserController::class, 'get_users']);
 
-})->withoutMiddleware([CheckSubscription::class])->group(function () {
-    Route::match(['post','get'],'/subscription', [UserController::class, 'subscription']);
-    Route::match(['post','get'],'/payment_success', [UserController::class, 'payment_success']);
-    Route::match(['post','get'],'/payment_cancel', [UserController::class, 'payment_cancel']);
-
 });
+
+
+// ->withoutMiddleware([CheckSubscription::class])->group(function () {
+//     Route::match(['post','get'],'/subscription', [UserController::class, 'subscription']);
+//     Route::match(['post','get'],'/payment_success', [UserController::class, 'payment_success']);
+//     Route::match(['post','get'],'/payment_cancel', [UserController::class, 'payment_cancel']);
+
+// });
 
     Route::get('/', [UserController::class, 'index']);
     Route::match(['post','get'],'/login', [UserController::class, 'user_login']);

@@ -47,6 +47,8 @@ class UserController extends Controller
     private $user;
     private $payment;
     protected $tripStatus;
+    protected $quoteStatus;
+    protected $status;
     protected $userStatus;
     protected $curFormatDate;
 
@@ -59,6 +61,9 @@ class UserController extends Controller
         $this->gateway->setSecret(config('constants.PAYPAL.CLIENT_SECRET'));
         $this->gateway->setTestMode(true);
         $this->tripStatus = config('constants.TRIP_STATUS');
+
+        $this->quoteStatus = config('constants.QUOTE_STATUS');
+        $this->status = config('constants.QUOTE_STATUS');
         $this->userStatus = config('constants.USER_STATUS');
         $this->curFormatDate = Carbon::now()->format('Y-m-d');
     }
@@ -83,16 +88,6 @@ class UserController extends Controller
             $currentDate = Carbon::now();
             // User roles: 1 for admin, 2 for client, 3 for driver
             if (isset($user->role) && $user->role == user_roles('2')) {
-
-                if ($user->sub_exp_date) {
-
-                    $expirationDate = Carbon::createFromFormat('Y-m-d', $user->sub_exp_date);
-                    if ($currentDate->gt($expirationDate)) {
-
-                        return view('subscription_expired', ['user' => $user]);
-                    } else {
-
-                        // $data['announcements'] = Announcement::where('start_date', '<=', $current_date)->where('end_date', '>=', $current_date)->get()->toArray();
 
                         $data['user']           = $user;
                         $data['drivers'] = User::where(['role' => user_roles('3'), 'client_id' => $user->id, 'status' => $this->userStatus['Active']])
@@ -122,34 +117,28 @@ class UserController extends Controller
                             ->get(['id', 'title', 'desc', 'trip_date', 'driver_id', 'client_id', 'status'])
                             ->toArray();
 
+                        
+                $data['totalQuotion']         = Quotation::where('admin_id',$user->id)->count();
+                $data['totalInvoice']         = Invoice::where('admin_id',$user->id)->count();
+                $data['totalContract']    = Contract::where('admin_id',$user->id)->count();
 
-                        $data['totalRoutes']     = Trip::where('client_id', $user->id)->count();
-                        $data['totalAct_Routes'] = Trip::whereIn('status', [$this->tripStatus['Pending'], $this->tripStatus['In Progress']])->where('client_id', $user->id)->count();
-                        $data['totalTodayRout']  = Trip::whereDate('trip_date', $this->curFormatDate)->where('client_id', $user->id)->count();
-                        $data['completedTrips']  = Trip::whereDate('trip_date', $this->curFormatDate)->where([['status', $this->tripStatus['Completed']], ['client_id', $user->id]])->count();
-                        $data['activeTrips']     = Trip::whereDate('trip_date', $this->curFormatDate)->where([['status', $this->tripStatus['In Progress']], ['client_id', $user->id]])->count();
-                        $data['PendingTrips']    = Trip::whereDate('trip_date', $this->curFormatDate)->where([['status', $this->tripStatus['Pending']], ['client_id', $user->id]])->count();
+                $data['totalTodayQT']   = Quotation::whereDate('date', $this->curFormatDate)->whereIn('status', [$this->status['Pending'],$this->status['In Progress']])->where('admin_id',$user->id)->count();
+                $data['TodayQTsent']    = Quotation::whereDate('date', $this->curFormatDate)->whereIn('status', [$this->status['In Progress']])->where('admin_id',$user->id)->count();
+                $data['sentQuote_percent'] = $data['totalTodayQT'] > 0 ? round(($data['TodayQTsent'] / $data['totalTodayQT']) * 100, 1) : 0;
 
-                        $data['compTrp_percentage'] = $data['totalTodayRout'] > 0 ? round(($data['completedTrips'] / $data['totalTodayRout']) * 100, 1) : 0;
-                        $data['actvTrp_percentage'] = $data['totalTodayRout'] > 0 ? round(($data['activeTrips'] / $data['totalTodayRout']) * 100, 1) : 0;
-                        $data['pendTrp_percentage'] = $data['totalTodayRout'] > 0 ? round(($data['PendingTrips'] / $data['totalTodayRout']) * 100, 1) : 0;
+                $data['totalTodayCT']   = Contract::whereDate('end_date', $this->curFormatDate)->whereIn('status', [$this->status['Pending'],$this->status['In Progress'],$this->status['Completed']])->where('admin_id',$user->id)->count();
+                $data['TodayCTcomp']    = Contract::whereDate('end_date', $this->curFormatDate)->whereIn('status', [$this->status['Completed']])->where('admin_id',$user->id)->count();
+                $data['compCT_percent'] = $data['totalTodayCT'] > 0 ? round(($data['TodayCTcomp'] / $data['totalTodayQT']) * 100, 1) : 0;
 
+                $data['totalTodayINV']   = Invoice::whereDate('date', $this->curFormatDate)->whereIn('status', [$this->status['Pending'],$this->status['In Progress']])->where('admin_id',$user->id)->count();
+                $data['TodayINVcomp']    = Invoice::whereDate('date', $this->curFormatDate)->whereIn('status', [$this->status['In Progress']])->where('admin_id',$user->id)->count();
+                $data['compINV_percent'] = $data['totalTodayINV'] > 0 ? round(($data['TodayCTcomp'] / $data['TodayINVcomp']) * 100, 1) : 0;
                         return view('client_dashboard', $data);
-                    }
-                } else {
-                    return redirect('/login');
-                }
-            } else if (isset($user->role) && $user->role == user_roles('3')) {
 
+            } 
+            else if (isset($user->role) && $user->role == user_roles('3')) {
                 $client = User::where(['role' => 'Client', 'id' => $user->client_id])->first();
-
                 if ($client) {
-                    if ($client->sub_exp_date) {
-                        $expirationDate = Carbon::createFromFormat('Y-m-d', $client->sub_exp_date);
-
-                        if ($currentDate->gt($expirationDate)) {
-                            return redirect('/subscription-expired_driver');
-                        } else {
 
                             $data['activeRoutes'] = Trip::with('driver:id,name')
                                 ->whereHas('driver', function ($query) use ($user) {
@@ -157,46 +146,47 @@ class UserController extends Controller
                                 })->whereDate('trip_date', $this->curFormatDate)->get(['id', 'title', 'desc', 'trip_date', 'driver_id', 'client_id', 'status'])->toArray();
 
                             $data['user']           = $user;
-                            $data['totalRoutes']     = Trip::where('driver_id', $user->id)->count();
-                            $data['totalAct_Routes'] = Trip::whereIn('status', [$this->tripStatus['Pending'], $this->tripStatus['In Progress']])->where('driver_id', $user->id)->count();
-                            $data['activeTrips']     = Trip::where([['status', $this->tripStatus['In Progress']], ['driver_id', $user->id]])->count();
-                            $data['PendingTrips']    = Trip::where([['status', $this->tripStatus['Pending']], ['driver_id', $user->id]])->count();
-                            $data['completedTrips_detail']  = Trip::where([['status', $this->tripStatus['Completed']], ['driver_id', $user->id]])->get()->toArray();
+                                                    
+                            $data['totalQuotion']         = Quotation::where('user_id',$user->id)->count();
+                            $data['totalInvoice']         = Invoice::where('user_id',$user->id)->count();
+                            $data['totalContract']    = Contract::where('user_id',$user->id)->count();
+
+                            $data['completedCOT_detail']  = Contract::where([['status', $this->status['Completed']], ['user_id', $user->id]])->get()->toArray();
 
                             $data['completedTrips'] = count($data['completedTrips_detail'] ?? []);
                             return view('driver_dashboard', $data);
-                        }
-                    } else {
-                        return redirect('/subscription-expired_driver');
-                    }
+                    
                 } else {
                     return redirect('/login');
                 }
-            } else {
 
+            } else {
                 $data['user']           = $user;
                 $data['adminsCount']    = User::where('role', user_roles('1'))->count();
                 $data['clientsCount']   = User::where('role', user_roles('2'))->count();
                 $data['driversCount']   = User::where('role', user_roles('3'))->count();
-                $data['revenue']        = Payment::where('payment_status', 'approved')->where('transaction_status', 'approved')->sum('amount');
+                $data['revenue']        = Invoice::where('status', $this->status['Completed'])->sum('amount');
 
+                $data['totalQuotion']         = Quotation::count();
+                $data['totalInvoice']         = Invoice::count();
+                $data['completedContract']    = Contract::where('status', $this->status['Completed'])->count();
+
+                $data['totalTodayQT']   = Quotation::whereDate('date', $this->curFormatDate)->whereIn('status', [$this->status['Pending'],$this->status['In Progress']])->count();
+                $data['TodayQTsent']    = Quotation::whereDate('date', $this->curFormatDate)->whereIn('status', [$this->status['In Progress']])->count();
+                $data['sentQuote_percent'] = $data['totalTodayQT'] > 0 ? round(($data['TodayQTsent'] / $data['totalTodayQT']) * 100, 1) : 0;
+
+                $data['totalTodayCT']   = Contract::whereDate('end_date', $this->curFormatDate)->whereIn('status', [$this->status['Pending'],$this->status['In Progress'],$this->status['Completed']])->count();
+                $data['TodayCTcomp']    = Contract::whereDate('end_date', $this->curFormatDate)->whereIn('status', [$this->status['Completed']])->count();
+                $data['compCT_percent'] = $data['totalTodayCT'] > 0 ? round(($data['TodayCTcomp'] / $data['totalTodayQT']) * 100, 1) : 0;
+
+                $data['totalTodayINV']   = Invoice::whereDate('date', $this->curFormatDate)->whereIn('status', [$this->status['Pending'],$this->status['In Progress']])->count();
+                $data['TodayINVcomp']    = Invoice::whereDate('date', $this->curFormatDate)->whereIn('status', [$this->status['In Progress']])->count();
+                $data['compINV_percent'] = $data['totalTodayINV'] > 0 ? round(($data['TodayCTcomp'] / $data['TodayINVcomp']) * 100, 1) : 0;
+                
                 $data['activeRoutes']   = Trip::with('user:id,name')->whereDate('trip_date', $this->curFormatDate)->where('status', $this->tripStatus['In Progress'])->get(['id', 'title', 'desc', 'trip_date', 'driver_id', 'client_id', 'status'])->toArray();
-
-                $data['totalRoutes']    = Trip::count();
-                $data['totalTodayRout'] = Trip::whereDate('trip_date', $this->curFormatDate)->count();
-                $data['completedTrips'] = Trip::where('status', $this->tripStatus['Completed'])->whereDate('trip_date', $this->curFormatDate)->count();
-                $data['activeTrips']    = Trip::where('status', $this->tripStatus['In Progress'])->whereDate('trip_date', $this->curFormatDate)->count();
-                $data['PendingTrips']   = Trip::where('status', $this->tripStatus['Pending'])->whereDate('trip_date', $this->curFormatDate)->count();
-
-                $data['compTrp_percentage'] = $data['totalTodayRout'] > 0 ? round(($data['completedTrips'] / $data['totalTodayRout']) * 100, 1) : 0;
-                $data['actvTrp_percentage'] = $data['totalTodayRout'] > 0 ? round(($data['activeTrips'] / $data['totalTodayRout']) * 100, 1) : 0;
-                $data['pendTrp_percentage'] = $data['totalTodayRout'] > 0 ? round(($data['PendingTrips'] / $data['totalTodayRout']) * 100, 1) : 0;
-
                 return view('index', $data);
             }
         } else {
-            // $package = Package::orderBy('id', 'ASC')->get()->toArray();
-            // return view('login', ['data' => $package]);
             return view('login');
         }
     }

@@ -167,7 +167,7 @@
                   <label for="remember-me" class="m-0 ml-1">@lang('lang.remember_me')</label>
                 </div>
                 <div>
-                  <a href="/forgot_password" class="btn btn-link ml-2">@lang('lang.forgot_password')?</a>
+                  <a href="/forgot_password" class="btn btn-link ml-2">@lang('Change Password')?</a>
                 </div>
               </div>
               @if (Session::has('password_changed'))

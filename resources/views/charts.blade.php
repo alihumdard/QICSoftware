@@ -1,8 +1,8 @@
 <script>
     
-    drawChart("canvas", "procent",{{ $actvTrp_percentage }});
-    drawChart("canvas1", "procent1",{{ $compTrp_percentage }});
-    drawChart("canvas2", "procent2",{{ $pendTrp_percentage }});
+    drawChart("canvas", "procent",{{ $sentQuote_percent }});
+    drawChart("canvas1", "procent1",{{ $compCT_percent }});
+    drawChart("canvas2", "procent2",{{ $compINV_percent }});
 
 
     function drawChart(canvasId, spanId,percentage) {

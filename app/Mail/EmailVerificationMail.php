@@ -33,7 +33,7 @@ class EmailVerificationMail extends Mailable
     public function envelope()
     {
         return new Envelope(
-            subject: 'Scooble Email Verification Mail',
+            subject: 'Email Verification Mail',
         );
     }
 
