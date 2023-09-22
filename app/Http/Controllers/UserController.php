@@ -177,7 +177,7 @@ class UserController extends Controller
 
                 $data['totalTodayCT']   = Contract::whereDate('end_date', $this->curFormatDate)->whereIn('status', [$this->status['Pending'],$this->status['In Progress'],$this->status['Completed']])->count();
                 $data['TodayCTcomp']    = Contract::whereDate('end_date', $this->curFormatDate)->whereIn('status', [$this->status['Completed']])->count();
-                $data['compCT_percent'] = $data['totalTodayCT'] > 0 ? round(($data['TodayCTcomp'] / $data['totalTodayQT']) * 100, 1) : 0;
+                $data['compCT_percent'] = $data['totalTodayCT'] > 0 ? round(($data['TodayCTcomp'] / $data['totalTodayCT']) * 100, 1) : 0;
 
                 $data['totalTodayINV']   = Invoice::whereDate('date', $this->curFormatDate)->whereIn('status', [$this->status['Pending'],$this->status['In Progress']])->count();
                 $data['TodayINVcomp']    = Invoice::whereDate('date', $this->curFormatDate)->whereIn('status', [$this->status['In Progress']])->count();
