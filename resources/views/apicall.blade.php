@@ -1423,6 +1423,18 @@
                         $("#tripDetail_date").val(response.data.date);
                         $("#tripDetail_startpoint").val(response.data.amount + ' (' + response.data.currency_code + ')');
                         $("#tripDetail_endpoint").val(services[s_id]);
+
+                        var serviceData = response.data.service_data;
+                        var tbody = $("#tbl_sevice_data");
+                        var ind = 1;
+                        $.each(JSON.parse(serviceData), function(index, key) {
+                            var row = $("<tr class='text-center'>");
+                            $("<td>").text(ind++).appendTo(row); 
+                            $("<td>").text(services[key.service_id]).appendTo(row);
+                            $("<td>").text( key.s_amount + ' (' + response.data.currency_code + ')').appendTo(row);
+                            row.appendTo(tbody);
+                        });
+
                         setTimeout(function() {
                             $('#mdl-spinner').addClass('d-none');
                             $('#data-qouteDetails').removeClass('d-none');

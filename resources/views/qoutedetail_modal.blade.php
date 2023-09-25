@@ -22,6 +22,7 @@
 
                               <div id="data-qouteDetails" class="d-none">
                                 <div class="row pb-2 mb-2" style="border-bottom: 2px solid #ACADAE4D;">
+
                                   <div class="col-lg-6 mt-4 mb-1">
                                     <div class="d-flex justify-content-evenly">
                                       <div class="">
@@ -29,10 +30,11 @@
                                       </div>
                                       <div>
                                         <label for="client_name" class="mb-0"><span style="color: #452C88;">@lang('Admin Name')</span></label>
-                                        <input type="text"  disabled id="tripDetail_client" class="form-control" value="">
+                                        <input type="text" disabled id="tripDetail_client" class="form-control" value="">
                                       </div>
                                     </div>
                                   </div>
+
                                   <div class="col-lg-6 mt-4 mb-1">
                                     <div class="d-flex justify-content-evenly">
                                       <div class="">
@@ -44,38 +46,59 @@
                                       </div>
                                     </div>
                                   </div>
+
                                 </div>
                                 <div class="row mb-2">
-                                  <div class="col-lg-8">
-                                    <div class="pl-lg-4 pl-sm-0 pl-0">
+
+                                  <div class="col-lg-4  mt-2 pr-0">
+                                    <div class="pl-lg-4 pr-lg-2 pl-sm-0 pr-sm-3 pl-0 pr-3">
                                       <label for="trip_title" class="mb-0"><span style="color: #452C88;">@lang('Client Name')</span></label>
                                       <input type="text" disabled id="tripDetail_title" class="form-control" value="">
                                     </div>
                                   </div>
-                                  <div class="col-lg-4">
-                                    <div class="pr-lg-4 pr-sm-0 pr-0">
+
+                                  <div class="col-lg-4 mt-2 pr-0">
+                                    <div class="pl-sm-0 pr-sm-3 pl-0 pr-3">
+                                      <label for="trip_desc" class="mb-0"><span style="color: #452C88;">@lang('Total Ammount')</span></label>
+                                      <input type="text" id="tripDetail_startpoint" class="form-control" disabled value="">
+                                    </div>
+                                  </div>
+
+
+                                  <div class="col-lg-4  mt-2 ">
+                                    <div class=" pl-sm-0 pr-sm-3 pl-0 pr-3">
                                       <label for="trip_title" class="mb-0"><span style="color: #452C88;">@lang('Qouted Date')</span></label>
                                       <input type="text" disabled class="form-control" id="tripDetail_date" value="">
                                     </div>
                                   </div>
+
+
                                   <div class="col-lg-12 mt-2">
                                     <div class="px-lg-4 px-sm-0 px-0">
                                       <label for="trip_desc" class="mb-0"><span style="color: #452C88;">@lang('Quotation Description')</span></label>
                                       <textarea rows="5" name="" id="tripDetail_description" class="form-control" disabled></textarea>
                                     </div>
                                   </div>
-                                  <div class="col-lg-6 mt-2 pr-0">
-                                    <div class="pl-lg-4 pr-lg-2 pl-sm-0 pr-sm-3 pl-0 pr-3">
-                                      <label for="trip_desc" class="mb-0"><span style="color: #452C88;">@lang('Qouted Ammount')</span></label>
-                                      <input type="text" id="tripDetail_startpoint" class="form-control" disabled value="">
+
+                                  <div class="col-lg-12 mt-4">
+                                    <div class="px-lg-4 px-sm-0 px-0">
+                                      <table class="table table-striped table-bordered">
+                                        <thead class="thead-dark">
+                                          <tr class="text-center">
+                                            <th>#</th>
+                                            <th>Service Name</th>
+                                            <th>Service Amount</th>
+                                          </tr>
+                                        </thead>
+                                        <tbody id="tbl_sevice_data">
+                                          <!-- Add  rows here as needed -->
+                                        </tbody>
+                                      </table>
                                     </div>
                                   </div>
-                                  <div class="col-lg-6 mt-2 pl-0">
-                                    <div class="pr-lg-4 pl-lg-2 pl-sm-3 pr-sm-0 pl-3 pr-0">
-                                      <label for="trip_desc" class="mb-0"><span style="color: #452C88;">@lang('Qouted Service')</span></label>
-                                      <input type="text" id="tripDetail_endpoint" class="form-control" disabled value="">
-                                    </div>
-                                  </div>
+
+
+
                                 </div>
                               </div>
                             </div>

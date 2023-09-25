@@ -95,7 +95,7 @@ $location = config('constants.LOCATIONS');
                   <th>@lang('lang.client_name')</th>
                   <th>@lang('Location')</th>
                   <th>@lang('lang.quoted_amount')</th>
-                  <th>@lang('Qoute Service')</th>
+                  <!-- <th>@lang('Qoute Service')</th> -->
                   <th>@lang('Qoute Status')</th>
                   <th>@lang('lang.actions')</th>
                 </tr>
@@ -115,7 +115,7 @@ $location = config('constants.LOCATIONS');
                   <td>{{ $value['client_name'] ?? '' }}</td>
                   <td>{{ $location[$value['location']] ?? ''}}</td>
                   <td>{{ $value['amount'].' ('.$value['currency_code'].') ' ?? '' }}</td>
-                  <td>{{ $services[$value['service_id']] }}</td>
+                  <!-- <td>{{ $value['service_data'] ?? '' }}</td> -->
                   <td>
                     <button class="btn btn_status_q">
                       @if ($value['status'] == $qouteStatus['In Progress'])
@@ -241,7 +241,7 @@ $location = config('constants.LOCATIONS');
 
   $('#filter_by_sts_routes').on('change', function() {
     var selectedStatus = $(this).val();
-    users_table.column(8).search(selectedStatus).draw();
+    users_table.column(7).search(selectedStatus).draw();
   });
 
   $('#filter_by_loc').on('change', function() {
@@ -255,7 +255,7 @@ $location = config('constants.LOCATIONS');
   var users_table = $('#qoute-table').DataTable();
   $('#filter_by_sts_routes').on('change', function() {
     var selectedStatus = $(this).val();
-    users_table.column(7).search(selectedStatus).draw();
+    users_table.column(6).search(selectedStatus).draw();
   });
   $('#filter_by_loc').on('change', function() {
     var selectedLocation = $(this).val();
@@ -267,7 +267,7 @@ $location = config('constants.LOCATIONS');
   var users_table = $('#qoute-table').DataTable();
   $('#filter_by_sts_routes').on('change', function() {
     var selectedStatus = $(this).val();
-    users_table.column(6).search(selectedStatus).draw();
+    users_table.column(5).search(selectedStatus).draw();
   });
   $('#filter_by_loc').on('change', function() {
     var selectedLocation = $(this).val();
