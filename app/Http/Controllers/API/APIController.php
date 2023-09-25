@@ -32,10 +32,13 @@ class APIController extends Controller
     
     protected $tripStatus;
     protected $userStatus;
-
+    protected $status;
+    
     public function __construct(){
         $this->tripStatus = config('constants.TRIP_STATUS');
         $this->userStatus = config('constants.USER_STATUS');
+        $this->status = config('constants.QUOTE_STATUS');
+
     }
 
     public function index(){
@@ -1594,6 +1597,56 @@ class APIController extends Controller
         }
     }
 
+    public function dashboardCharts(Request $request): JsonResponse
+    {
+        try {
+            
+            $id = $request->input('id');    
+            $user = User::where('id', $id)->first();
+            $selected_date  = $request->input('selected_date');
+
+            if($user){
+                // User roles: 1 for admin, 2 for client, 3 for driver
+                if(isset($user->role) && $user->role == user_roles('1')){
+
+                    $data['totalTodayQT']   = Quotation::whereDate('date', $selected_date)->whereIn('status', [$this->status['Pending'],$this->status['In Progress']])->count();
+                    $data['TodayQTsent']    = Quotation::whereDate('date', $selected_date)->whereIn('status', [$this->status['In Progress']])->count();
+                    $data['sentQuote_percent'] = $data['totalTodayQT'] > 0 ? round(($data['TodayQTsent'] / $data['totalTodayQT']) * 100, 1) : 0;
+
+                    $data['totalTodayCT']   = Contract::whereDate('end_date', $selected_date)->whereIn('status', [$this->status['Pending'],$this->status['In Progress'],$this->status['Completed']])->count();
+                    $data['TodayCTcomp']    = Contract::whereDate('end_date', $selected_date)->whereIn('status', [$this->status['Completed']])->count();
+                    $data['compCT_percent'] = $data['totalTodayCT'] > 0 ? round(($data['TodayCTcomp'] / $data['totalTodayCT']) * 100, 1) : 0;
+
+                    $data['totalTodayINV']   = Invoice::whereDate('date', $selected_date)->whereIn('status', [$this->status['Pending'],$this->status['In Progress']])->count();
+                    $data['TodayINVcomp']    = Invoice::whereDate('date', $selected_date)->whereIn('status', [$this->status['In Progress']])->count();
+                    $data['compINV_percent'] = $data['totalTodayINV'] > 0 ? round(($data['TodayCTcomp'] / $data['totalTodayINV']) * 100, 1) : 0;
+               
+            }
+                else if(isset($user->role) && $user->role == user_roles('2')){   
+                    $data['totalRoutes']     = Trip::where('client_id', $user->id)->count();
+                    $data['totalAct_Routes'] = Trip::whereIn('status', [$this->tripStatus['Pending'], $this->tripStatus['In Progress']])->where('client_id', $user->id)->count();
+                    $data['totalTodayRout']  = Trip::whereDate('trip_date', $selected_date)->where('client_id', $user->id)->count();
+                    $data['completedTrips']  = Trip::whereDate('trip_date', $selected_date)->where([['status', $this->tripStatus['Completed']], ['client_id', $user->id]])->count();
+                    $data['activeTrips']     = Trip::whereDate('trip_date', $selected_date)->where([['status', $this->tripStatus['In Progress']], ['client_id', $user->id]])->count();
+                    $data['PendingTrips']    = Trip::whereDate('trip_date', $selected_date)->where([['status', $this->tripStatus['Pending']], ['client_id', $user->id]])->count();
+
+                    $data['compTrp_percentage'] = $data['totalTodayRout'] > 0 ? round(($data['completedTrips'] / $data['totalTodayRout']) * 100, 1) : 0;
+                    $data['actvTrp_percentage'] = $data['totalTodayRout'] > 0 ? round(($data['activeTrips'] / $data['totalTodayRout']) * 100, 1) : 0;
+                    $data['pendTrp_percentage'] = $data['totalTodayRout'] > 0 ? round(($data['PendingTrips'] / $data['totalTodayRout']) * 100, 1) : 0;       
+                }   
+              
+            }
+            
+            if (empty($data)) {
+                return response()->json(['status' => 'empty', 'message' => 'No data found'], 404);
+            }
+    
+            return response()->json(['status' => 'success', 'message' => 'Data retrieved successfully', 'data' => $data]);
+    
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => 'Error retrieving data', 'error' => $e->getMessage()], 500);
+        }
+    }
 
 
 

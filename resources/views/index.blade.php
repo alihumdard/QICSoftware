@@ -119,7 +119,9 @@ span#procent2::after {
               <div class="d-flex justify-content-between">
                 <div>
                   <h6 style="color: #452C88;"><span>@lang('lang.revenue')</span></h6>
-                  <h5 style="color: #E45F00;">{{ isset($revenue) ?  $revenue : '' }}</h5>
+                  @foreach($revenue as $key => $val)
+                  <h5 style="color: #E45F00;">{{ $val.' '. $key ?? '' }}</h5>
+                  @endforeach
                 </div>
                 <div>
                   <svg width="70" height="70" viewBox="0 0 70 70" fill="none" xmlns="http://www.w3.org/2000/svg">
