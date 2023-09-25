@@ -48,6 +48,7 @@ class UserController extends Controller
     private $payment;
     protected $tripStatus;
     protected $quoteStatus;
+    protected $currencies;
     protected $status;
     protected $userStatus;
     protected $curFormatDate;
@@ -64,6 +65,7 @@ class UserController extends Controller
 
         $this->quoteStatus = config('constants.QUOTE_STATUS');
         $this->status = config('constants.QUOTE_STATUS');
+        $this->currencies = config('constants.CURRENCIES');
         $this->userStatus = config('constants.USER_STATUS');
         $this->curFormatDate = Carbon::now()->format('Y-m-d');
     }
@@ -165,8 +167,12 @@ class UserController extends Controller
                 $data['adminsCount']    = User::where('role', user_roles('1'))->count();
                 $data['clientsCount']   = User::where('role', user_roles('2'))->count();
                 $data['driversCount']   = User::where('role', user_roles('3'))->count();
-                $data['revenue']        = Invoice::where('status', $this->status['Completed'])->sum('amount');
-
+                $data['revenue']        = Invoice::where('status', $this->status['Completed'])
+                                            ->whereIn('currency_code', array_keys($this->currencies))
+                                            ->groupBy('currency_code')
+                                            ->select('currency_code', DB::raw('SUM(amount) as total_amount'))
+                                            ->pluck('total_amount', 'currency_code')
+                                            ->toArray();
                 $data['totalQuotion']         = Quotation::count();
                 $data['totalInvoice']         = Invoice::count();
                 $data['completedContract']    = Contract::where('status', $this->status['Completed'])->count();
