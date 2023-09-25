@@ -20,7 +20,8 @@ return new class extends Migration
             $table->integer('admin_id');
             $table->integer('user_id');
             $table->string('client_name');
-            $table->integer('service_id');
+            // $table->text('service_id');
+            $table->text('service_data');
             $table->integer('amount');
             $table->string('file')->nullable();
             $table->string('currency_code')->nullable();

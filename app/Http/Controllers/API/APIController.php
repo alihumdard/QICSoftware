@@ -1285,31 +1285,30 @@ class APIController extends Controller
 
     public function quotation_store(Request $request): JsonResponse
     {
-        // $validator = Validator::make($request->all(), [
-        //     'title' => 'required',
-        //     'desc' => 'required',
-        //     'type' => 'required',
-        //     'price' => 'required',
-        //     'users' => 'required',
-        //     'drivers' => 'required',
-        //     'map_api_call' => 'required'
-        // ]);
-    
-        // if ($validator->fails()) {
-        //     return response()->json(['status' => 'error', 'message' => $validator->errors()]);
-        // }
     
         try {
             $quotation = ($request->id) ? Quotation::find($request->id) : new Quotation(); 
              
             $isExistQuotation = $quotation->exists;
 
+            $combinedArray = [];
+
+            $serviceIds = $request->service_id;
+            $sAmounts = $request->s_amount;
+
+            for ($i = 0; $i < count($serviceIds); $i++) {
+                $combinedArray[] = [
+                    'service_id' => $serviceIds[$i],
+                    's_amount'   => $sAmounts[$i],
+                ];
+            }
+            
             $quotation->date          = $request->date;
             $quotation->admin_id      = $request->admin_id;
             $quotation->user_id       = $request->user_id;
             $quotation->currency_code = $request->currency_code;
             $quotation->location      = $request->location;
-            $quotation->service_id    = $request->service_id;
+            $quotation->service_data  = !empty($combinedArray) ? json_encode($combinedArray, JSON_FORCE_OBJECT) : null;
             $quotation->desc          = $request->desc;
             $quotation->client_name   = $request->client_name;
             $quotation->amount        = $request->amount;

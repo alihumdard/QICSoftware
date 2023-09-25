@@ -136,10 +136,10 @@ $currencies = config('constants.CURRENCIES');
                             <span id="user_id_error" class="error-message text-danger"></span>
                         </div>
                         @else
-                        <input type="hidden" name="user_id" id="user_id" value="{{$user->id}}" />               
+                        <input type="hidden" name="user_id" id="user_id" value="{{$user->id}}" />
                         @endif
 
-                        <div class="col-lg-{{ ($user->role == user_roles('3')) ? (($user->role == user_roles('2')) ? '4' : '6') : '3' }} col-md-6 col-sm-12">
+                        <div class="col-lg-{{ ($user->role == user_roles('3')) ? (($user->role == user_roles('2')) ? '4' : '6') : '3' }} col-md-6 col-sm-12 my-2">
                             <label for="client_name">@lang('lang.client_name')</label>
                             <input required type="text" maxlength="100" name="client_name" id="client_name" value="{{ $data['client_name'] ?? '' }}" placeholder="@lang('lang.client_name')" class="form-control">
                             <span id="client_name_error" class="error-message text-danger"></span>
@@ -152,25 +152,10 @@ $currencies = config('constants.CURRENCIES');
                             <span id="q_desc_error" class="error-message text-danger"></span>
                         </div>
 
-                        <div class="col-lg-3 col-md-6  col-sm-12">
-                            <label for="service_id">@lang('Qoute Service')</label>
-                            <select required name="service_id" id="service_id" class="form-select">
-                                <option disabled selected> Select @lang('quote service')</option>
-                                @forelse($services as $key => $value)
-                                <option value="{{ $key}}" {{ isset($data['service_id']) && $data['service_id'] == $key ? 'selected' : '' }}>
-                                    {{ $value }}
-                                </option>
-                                @empty
-                                <!-- Code to handle the case when $driver_list is empty or null -->
-                                @endforelse
-                            </select>
-                            <span id="service_id_error" class="error-message text-danger"></span>
-                        </div>
-
-                        <div class="col-lg-3 col-md-6  col-sm-12">
-                            <label for="service_id">@lang('Qoute Location')</label>
+                        <div class="col-lg-3 col-md-6  col-sm-12 ">
+                            <label for="service_id">@lang('Quote Location')</label>
                             <select required name="location" id="location" class="form-select">
-                                <option disabled selected> Select @lang('lang.quote location')</option>
+                                <option disabled selected> Select @lang('quote location')</option>
                                 @forelse($location as $key => $value)
                                 <option value="{{ $key}}" {{ isset($data['location']) && $data['location'] == $key ? 'selected' : '' }}>
                                     {{ $value }}
@@ -182,13 +167,14 @@ $currencies = config('constants.CURRENCIES');
                             <span id="location_error" class="error-message text-danger"></span>
                         </div>
 
-                        <div class="col-lg-2 col-md-6 col-sm-12">
-                            <label for="q_amount">@lang('lang.quoted_amount')</label>
+                        <div class="col-lg-3 col-md-6 col-sm-12">
+                            <label for="q_amount">@lang('Total Amount')</label>
                             <input required type="number" min="1" name="amount" id="q_amount" value="{{ $data['amount'] ?? 1 }}" placeholder="@lang('lang.quoted_amount')" class="form-control">
                             <span id="q_amount_error" class="error-message text-danger"></span>
                         </div>
-                        <div class="col-lg-2 col-md-6 col-sm-12">
-                            <label for="currency_code">Currency Code</label>
+
+                        <div class="col-lg-3 col-md-6 col-sm-12">
+                            <label for="currency_code">Currency</label>
                             <select required name="currency_code" id="currency_code" class="form-select">
                                 <option disabled selected> @lang('currency')</option>
                                 @forelse($currencies as $key => $value)
@@ -202,7 +188,7 @@ $currencies = config('constants.CURRENCIES');
                             <span id="currency_code_error" class="error-message text-danger"></span>
                         </div>
 
-                        <div class="col-lg-2 col-md-6 col-sm-12">
+                        <div class="col-lg-3 col-md-6 col-sm-12 ">
                             <label for="q_file">@lang('Upload File ')</label>
                             <label for="q_file" class="custom-button">
                                 <svg width="10" height="10" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -213,6 +199,80 @@ $currencies = config('constants.CURRENCIES');
                             <input type="file" id="q_file" name="file" multiple size="50" style="display: none;">
                             <p class="float-right mr-3" style="font-size: smaller;"><a href="{{ asset('storage/excel_files/template_for_scooble.xlsx') }}" download="template_for_scooble.xlsx">@lang('lang.download_sample')!</a></p>
                         </div>
+
+
+                        <div id="existing_row">
+                            @forelse( json_decode($data['service_data'] ?? '[]') as $key => $serv_data)
+                            <div class="row">
+
+                                @if($key == '0')
+                                <div class="col-lg-1 col-md-12 col-sm-12 order-lg-last">
+                                    <label class="d-none d-lg-block">Add</label>
+                                    <span class="fw-bold btn btn-success btn-block text-center" id="btn_addNewRow"> + </span>
+                                </div>
+                                @else
+                                <div class="col-lg-1 col-md-12 col-sm-12 order-lg-last">
+                                    <label class="d-none d-lg-block">Remove</label>
+                                    <span class="fw-bold btn_removeRow btn btn-danger btn-block"> - </span>
+                                </div>
+                                @endif
+
+                                <div class="col-lg-3 col-md-6  col-sm-12 ">
+                                    <label for="service_id">@lang('Service')</label>
+                                    <select required name="service_id[]" class="form-select service_id ">
+                                        <option disabled selected> Select @lang('quote service')</option>
+                                        @forelse($services as $key => $value)
+                                        <option value="{{ $key}}" {{ isset($serv_data->service_id) && $serv_data->service_id == $key ? 'selected' : '' }}>
+                                            {{ $value }}
+                                        </option>
+                                        @empty
+                                        <!-- Code to handle the case when $driver_list is empty or null -->
+                                        @endforelse
+                                    </select>
+                                    <span class="error-message text-danger service_id_error"></span>
+                                </div>
+                                <div class="col-lg-3 col-md-6 col-sm-12">
+                                    <label for="q_amount">@lang('Service Amount')</label>
+                                    <input required type="number" min="1" name="s_amount[]" value="{{ $serv_data->s_amount ?? 1 }}" placeholder="@lang('serivce amount')" class="form-control s_amount">
+                                    <span class="error-message text-danger s_amount_error "></span>
+                                </div>
+                            </div>
+                            @empty
+
+                            <div class="row">
+                                <div class="col-lg-1 col-md-12 col-sm-12 order-lg-last">
+                                    <label class="d-none d-lg-block">Add</label>
+                                    <span class="fw-bold btn btn-success btn-block text-center" id="btn_addNewRow"> + </span>
+                                </div>
+
+                                <div class="col-lg-3 col-md-6  col-sm-12 ">
+                                    <label for="service_id">@lang('Service')</label>
+                                    <select required name="service_id[]" class="form-select service_id ">
+                                        <option disabled selected> Select @lang('quote service')</option>
+                                        @forelse($services as $key => $value)
+                                        <option value="{{ $key}}" {{ isset($serv_data->service_id) && $serv_data->service_id == $key ? 'selected' : '' }}>
+                                            {{ $value }}
+                                        </option>
+                                        @empty
+                                        <!-- Code to handle the case when $driver_list is empty or null -->
+                                        @endforelse
+                                    </select>
+                                    <span   class="error-message text-danger service_id_error"></span>
+                                </div>
+
+                                <div class="col-lg-3 col-md-6 col-sm-12">
+                                    <label for="q_amount">@lang('Service Amount')</label>
+                                    <input required type="number"  min="1" name="s_amount[]" value="{{ $serv_data->s_amount ?? 1 }}" placeholder="@lang('serivce amount')" class="form-control s_amount">
+                                    <span class="error-message text-danger s_amount_error "></span>
+                                </div>
+                            </div>
+                            <!-- Code to handle the case when $driver_list is empty or null -->
+                            @endforelse
+                        </div>
+                        <div id="new_rowdata">
+                            <!-- dynamic row added -->
+                        </div>
+
                     </div>
 
                     <div class="mt-3">
@@ -241,7 +301,47 @@ $currencies = config('constants.CURRENCIES');
 
 <!-- viewlocation Modal End -->
 <script>
+    var newRow = `
+            <div class="row mt-md-3 mt-sm-3 mt-3">
+                <div class="col-lg-1 col-md-12 col-sm-12 order-lg-last">
+                    <label class="d-none d-lg-block">Remove</label>
+                    <span class="fw-bold btn_removeRow btn btn-danger btn-block" > - </span>
+                </div>
+                <div class="col-lg-3 col-md-6  col-sm-12">
+                    <label for="service_id">@lang('Service')</label>
+                    <select required name="service_id[]"  class="form-select service_id">
+                        <option disabled selected> Select @lang('quote service')</option>
+                        @forelse($services as $key => $value)
+                        <option value="{{ $key}}" >
+                            {{ $value }}
+                        </option>
+                        @empty
+                        <!-- Code to handle the case when $driver_list is empty or null -->
+                        @endforelse
+                    </select>
+                    <span  class="error-message text-danger service_id_error"></span>
+                </div>
+
+                <div class="col-lg-3 col-md-6 col-sm-12">
+                    <label for="q_amount">@lang('Service Aamount')</label>
+                    <input required type="number" min="1" name="s_amount[]"  value="" placeholder="@lang('service amount')" class="form-control s_amount">
+                    <span  class="error-message text-danger s_amount_error"></span>
+                </div>
+
+            </div>
+            `;
+
     $(document).ready(function() {
+
+        $('#btn_addNewRow').on('click', function() {
+            $('#new_rowdata').append(newRow);
+        });
+
+        $(document).on('click', '.btn_removeRow', function() {
+            $(this).closest('.row').fadeOut('slow', function() {
+                $(this).remove();
+            });
+        });
 
         const maxLength = 250;
         const textarea = $('#q_desc');
@@ -281,14 +381,43 @@ $currencies = config('constants.CURRENCIES');
             var userId = $('#user_id').val();
             var client_name = $('#client_name').val();
             var q_desc = $('#q_desc').val();
-            var service_id = $('#service_id').val();
             var q_amount = $('#q_amount').val();
             var currency_code = $('#currency_code').val();
             var location = $('#location').val();
 
             // Reset error messages
             $('.error-message text-danger').text('');
+            var hasEmptyDropdown = false; 
+            var hasEmptyservice = false; 
 
+            $('.service_id_error').each(function() {
+                var selectedValue = $(this).prev('.service_id').val();
+                if (selectedValue === null || selectedValue === '') {
+                    $(this).text('*Please select a service.');
+                    hasEmptyDropdown = true; 
+                } else {
+                    $(this).text(''); 
+                }
+            });
+
+            $('.s_amount_error').each(function() {
+                var s_amount = $(this).prev('.s_amount').val();
+                if (s_amount == null || s_amount == '') {
+                    $(this).text('*Please select a quote amount.');
+                    hasEmptyservice = true; 
+                } else {
+                    $(this).text(''); 
+                }
+            });
+
+            if (hasEmptyDropdown) {
+                event.preventDefault(); 
+            }
+            
+            if (hasEmptyservice) {
+                event.preventDefault(); 
+            }
+            
             if (qDate === '') {
                 $('#q_date_error').text('*Please enter a quatation date.');
                 event.preventDefault();
@@ -307,17 +436,17 @@ $currencies = config('constants.CURRENCIES');
             if (client_name == '') {
                 $('#client_name_error').text('*Please enter client name.');
                 event.preventDefault();
-            }            
-            
+            }
+
             if (q_desc == '') {
                 $('#q_desc_error').text('*Please enter client description.');
                 event.preventDefault();
-            }            
-            
-            if (service_id === null) {
-                $('#service_id_error').text('*Please select a service.');
-                event.preventDefault();
             }
+
+            // if (service_id === null) {
+            //     $('#service_id_error').text('*Please select a service.');
+            //     event.preventDefault();
+            // }
 
             if (q_amount == '') {
                 $('#q_amount_error').text('*Please enter quoted ammount.');
@@ -337,6 +466,19 @@ $currencies = config('constants.CURRENCIES');
         });
 
 
+        $('.s_amount').on('input', function() {
+    $('.s_amount_error').each(function() {
+        var s_amount = $(this).prev('.s_amount').val();
+        if (s_amount == null || s_amount == '') {
+            $(this).text('*Please enter a quote amount.');
+        } else {
+            $(this).text('');
+        }
+    });
+});
+
+
+
 
         $('#q_date').on('input', function() {
             $('#q_date_error').text('');
@@ -349,7 +491,7 @@ $currencies = config('constants.CURRENCIES');
         $('#user_id').on('change', function() {
             $('#user_id_error').text('');
         });
-        
+
         $('#currency_code').on('change', function() {
             $('#currency_code_error').text('');
         });
