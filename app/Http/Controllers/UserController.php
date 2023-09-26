@@ -91,37 +91,12 @@ class UserController extends Controller
             // User roles: 1 for admin, 2 for client, 3 for driver
             if (isset($user->role) && $user->role == user_roles('2')) {
 
-                        $data['user']           = $user;
-                        $data['drivers'] = User::where(['role' => user_roles('3'), 'client_id' => $user->id, 'status' => $this->userStatus['Active']])
-                            ->select('id', 'name', 'user_pic')
-                            ->addSelect(DB::raw('ROUND(((
-                            SELECT COUNT(*) 
-                            FROM trips 
-                            WHERE trips.driver_id = users.id 
-                            AND DATE(trip_date) = CURDATE() 
-                            AND status = 1
-                        ) / (
-                            SELECT COUNT(*) 
-                            FROM trips 
-                            WHERE trips.driver_id = users.id 
-                            AND DATE(trip_date) = CURDATE() 
-                            AND status IN (1, 2)
-                        )) * 100, 2) as driv_active_percentage'))
-                            ->get()
-                            ->toArray();
-
-                        $data['driversCount'] = count($data['drivers'] ?? []);
-
-                        $data['activeRoutes'] = Trip::with(['user:id,name', 'driver:id,name'])
-                            ->whereHas('user', function ($query) use ($user) {
-                                $query->where('id', $user->id);
-                            })->whereDate('trip_date', $this->curFormatDate)->where('status', $this->tripStatus['In Progress'])
-                            ->get(['id', 'title', 'desc', 'trip_date', 'driver_id', 'client_id', 'status'])
-                            ->toArray();
-
-                        
-                $data['totalQuotion']         = Quotation::where('admin_id',$user->id)->count();
-                $data['totalInvoice']         = Invoice::where('admin_id',$user->id)->count();
+                $data['user']         = $user;
+                $data['drivers']      = User::where(['role' => user_roles('3'), 'client_id' => $user->id, 'status' => $this->userStatus['Active']])->select('id', 'name', 'user_pic')->get()->toArray();
+                $data['driversCount'] = count($data['drivers'] ?? []);
+            
+                $data['totalQuotion']     = Quotation::where('admin_id',$user->id)->count();
+                $data['totalInvoice']     = Invoice::where('admin_id',$user->id)->count();
                 $data['totalContract']    = Contract::where('admin_id',$user->id)->count();
 
                 $data['totalTodayQT']   = Quotation::whereDate('date', $this->curFormatDate)->whereIn('status', [$this->status['Pending'],$this->status['In Progress']])->where('admin_id',$user->id)->count();
@@ -135,28 +110,38 @@ class UserController extends Controller
                 $data['totalTodayINV']   = Invoice::whereDate('date', $this->curFormatDate)->whereIn('status', [$this->status['Pending'],$this->status['In Progress']])->where('admin_id',$user->id)->count();
                 $data['TodayINVcomp']    = Invoice::whereDate('date', $this->curFormatDate)->whereIn('status', [$this->status['In Progress']])->where('admin_id',$user->id)->count();
                 $data['compINV_percent'] = $data['totalTodayINV'] > 0 ? round(($data['TodayCTcomp'] / $data['TodayINVcomp']) * 100, 1) : 0;
-                        return view('client_dashboard', $data);
+                
+                $data['activeQuotes']   = Quotation::with(['admins:id,name', 'users:id,name'])
+                ->whereDate('date', $this->curFormatDate)
+                ->where(['status' => $this->status['In Progress'] , 'admin_id'=> $user->id])
+                ->get(['id','desc', 'client_name', 'date', 'user_id', 'admin_id', 'status'])
+                ->toArray();
+
+                // dd($data['activeQuotes']);
+                return view('client_dashboard', $data);
 
             } 
             else if (isset($user->role) && $user->role == user_roles('3')) {
                 $client = User::where(['role' => 'Client', 'id' => $user->client_id])->first();
                 if ($client) {
 
-                            $data['activeRoutes'] = Trip::with('driver:id,name')
-                                ->whereHas('driver', function ($query) use ($user) {
-                                    $query->where('id', $user->id);
-                                })->whereDate('trip_date', $this->curFormatDate)->get(['id', 'title', 'desc', 'trip_date', 'driver_id', 'client_id', 'status'])->toArray();
+                    $data['user']           = $user;
+                                            
+                    $data['totalQuotion']         = Quotation::where('user_id',$user->id)->count();
+                    $data['totalInvoice']         = Invoice::where('user_id',$user->id)->count();
+                    $data['totalContract']    = Contract::where('user_id',$user->id)->count();
 
-                            $data['user']           = $user;
-                                                    
-                            $data['totalQuotion']         = Quotation::where('user_id',$user->id)->count();
-                            $data['totalInvoice']         = Invoice::where('user_id',$user->id)->count();
-                            $data['totalContract']    = Contract::where('user_id',$user->id)->count();
+                    $data['completedCOT_detail']  = Contract::where([['status', $this->status['Completed']], ['user_id', $user->id]])->get()->toArray();
 
-                            $data['completedCOT_detail']  = Contract::where([['status', $this->status['Completed']], ['user_id', $user->id]])->get()->toArray();
+                    $data['completedTrips'] = count($data['completedTrips_detail'] ?? []);
+                    
+                    $data['activeQuotes']   = Quotation::with(['admins:id,name', 'users:id,name'])
+                    ->whereDate('date', $this->curFormatDate)
+                    ->where(['status' => $this->status['In Progress'] , 'user_id'=> $user->id])
+                    ->get(['id','desc', 'client_name', 'date', 'user_id', 'admin_id', 'status'])
+                    ->toArray();
 
-                            $data['completedTrips'] = count($data['completedTrips_detail'] ?? []);
-                            return view('driver_dashboard', $data);
+                    return view('driver_dashboard', $data);
                     
                 } else {
                     return redirect('/login');
@@ -188,8 +173,9 @@ class UserController extends Controller
                 $data['totalTodayINV']   = Invoice::whereDate('date', $this->curFormatDate)->whereIn('status', [$this->status['Pending'],$this->status['In Progress']])->count();
                 $data['TodayINVcomp']    = Invoice::whereDate('date', $this->curFormatDate)->whereIn('status', [$this->status['In Progress']])->count();
                 $data['compINV_percent'] = $data['totalTodayINV'] > 0 ? round(($data['TodayCTcomp'] / $data['totalTodayINV']) * 100, 1) : 0;
-                
-                $data['activeRoutes']   = Trip::with('user:id,name')->whereDate('trip_date', $this->curFormatDate)->where('status', $this->tripStatus['In Progress'])->get(['id', 'title', 'desc', 'trip_date', 'driver_id', 'client_id', 'status'])->toArray();
+
+                $data['activeQuotes']   = Quotation::with('admins:id,name')->whereDate('date', $this->curFormatDate)->where('status', $this->status['In Progress'])->get(['id','desc', 'client_name', 'date', 'user_id', 'admin_id', 'status'])->toArray();
+
                 return view('index', $data);
             }
         } else {

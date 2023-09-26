@@ -83,7 +83,6 @@ return [
         6 => 'Other'
     ],
 
-    
     'INVOICES' => [
         1 => 'Weekly',
         2 => 'Monthly',

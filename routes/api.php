@@ -73,6 +73,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::match(['post','get'],'/invoiceDetail', [APIController::class, 'invoice_detail']);
 
     Route::match(['post','get'],'/contractDetail', [APIController::class, 'contract_detail']);
+
+    Route::match(['post','get'],'/dashboardCharts', [APIController::class, 'dashboardCharts']);
     
 
 });
