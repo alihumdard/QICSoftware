@@ -52,8 +52,10 @@ class User extends Authenticatable
     {
         return $this->hasMany(Payment::class, 'created_by');
     }
+
     public function trips()
     {
         return $this->hasMany(Trip::class, 'client_id');
     }
+
 }

@@ -48,7 +48,7 @@
 
     // Function to make the AJAX call and update the charts
     function updateCharts(selectedDate, user_id) {
-        var apiname = 'trip_charts';
+        var apiname = 'dashboardCharts';
         var apiurl = "{{ end_url('') }}" + apiname;  
         var bearerToken = "{{session('user')}}";
 
@@ -70,9 +70,9 @@
             success: function(response) {
                 if (response.status === 'success') {
                     var data = response.data; // Access the 'data' object from the response
-                    drawChart("canvas", "procent",data.actvTrp_percentage,true);
-                    drawChart("canvas1", "procent1",data.compTrp_percentage,true);
-                    drawChart("canvas2", "procent2",data.pendTrp_percentage,true);
+                    drawChart("canvas", "procent",data.sentQuote_percent,true);
+                    drawChart("canvas1", "procent1",data.compCT_percent,true);
+                    drawChart("canvas2", "procent2",data.compINV_percent,true);
                 } else {
                     // Handle other status cases if needed
                 }
