@@ -54,7 +54,7 @@
         <h3>Dear, {{ $emailData['name'] }}</h3>
         <div class="message">
             <h3>{{ $emailData['body'] }}</h3>
-            <p>Your default password is: <strong>{{ $emailData['password'] }}</strong>.</p>
+            <p>Your default password is: <b>{{ $emailData['password'] }}</base64_decode></p>
             <p>You can log in to your account through this link: <strong><a href="{{ URL::to('/login') }}">Login</a></strong>.</p>
         </div>
         <div class="footer">

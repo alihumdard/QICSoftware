@@ -53,10 +53,10 @@
               </div>
               @if($add_as_user == user_roles('3') && $user->role == user_roles('1'))
               <div class="col-lg-6 mb-2">
-                <label for="com_pic">@lang('lang.client')</label>
+                <label for="com_pic">@lang('lang.admin')</label>
                 <select name="client_id" id="client_id" class="form-select">
-                  <option disabled selected>@lang('lang.select_client') </option>
-                  @foreach($client_list as $value)
+                  <option disabled selected>@lang('select admins') </option>
+                  @foreach($admins_list as $value)
                   <option value="{{ $value['id'] }}" {{ isset($data['client_id']) && $data['client_id'] == $value['id'] ? 'selected' : '' }}>
                     {{ $value['name'] }}
                   </option>
@@ -210,21 +210,13 @@
             </button>
           <div class="mt-3">
             <h6>@lang('lang.really_want_to_delete_client')</h6>
-            <p>@lang('lang.client_has_assigned_drivers_trips_what_to_do_with_them')</p>
+            <p>@lang('Admin has assigned Users what to do with them')</p>
           </div>
           <form method="post" id="DeleteData" action="deleteUsers">
               <input type="hidden" id="user_id" name="id">
               <input type="hidden" id="deleted_by" name="deleted_by" value="{{ $login_userId ?? ''}}">
               <div class="mt-3">
-                <input type="checkbox" name="delete_all_drivers" id="delete_all_drivers"> @lang('lang.delete_all_drivers')
-              </div>
-              <div class="mt-3">
-                <select class="form-select" name="choose_options" id="choose_options">
-                  <option value="">@lang('lang.choose_additional_options')</option>
-                  <option value="assigned">@lang('lang.delete_all_assigned_trips')</option>
-                  <option value="completed">@lang('lang.delete_completed_trips')</option>
-                  <option value="">@lang('lang.Dont_delete_any_trips')</option>
-                </select>
+                <input type="checkbox" name="delete_all_user" id="delete_all_drivers"> @lang('Delete his all users')
               </div>
               <div class="row mt-3 text-center">
                 <div class="col-lg-6">
@@ -253,24 +245,13 @@
             </button>
 
             <div class="mt-3">
-              <h6>@lang('lang.really_want_to_delete_driver')</h6>
-              <p>@lang('lang.driver_has_assigned_trips_what_to_do_with_them')</p>
+              <h6>@lang('Really want to delete that user')</h6>
             </div>
 
             <form method="post" id="DeleteData" action="deleteUsers">
                <input type="hidden" id="user_id" name="id">
                <input type="hidden" id="deleted_by" name="deleted_by" value="{{ $login_userId ?? ''}}">
               <div class="my-2">
-                <div>
-                  <input type="checkbox" name="assigned"> @lang('lang.delete_all_assigned_trips')
-                </div>
-                <div>
-                  <input type="checkbox" name="completed"> @lang('lang.delete_completed_trips')
-                </div>
-                <div>
-                  <input type="checkbox" name="dont_delete"> @lang('lang.dont_delete_any_trips')
-                </div>
-              </div>
               <div class="row mt-3 text-center">
                 <div class="col-lg-6">
                   <button data-dismiss="modal" type="button" class="btn btn-sm btn-outline px-5 closeModalButton" style="background-color: #ffffff; border: 1px solid #D0D5DD; border-radius: 8px; width: 100%;">@lang('lang.cancel')</button>

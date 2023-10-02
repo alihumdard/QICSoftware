@@ -194,7 +194,6 @@ $location = config('constants.LOCATIONS');
 </div>
 <!-- content-wrapper ends -->
 
-
 <!-- Quote Status Modal -->
 <div class="modal fade" id="qoute_sts_modal" tabindex="-1" aria-labelledby="user_stsLabel" aria-hidden="true">
   <div class="modal-dialog">
@@ -276,8 +275,6 @@ $location = config('constants.LOCATIONS');
 </script>
 @endif
 <script>
-
-
   function downloadPDF() {
     // Create a link element
     var link = document.createElement('a');

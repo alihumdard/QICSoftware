@@ -32,7 +32,7 @@ class otpVerifcation extends Mailable
     public function envelope()
     {
         return new Envelope(
-            subject: 'QIC Software Updates',
+            subject: 'TSP CRM Updates',
         );
     }
 
