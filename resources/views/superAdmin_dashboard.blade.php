@@ -147,7 +147,7 @@ $quote_status = config('constants.QUOTE_STATUS_' . app()->getLocale());
             <div class="d-flex justify-content-between">
               <div>
                 <h6 style="color: #452C88;"><span>@lang('lang.admins')</span></h6>
-                <h5 style="color: #E45F00;">{{ $clientsCount ?? $clientsCount}}</h5>
+                <h5 style="color: #E45F00;">{{ $adminsCount ?? $adminsCount}}</h5>
               </div>
               <div>
                 <svg width="70" height="71" viewBox="0 0 70 71" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -170,7 +170,7 @@ $quote_status = config('constants.QUOTE_STATUS_' . app()->getLocale());
             <div class="d-flex justify-content-between">
               <div>
                 <h6 style="color: #452C88;"><span>@lang('lang.users')</span></h6>
-                <h5 style="color: #E45F00;">{{ $driversCount ?? $driversCount}}</h5>
+                <h5 style="color: #E45F00;">{{ $usersCount ?? $usersCount}}</h5>
               </div>
               <div>
                 <svg width="70" height="71" viewBox="0 0 70 71" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -293,20 +293,16 @@ $quote_status = config('constants.QUOTE_STATUS_' . app()->getLocale());
           </div>
           <div class="row mt-4 text-right">
             <div class="offset-lg-5 col-lg-5 col-md-5">
-              <div class="row">
+              <!-- <div class="row">
                 <div class="col-lg-8 col-xl-8 col-sm-6 text-left text-lg-right text-xl-right text-sm-right">
                   <span class="text-muted font-weight-semibold">@lang('lang.previous_month'):</span>
                 </div>
                 <div class="col-lg-4 col-xl-4 col-sm-6">
                   <input type="month" class=" date-input" value="{{ date('Y-m') }}" id="monthPickerInput">
                 </div>
-                <!-- <b>{{ date('F, Y', strtotime('previous month')) }}</b>
-                  <span style="border: 1px solid #ACADAE; cursor: pointer ;padding: 0px 6px;">
-                    <i class="fa fa-caret-down"></i>
-                  </span> -->
-              </div>
+              </div> -->
             </div>
-            <canvas id="Chart-Line" class="mb-2 admin-chart"></canvas>
+            <!-- <canvas id="Chart-Line" class="mb-2 admin-chart"></canvas> -->
           </div>
         </div>
         <div class="col-lg-12 col-xl-4 col-md-12">

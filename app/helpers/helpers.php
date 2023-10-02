@@ -15,11 +15,11 @@ function end_url(){
 function user_roles($role_no){
     switch ($role_no) {
         case 1:
-            return 'Admin';
+            return 'Super Admin';
         case 2:
-            return 'Client';
+            return 'Admin';
         case 3:
-            return 'Driver';
+            return 'User';
         default:
             return false;
     }    
@@ -39,11 +39,11 @@ function active_users(){
 
 function user_role_no($role_no){
     switch ($role_no) {
-        case 'Admin':
+        case 'Super Admin':
             return 1;
-        case 'Client':
+        case 'Admin':
             return 2;
-        case 'Driver':
+        case 'User':
             return 3 ;
         default:
             return false;
@@ -54,61 +54,43 @@ function view_permission($page_name) {
     $user_role = session('user_details')->role;
     switch ($user_role) {
         
+        case 'Super Admin':
+            switch ($page_name) {
+                case 'index':
+                case 'settings':
+                case 'quotations':
+                case 'invoices':
+                case 'admins':
+                case 'users':
+                case 'add_quotation':
+                case 'add_contract':
+                case 'add_invoice':
+                case 'contracts':
+                case 'super_admins': 
+                case 'logout': 
+                    return true;
+                default:
+                    return false;
+            }
+
         case 'Admin':
             switch ($page_name) {
                 case 'index':
                 case 'settings':
                 case 'quotations':
                 case 'invoices':
-                case 'clients':
-                case 'drivers':
-                case 'add_quotation':
-                case 'add_contract':
-                case 'add_invoice':
-                case 'contracts':
-                // case 'calender':
-                case 'routes':    
                 case 'users':
-                // case 'announcements':
-                // case 'notifications': 
-                case 'create_trip':     
-            // case 'announcements_alerts': 
-                // case 'pdf_templates': 
-                // case 'packages': 
-                case 'logout': 
-                // case 'calendar_maintable': 
-
-                    return true;
-                default:
-                    return false;
-            }
-
-        case 'Client':
-            switch ($page_name) {
-                case 'index':
-                case 'settings':
-                case 'quotations':
-                case 'invoices':
-                case 'drivers':
-                case 'routes':
                 case 'add_quotation':
                 case 'add_contract':
                 case 'add_invoice':
                 case 'contracts':
-                // case 'calender':      
-                // case 'notifications':    
-                case 'create_trip': 
                 case 'logout': 
-                // case 'home': 
-                // case 'subscription':
-                // case 'calendar_maintable': 
-
                     return true;
                 default:
                     return false;
             }
 
-        case 'Driver':
+        case 'User':
             switch ($page_name) {
                 case 'index':
                 case 'settings':
@@ -117,13 +99,8 @@ function view_permission($page_name) {
                 case 'add_quotation':
                 case 'add_invoice':
                 case 'add_contract':
-                case 'routes': 
-                case 'create_trip': 
-                // case 'calender':    
-                // case 'notifications':    
                 case 'contracts':    
                 case 'logout':
-                // case 'calendar_maintable':
                     return true;
                     
                 default:

@@ -2,12 +2,7 @@
 
 @section('main-section')
 @php
-$tripStatus = config('constants.TRIP_STATUS');
-$tripStatus_trans = config('constants.TRIP_STATUS_' . app()->getLocale());
-$expDate = strtotime($user->sub_exp_date);
 $currentDate = time();
-$secondsLeft = $expDate - $currentDate;
-$daysLeft = ceil($secondsLeft / (60 * 60 * 24));
 @endphp
 <style>
     .position-absolute {
@@ -132,7 +127,7 @@ $daysLeft = ceil($secondsLeft / (60 * 60 * 24));
                         <div class="d-flex justify-content-between">
                             <div>
                                 <h6 style="color: #452C88;"><span>@lang('Active Users')</span></h6>
-                                <h5 style="color: #E45F00;">{{ $driversCount ?? $driversCount}}</h5>
+                                <h5 style="color: #E45F00;">{{ $usersCount ?? $usersCount}}</h5>
                             </div>
                             <div>
                                 <svg width="70" height="71" viewBox="0 0 70 71" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -280,7 +275,7 @@ $daysLeft = ceil($secondsLeft / (60 * 60 * 24));
                                 content: '%';
                             }
                         </style>
-                        @foreach($drivers as $key => $value)
+                        @foreach($users as $key => $value)
                         <div class="col-lg-4 col-md-4 mb-3">
                             <div class="prgrss-chart" style="box-shadow: 0px 0px 3px 0.75px rgba(0,0,0,0.25); 
                                     -webkit-box-shadow: 0px 0px 3px 0.75px rgba(0,0,0,0.25);
@@ -341,10 +336,10 @@ $daysLeft = ceil($secondsLeft / (60 * 60 * 24));
                             }
 
                             // Call the arcMove function for each chart with unique IDs.
-                            @foreach($drivers as $key => $value)
+                            @foreach($users as $key => $value)
                             arcMove('can{{ $key }}', 'pro{{ $key }}', {
                                 {
-                                    $value['driv_active_percentage'] ?? 0
+                                    $value['user_quote_percentage'] ?? 0
                                 }
                             });
                             @endforeach

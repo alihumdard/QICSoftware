@@ -34,8 +34,7 @@ class UserProfileEmail implements ShouldQueue
      */
     public function handle()
     {
-
         $mail = new UserProfile($this->emailData);
-        Mail::to($this->emailData['email'])->send($mail);
+        $send = Mail::to($this->emailData['email'])->send($mail);
     }
 }

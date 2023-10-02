@@ -23,7 +23,7 @@ class UserTableSeeder extends Seeder
                 'name' => 'Super Admin',
                 'email' => 'superadmin@gmail.com',
                 'password' => Hash::make('12345'),
-                'role' => 'Admin',
+                'role' => 'Super Admin',
                 'status' => '1',
             ]);
     
@@ -32,7 +32,7 @@ class UserTableSeeder extends Seeder
                 'name' => 'Admin',
                 'email' => 'admin@gmail.com',
                 'password' => Hash::make('12345'),
-                'role' => 'Client',
+                'role' => 'Admin',
                 'added_user_id' => '1',
                 'status' => '1',
                 'sub_exp_date' => Carbon::now()->addDays(30),
@@ -40,10 +40,10 @@ class UserTableSeeder extends Seeder
     
             // Create a driver user
             User::factory()->create([
-                'name' => 'User ',
+                'name' => 'User',
                 'email' => 'user@gmail.com',
                 'password' => Hash::make('12345'),
-                'role' => 'Driver',
+                'role' => 'User',
                 'added_user_id' => '1',
                 'client_id' => '2',
                 'status' => '1'

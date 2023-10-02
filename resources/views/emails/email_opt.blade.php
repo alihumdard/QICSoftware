@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Scooble Updates</title>
+    <title>TSP Updates</title>
     <style>
         body {
             font-family: Arial, sans-serif;

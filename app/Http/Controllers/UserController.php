@@ -6,7 +6,6 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Client\ConnectionException;
 use App\Models\User;
 use App\Mail\otpVerifcation;
-use App\Mail\SubscriptionPurchased;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Hash;
@@ -18,16 +17,9 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
-use App\Models\Announcement;
-use App\Models\Package;
 use App\Models\Notification;
 use Illuminate\Foundation\Auth\Authenticatable;
 use Carbon\Carbon;
-use App\Models\Trip;
-use App\Models\Address;
-use Omnipay\Omnipay;
-use App\Models\Payment;
-use App\Jobs\SendSubscriptionPurchasedEmail;
 use App\Jobs\SendEmailVerificationJob;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
@@ -42,11 +34,7 @@ class UserController extends Controller
 {
 
     public $api;
-
-    private $gateway;
     private $user;
-    private $payment;
-    protected $tripStatus;
     protected $quoteStatus;
     protected $currencies;
     protected $status;
@@ -57,12 +45,6 @@ class UserController extends Controller
     {
         $this->user = auth()->user();
         $this->api = new APIController();
-        $this->gateway = Omnipay::create('PayPal_Rest');
-        $this->gateway->setClientId(config('constants.PAYPAL.CLIENT_ID'));
-        $this->gateway->setSecret(config('constants.PAYPAL.CLIENT_SECRET'));
-        $this->gateway->setTestMode(true);
-        $this->tripStatus = config('constants.TRIP_STATUS');
-
         $this->quoteStatus = config('constants.QUOTE_STATUS');
         $this->status = config('constants.QUOTE_STATUS');
         $this->currencies = config('constants.CURRENCIES');
@@ -88,118 +70,109 @@ class UserController extends Controller
             $now = Carbon::now('Asia/Karachi');
             $current_date = $now->format('Y-m-d H:i:s');
             $currentDate = Carbon::now();
-            // User roles: 1 for admin, 2 for client, 3 for driver
+            // User roles: 1 for Super Admin, 2 for Admin, 3 for User
             if (isset($user->role) && $user->role == user_roles('2')) {
 
                 $data['user']         = $user;
-                $data['drivers']      = User::where(['role' => user_roles('3'), 'client_id' => $user->id, 'status' => $this->userStatus['Active']])->select('id', 'name', 'user_pic')->get()->toArray();
-                $data['driversCount'] = count($data['drivers'] ?? []);
-            
-                $data['totalQuotion']     = Quotation::where('admin_id',$user->id)->count();
-                $data['totalInvoice']     = Invoice::where('admin_id',$user->id)->count();
-                $data['totalContract']    = Contract::where('admin_id',$user->id)->count();
+                $data['users']      = User::where(['role' => user_roles('3'), 'client_id' => $user->id, 'status' => $this->userStatus['Active']])->select('id', 'name', 'user_pic')->get()->toArray();
+                $data['usersCount'] = count($data['users'] ?? []);
+                $data['user_quote_percentage'] = 0;
+                $data['totalQuotion']     = Quotation::where('admin_id', $user->id)->count();
+                $data['totalInvoice']     = Invoice::where('admin_id', $user->id)->count();
+                $data['totalContract']    = Contract::where('admin_id', $user->id)->count();
 
-                $data['totalTodayQT']   = Quotation::whereDate('date', $this->curFormatDate)->whereIn('status', [$this->status['Pending'],$this->status['In Progress']])->where('admin_id',$user->id)->count();
-                $data['TodayQTsent']    = Quotation::whereDate('date', $this->curFormatDate)->whereIn('status', [$this->status['In Progress']])->where('admin_id',$user->id)->count();
+                $data['totalTodayQT']   = Quotation::whereDate('date', $this->curFormatDate)->whereIn('status', [$this->status['Pending'], $this->status['In Progress']])->where('admin_id', $user->id)->count();
+                $data['TodayQTsent']    = Quotation::whereDate('date', $this->curFormatDate)->whereIn('status', [$this->status['In Progress']])->where('admin_id', $user->id)->count();
                 $data['sentQuote_percent'] = $data['totalTodayQT'] > 0 ? round(($data['TodayQTsent'] / $data['totalTodayQT']) * 100, 1) : 0;
 
-                $data['totalTodayCT']   = Contract::whereDate('end_date', $this->curFormatDate)->whereIn('status', [$this->status['Pending'],$this->status['In Progress'],$this->status['Completed']])->where('admin_id',$user->id)->count();
-                $data['TodayCTcomp']    = Contract::whereDate('end_date', $this->curFormatDate)->whereIn('status', [$this->status['Completed']])->where('admin_id',$user->id)->count();
+                $data['totalTodayCT']   = Contract::whereDate('end_date', $this->curFormatDate)->whereIn('status', [$this->status['Pending'], $this->status['In Progress'], $this->status['Completed']])->where('admin_id', $user->id)->count();
+                $data['TodayCTcomp']    = Contract::whereDate('end_date', $this->curFormatDate)->whereIn('status', [$this->status['Completed']])->where('admin_id', $user->id)->count();
                 $data['compCT_percent'] = $data['totalTodayCT'] > 0 ? round(($data['TodayCTcomp'] / $data['totalTodayQT']) * 100, 1) : 0;
 
-                $data['totalTodayINV']   = Invoice::whereDate('date', $this->curFormatDate)->whereIn('status', [$this->status['Pending'],$this->status['In Progress']])->where('admin_id',$user->id)->count();
-                $data['TodayINVcomp']    = Invoice::whereDate('date', $this->curFormatDate)->whereIn('status', [$this->status['In Progress']])->where('admin_id',$user->id)->count();
+                $data['totalTodayINV']   = Invoice::whereDate('date', $this->curFormatDate)->whereIn('status', [$this->status['Pending'], $this->status['In Progress']])->where('admin_id', $user->id)->count();
+                $data['TodayINVcomp']    = Invoice::whereDate('date', $this->curFormatDate)->whereIn('status', [$this->status['In Progress']])->where('admin_id', $user->id)->count();
                 $data['compINV_percent'] = $data['totalTodayINV'] > 0 ? round(($data['TodayCTcomp'] / $data['TodayINVcomp']) * 100, 1) : 0;
-                
+
                 $data['activeQuotes']   = Quotation::with(['admins:id,name', 'users:id,name'])
-                ->whereDate('date', $this->curFormatDate)
-                ->where(['status' => $this->status['In Progress'] , 'admin_id'=> $user->id])
-                ->get(['id','desc', 'client_name', 'date', 'user_id', 'admin_id', 'status'])
-                ->toArray();
-
-                // dd($data['activeQuotes']);
-                return view('client_dashboard', $data);
-
-            } 
-            else if (isset($user->role) && $user->role == user_roles('3')) {
-                $client = User::where(['role' => 'Client', 'id' => $user->client_id])->first();
-                if ($client) {
-
-                    $data['user']           = $user;
-                                            
-                    $data['totalQuotion']         = Quotation::where('user_id',$user->id)->count();
-                    $data['totalInvoice']         = Invoice::where('user_id',$user->id)->count();
-                    $data['totalContract']    = Contract::where('user_id',$user->id)->count();
-
-                    $data['completedCOT_detail']  = Contract::where([['status', $this->status['Completed']], ['user_id', $user->id]])->get()->toArray();
-
-                    $data['completedTrips'] = count($data['completedTrips_detail'] ?? []);
-                    
-                    $data['activeQuotes']   = Quotation::with(['admins:id,name', 'users:id,name'])
                     ->whereDate('date', $this->curFormatDate)
-                    ->where(['status' => $this->status['In Progress'] , 'user_id'=> $user->id])
-                    ->get(['id','desc', 'client_name', 'date', 'user_id', 'admin_id', 'status'])
+                    ->where(['status' => $this->status['In Progress'], 'admin_id' => $user->id])
+                    ->get(['id', 'desc', 'client_name', 'date', 'user_id', 'admin_id', 'status'])
                     ->toArray();
 
-                    return view('driver_dashboard', $data);
-                    
+                return view('admin_dashboard', $data);
+            } else if (isset($user->role) && $user->role == user_roles('3')) {
+                $admin = User::where(['role' => user_roles('2'), 'id' => $user->client_id])->first();
+                if ($admin) {
+
+                    $data['user']           = $user;
+                    $data['totalQuotion']   = Quotation::where('user_id', $user->id)->count();
+                    $data['totalInvoice']   = Invoice::where('user_id', $user->id)->count();
+                    $data['totalContract']  = Contract::where('user_id', $user->id)->count();
+                    $data['completedCOT_detail']  = Contract::where([['status', $this->status['Completed']], ['user_id', $user->id]])->get()->toArray();
+                    $data['completedTrips'] = count($data['completedTrips_detail'] ?? []);
+                    $data['activeQuotes']   = Quotation::with(['admins:id,name', 'users:id,name'])
+                        ->whereDate('date', $this->curFormatDate)
+                        ->where(['status' => $this->status['In Progress'], 'user_id' => $user->id])
+                        ->get(['id', 'desc', 'client_name', 'date', 'user_id', 'admin_id', 'status'])
+                        ->toArray();
+
+                    return view('user_dashboard', $data);
                 } else {
                     return redirect('/login');
                 }
-
             } else {
                 $data['user']           = $user;
-                $data['adminsCount']    = User::where('role', user_roles('1'))->count();
-                $data['clientsCount']   = User::where('role', user_roles('2'))->count();
-                $data['driversCount']   = User::where('role', user_roles('3'))->count();
+                $data['sadminsCount']    = User::where('role', user_roles('1'))->count();
+                $data['adminsCount']   = User::where('role', user_roles('2'))->count();
+                $data['usersCount']   = User::where('role', user_roles('3'))->count();
                 $data['revenue']        = Invoice::where('status', $this->status['Completed'])
-                                            ->whereIn('currency_code', array_keys($this->currencies))
-                                            ->groupBy('currency_code')
-                                            ->select('currency_code', DB::raw('SUM(amount) as total_amount'))
-                                            ->pluck('total_amount', 'currency_code')
-                                            ->toArray();
+                    ->whereIn('currency_code', array_keys($this->currencies))
+                    ->groupBy('currency_code')
+                    ->select('currency_code', DB::raw('SUM(amount) as total_amount'))
+                    ->pluck('total_amount', 'currency_code')
+                    ->toArray();
                 $data['totalQuotion']         = Quotation::count();
                 $data['totalInvoice']         = Invoice::count();
                 $data['completedContract']    = Contract::where('status', $this->status['Completed'])->count();
 
-                $data['totalTodayQT']   = Quotation::whereDate('date', $this->curFormatDate)->whereIn('status', [$this->status['Pending'],$this->status['In Progress']])->count();
+                $data['totalTodayQT']   = Quotation::whereDate('date', $this->curFormatDate)->whereIn('status', [$this->status['Pending'], $this->status['In Progress']])->count();
                 $data['TodayQTsent']    = Quotation::whereDate('date', $this->curFormatDate)->whereIn('status', [$this->status['In Progress']])->count();
                 $data['sentQuote_percent'] = $data['totalTodayQT'] > 0 ? round(($data['TodayQTsent'] / $data['totalTodayQT']) * 100, 1) : 0;
 
-                $data['totalTodayCT']   = Contract::whereDate('end_date', $this->curFormatDate)->whereIn('status', [$this->status['Pending'],$this->status['In Progress'],$this->status['Completed']])->count();
+                $data['totalTodayCT']   = Contract::whereDate('end_date', $this->curFormatDate)->whereIn('status', [$this->status['Pending'], $this->status['In Progress'], $this->status['Completed']])->count();
                 $data['TodayCTcomp']    = Contract::whereDate('end_date', $this->curFormatDate)->whereIn('status', [$this->status['Completed']])->count();
                 $data['compCT_percent'] = $data['totalTodayCT'] > 0 ? round(($data['TodayCTcomp'] / $data['totalTodayCT']) * 100, 1) : 0;
 
-                $data['totalTodayINV']   = Invoice::whereDate('date', $this->curFormatDate)->whereIn('status', [$this->status['Pending'],$this->status['In Progress']])->count();
+                $data['totalTodayINV']   = Invoice::whereDate('date', $this->curFormatDate)->whereIn('status', [$this->status['Pending'], $this->status['In Progress']])->count();
                 $data['TodayINVcomp']    = Invoice::whereDate('date', $this->curFormatDate)->whereIn('status', [$this->status['In Progress']])->count();
-                $data['compINV_percent'] = $data['totalTodayINV'] > 0 ? round(($data['TodayCTcomp'] / $data['totalTodayINV']) * 100, 1) : 0;
+                $data['compINV_percent'] = $data['totalTodayINV'] > 0 ? round(($data['TodayINVcomp'] / $data['totalTodayINV']) * 100, 1) : 0;
 
-                $data['activeQuotes']   = Quotation::with('admins:id,name')->whereDate('date', $this->curFormatDate)->where('status', $this->status['In Progress'])->get(['id','desc', 'client_name', 'date', 'user_id', 'admin_id', 'status'])->toArray();
+                $data['activeQuotes']   = Quotation::with('admins:id,name')->whereDate('date', $this->curFormatDate)->where('status', $this->status['In Progress'])->get(['id', 'desc', 'client_name', 'date', 'user_id', 'admin_id', 'status'])->toArray();
 
-                return view('index', $data);
+                return view('superAdmin_dashboard', $data);
             }
         } else {
             return view('login');
         }
     }
 
-    public function clients()
+    public function admins()
     {
         $user = auth()->user();
-        $page_name = 'clients';
+        $page_name = 'admins';
 
         if (!view_permission($page_name)) {
             return redirect()->back();
         }
 
         $clients = User::where(['role' => user_roles('2')])->orderBy('id', 'desc')->get()->toArray();
-        return view('clients', ['data' => $clients, 'user' => $user, 'add_as_user' => user_roles('2')]);
+        return view('admins', ['data' => $clients, 'user' => $user, 'add_as_user' => user_roles('2')]);
     }
 
-    public function drivers()
+    public function users()
     {
         $user = auth()->user();
-        $page_name = 'drivers';
+        $page_name = 'users';
 
         if (!view_permission($page_name)) {
             return redirect()->back();
@@ -207,19 +180,19 @@ class UserController extends Controller
 
         if (isset($user->role) && $user->role == user_roles('1')) {
 
-            $drivers = User::join('users as c', 'users.client_id', '=', 'c.id')
-                ->where('users.role', 'Driver')
+            $users = User::join('users as c', 'users.client_id', '=', 'c.id')
+                ->where('users.role', user_roles('3'))
                 ->select('users.*', 'c.name as client_name', 'c.user_pic as client_pic', 'c.email as client_email')
                 ->orderBy('users.id', 'desc')
                 ->get()
                 ->toArray();
-            $client_list = User::where(['role' => 'Client'])->orderBy('id', 'desc')->select('id', 'name')->get()->toArray();
+            $admins_list = User::where(['role' => user_roles('2')])->orderBy('id', 'desc')->select('id', 'name')->get()->toArray();
 
-            return view('drivers', ['data' => $drivers, 'user' => $user, 'add_as_user' => user_roles('3'), 'client_list' => $client_list]);
+            return view('users', ['data' => $users, 'user' => $user, 'add_as_user' => user_roles('3'), 'admins_list' => $admins_list]);
         } else {
 
-            $derivers = User::where(['role' => user_roles('3'), 'client_id' => $user->id])->orderBy('id', 'desc')->get()->toArray();
-            return view('drivers', ['data' => $derivers, 'user' => $user, 'add_as_user' => user_roles('3')]);
+            $users = User::where(['role' => user_roles('3'), 'client_id' => $user->id])->orderBy('id', 'desc')->get()->toArray();
+            return view('users', ['data' => $users, 'user' => $user, 'add_as_user' => user_roles('3')]);
         }
     }
 
@@ -233,28 +206,27 @@ class UserController extends Controller
         }
         if (isset($user->role) && $user->role == user_roles('1')) {
             $quotations = Quotation::join('users as u', 'u.id', '=', 'quotations.user_id')
-            ->join('users as admins', 'admins.id', '=', 'quotations.admin_id')
-            ->select('quotations.*','u.name as user_name','admins.name as admin_name')
-            ->orderBy('quotations.id', 'desc')
-            ->get()
-            ->toArray();
-
+                ->join('users as admins', 'admins.id', '=', 'quotations.admin_id')
+                ->select('quotations.*', 'u.name as user_name', 'admins.name as admin_name')
+                ->orderBy('quotations.id', 'desc')
+                ->get()
+                ->toArray();
         } else if (isset($user->role) && $user->role == user_roles('2')) {
             $quotations = Quotation::join('users as u', 'u.id', '=', 'quotations.user_id')
-            ->join('users as admins', 'admins.id', '=', 'quotations.admin_id')
-            ->select('quotations.*','u.name as user_name','admins.name as admin_name')
-            ->where('quotations.admin_id',$user->id)
-            ->orderBy('quotations.id', 'desc')
-            ->get()
-            ->toArray();
+                ->join('users as admins', 'admins.id', '=', 'quotations.admin_id')
+                ->select('quotations.*', 'u.name as user_name', 'admins.name as admin_name')
+                ->where('quotations.admin_id', $user->id)
+                ->orderBy('quotations.id', 'desc')
+                ->get()
+                ->toArray();
         } else {
             $quotations = Quotation::join('users as u', 'u.id', '=', 'quotations.user_id')
-            ->join('users as admins', 'admins.id', '=', 'quotations.admin_id')
-            ->select('quotations.*','u.name as user_name','admins.name as admin_name')
-            ->where('quotations.user_id',$user->id)
-            ->orderBy('quotations.id', 'desc')
-            ->get()
-            ->toArray();
+                ->join('users as admins', 'admins.id', '=', 'quotations.admin_id')
+                ->select('quotations.*', 'u.name as user_name', 'admins.name as admin_name')
+                ->where('quotations.user_id', $user->id)
+                ->orderBy('quotations.id', 'desc')
+                ->get()
+                ->toArray();
         }
 
         return view('quotations', ['data' => $quotations, 'user' => $user]);
@@ -270,33 +242,31 @@ class UserController extends Controller
         }
         if (isset($user->role) && $user->role == user_roles('1')) {
             $contracts = Contract::join('users as u', 'u.id', '=', 'contracts.user_id')
-            ->join('users as admins', 'admins.id', '=', 'contracts.admin_id')
-            ->select('contracts.*','u.name as user_name','admins.name as admin_name')
-            ->orderBy('contracts.id', 'desc')
-            ->get()
-            ->toArray();
-
+                ->join('users as admins', 'admins.id', '=', 'contracts.admin_id')
+                ->select('contracts.*', 'u.name as user_name', 'admins.name as admin_name')
+                ->orderBy('contracts.id', 'desc')
+                ->get()
+                ->toArray();
         } else if (isset($user->role) && $user->role == user_roles('2')) {
             $contracts = Contract::join('users as u', 'u.id', '=', 'contracts.user_id')
-            ->join('users as admins', 'admins.id', '=', 'contracts.admin_id')
-            ->select('contracts.*','u.name as user_name','admins.name as admin_name')
-            ->where('contracts.admin_id',$user->id)
-            ->orderBy('contracts.id', 'desc')
-            ->get()
-            ->toArray();
+                ->join('users as admins', 'admins.id', '=', 'contracts.admin_id')
+                ->select('contracts.*', 'u.name as user_name', 'admins.name as admin_name')
+                ->where('contracts.admin_id', $user->id)
+                ->orderBy('contracts.id', 'desc')
+                ->get()
+                ->toArray();
         } else {
             $contracts = Contract::join('users as u', 'u.id', '=', 'contracts.user_id')
-            ->join('users as admins', 'admins.id', '=', 'contracts.admin_id')
-            ->select('contracts.*','u.name as user_name','admins.name as admin_name')
-            ->where('contracts.user_id',$user->id)
-            ->orderBy('contracts.id', 'desc')
-            ->get()
-            ->toArray();
+                ->join('users as admins', 'admins.id', '=', 'contracts.admin_id')
+                ->select('contracts.*', 'u.name as user_name', 'admins.name as admin_name')
+                ->where('contracts.user_id', $user->id)
+                ->orderBy('contracts.id', 'desc')
+                ->get()
+                ->toArray();
         }
 
         return view('contracts', ['data' => $contracts, 'user' => $user]);
     }
-
 
     public function invoices()
     {
@@ -308,28 +278,27 @@ class UserController extends Controller
         }
         if (isset($user->role) && $user->role == user_roles('1')) {
             $invoices = Invoice::join('users as u', 'u.id', '=', 'invoices.user_id')
-            ->join('users as admins', 'admins.id', '=', 'invoices.admin_id')
-            ->select('invoices.*','u.name as user_name','admins.name as admin_name')
-            ->orderBy('invoices.id', 'desc')
-            ->get()
-            ->toArray();
-
+                ->join('users as admins', 'admins.id', '=', 'invoices.admin_id')
+                ->select('invoices.*', 'u.name as user_name', 'admins.name as admin_name')
+                ->orderBy('invoices.id', 'desc')
+                ->get()
+                ->toArray();
         } else if (isset($user->role) && $user->role == user_roles('2')) {
             $invoices = Invoice::join('users as u', 'u.id', '=', 'invoices.user_id')
-            ->join('users as admins', 'admins.id', '=', 'invoices.admin_id')
-            ->select('invoices.*','u.name as user_name','admins.name as admin_name')
-            ->where('invoices.admin_id',$user->id)
-            ->orderBy('invoices.id', 'desc')
-            ->get()
-            ->toArray();
+                ->join('users as admins', 'admins.id', '=', 'invoices.admin_id')
+                ->select('invoices.*', 'u.name as user_name', 'admins.name as admin_name')
+                ->where('invoices.admin_id', $user->id)
+                ->orderBy('invoices.id', 'desc')
+                ->get()
+                ->toArray();
         } else {
             $invoices = Invoice::join('users as u', 'u.id', '=', 'invoices.user_id')
-            ->join('users as admins', 'admins.id', '=', 'invoices.admin_id')
-            ->select('invoices.*','u.name as user_name','admins.name as admin_name')
-            ->where('invoices.user_id',$user->id)
-            ->orderBy('invoices.id', 'desc')
-            ->get()
-            ->toArray();
+                ->join('users as admins', 'admins.id', '=', 'invoices.admin_id')
+                ->select('invoices.*', 'u.name as user_name', 'admins.name as admin_name')
+                ->where('invoices.user_id', $user->id)
+                ->orderBy('invoices.id', 'desc')
+                ->get()
+                ->toArray();
         }
 
         return view('invoices', ['data' => $invoices, 'user' => $user]);
@@ -350,26 +319,23 @@ class UserController extends Controller
             $data['duplicate_trip'] = $request->duplicate_trip ?? NULL;
 
             if (isset($user->role) && ($user->role == user_roles('1'))) {
-                $quotation = Quotation::find($request->id); 
+                $quotation = Quotation::find($request->id);
                 $data['data'] = $quotation->toArray();
-                $data['admins_list'] = User::where(['role' => user_roles('2'), 'status'=>active_users()])->orderBy('id', 'desc')->select('id','name')->get()->toArray();
-                $data['users_list'] = User::where(['role' => user_roles('3'),'status'=>active_users(), 'client_id' => $quotation->admin_id])->orderBy('id', 'desc')->get()->toArray();
-            }  
-            else if (isset($user->role) && ($user->role == user_roles('2'))) {
-                $data['data'] = Quotation::find($request->id)->toArray(); 
-                $data['users_list'] = User::where(['role' => user_roles('3'),'status'=>active_users(), 'client_id' => $user->id])->orderBy('id', 'desc')->get()->toArray();
+                $data['admins_list'] = User::where(['role' => user_roles('2'), 'status' => active_users()])->orderBy('id', 'desc')->select('id', 'name')->get()->toArray();
+                $data['users_list'] = User::where(['role' => user_roles('3'), 'status' => active_users(), 'client_id' => $quotation->admin_id])->orderBy('id', 'desc')->get()->toArray();
+            } else if (isset($user->role) && ($user->role == user_roles('2'))) {
+                $data['data'] = Quotation::find($request->id)->toArray();
+                $data['users_list'] = User::where(['role' => user_roles('3'), 'status' => active_users(), 'client_id' => $user->id])->orderBy('id', 'desc')->get()->toArray();
+            } else {
+                $data['data'] = Quotation::find($request->id)->toArray();
             }
-            else{
-                $data['data'] = Quotation::find($request->id)->toArray(); 
-            } 
         } else {
             if (isset($user->role) && $user->role == user_roles('1')) {
                 $data['users_list'] = [];
                 $data['admins_list'] = User::where(['role' => user_roles('2'), 'status' => active_users()])->orderBy('id', 'desc')->select('id', 'name')->get()->toArray();
-            } 
-            else if (isset($user->role) && $user->role == user_roles('2')) {
+            } else if (isset($user->role) && $user->role == user_roles('2')) {
                 $data['users_list'] = User::where(['role' => user_roles('3'), 'status' => active_users(), 'client_id' => $user->id])->orderBy('id', 'desc')->select('id', 'name')->get()->toArray();
-            } 
+            }
         }
 
         return view('add_quotation', $data);
@@ -391,26 +357,23 @@ class UserController extends Controller
             $data['duplicate_trip'] = $request->duplicate_trip ?? NULL;
 
             if (isset($user->role) && ($user->role == user_roles('1'))) {
-                $contract = Contract::find($request->id); 
+                $contract = Contract::find($request->id);
                 $data['data'] = $contract->toArray();
-                $data['admins_list'] = User::where(['role' => user_roles('2'), 'status'=>active_users()])->orderBy('id', 'desc')->select('id','name')->get()->toArray();
-                $data['users_list'] = User::where(['role' => user_roles('3'),'status'=>active_users(), 'client_id' => $contract->admin_id])->orderBy('id', 'desc')->get()->toArray();
-            }  
-            else if (isset($user->role) && ($user->role == user_roles('2'))) {
-                $data['data'] = Contract::find($request->id)->toArray(); 
-                $data['users_list'] = User::where(['role' => user_roles('3'),'status'=>active_users(), 'client_id' => $user->id])->orderBy('id', 'desc')->get()->toArray();
+                $data['admins_list'] = User::where(['role' => user_roles('2'), 'status' => active_users()])->orderBy('id', 'desc')->select('id', 'name')->get()->toArray();
+                $data['users_list'] = User::where(['role' => user_roles('3'), 'status' => active_users(), 'client_id' => $contract->admin_id])->orderBy('id', 'desc')->get()->toArray();
+            } else if (isset($user->role) && ($user->role == user_roles('2'))) {
+                $data['data'] = Contract::find($request->id)->toArray();
+                $data['users_list'] = User::where(['role' => user_roles('3'), 'status' => active_users(), 'client_id' => $user->id])->orderBy('id', 'desc')->get()->toArray();
+            } else {
+                $data['data'] = Contract::find($request->id)->toArray();
             }
-            else{
-                $data['data'] = Contract::find($request->id)->toArray(); 
-            } 
         } else {
             if (isset($user->role) && $user->role == user_roles('1')) {
                 $data['users_list'] = [];
                 $data['admins_list'] = User::where(['role' => user_roles('2'), 'status' => active_users()])->orderBy('id', 'desc')->select('id', 'name')->get()->toArray();
-            } 
-            else if (isset($user->role) && $user->role == user_roles('2')) {
+            } else if (isset($user->role) && $user->role == user_roles('2')) {
                 $data['users_list'] = User::where(['role' => user_roles('3'), 'status' => active_users(), 'client_id' => $user->id])->orderBy('id', 'desc')->select('id', 'name')->get()->toArray();
-            } 
+            }
         }
 
         return view('add_contract', $data);
@@ -432,26 +395,23 @@ class UserController extends Controller
             $data['duplicate_trip'] = $request->duplicate_trip ?? NULL;
 
             if (isset($user->role) && ($user->role == user_roles('1'))) {
-                $invoices = Invoice::find($request->id); 
+                $invoices = Invoice::find($request->id);
                 $data['data'] = $invoices->toArray();
-                $data['admins_list'] = User::where(['role' => user_roles('2'), 'status'=>active_users()])->orderBy('id', 'desc')->select('id','name')->get()->toArray();
-                $data['users_list'] = User::where(['role' => user_roles('3'),'status'=>active_users(), 'client_id' => $invoices->admin_id])->orderBy('id', 'desc')->get()->toArray();
-            }  
-            else if (isset($user->role) && ($user->role == user_roles('2'))) {
-                $data['data'] = Invoice::find($request->id)->toArray(); 
-                $data['users_list'] = User::where(['role' => user_roles('3'),'status'=>active_users(), 'client_id' => $user->id])->orderBy('id', 'desc')->get()->toArray();
+                $data['admins_list'] = User::where(['role' => user_roles('2'), 'status' => active_users()])->orderBy('id', 'desc')->select('id', 'name')->get()->toArray();
+                $data['users_list'] = User::where(['role' => user_roles('3'), 'status' => active_users(), 'client_id' => $invoices->admin_id])->orderBy('id', 'desc')->get()->toArray();
+            } else if (isset($user->role) && ($user->role == user_roles('2'))) {
+                $data['data'] = Invoice::find($request->id)->toArray();
+                $data['users_list'] = User::where(['role' => user_roles('3'), 'status' => active_users(), 'client_id' => $user->id])->orderBy('id', 'desc')->get()->toArray();
+            } else {
+                $data['data'] = Invoice::find($request->id)->toArray();
             }
-            else{
-                $data['data'] = Invoice::find($request->id)->toArray(); 
-            } 
         } else {
             if (isset($user->role) && $user->role == user_roles('1')) {
                 $data['users_list'] = [];
                 $data['admins_list'] = User::where(['role' => user_roles('2'), 'status' => active_users()])->orderBy('id', 'desc')->select('id', 'name')->get()->toArray();
-            } 
-            else if (isset($user->role) && $user->role == user_roles('2')) {
+            } else if (isset($user->role) && $user->role == user_roles('2')) {
                 $data['users_list'] = User::where(['role' => user_roles('3'), 'status' => active_users(), 'client_id' => $user->id])->orderBy('id', 'desc')->select('id', 'name')->get()->toArray();
-            } 
+            }
         }
 
         return view('add_invoice', $data);
@@ -459,237 +419,26 @@ class UserController extends Controller
 
     public function get_users(Request $request)
     {
-        $driver_list = User::where(['role' => user_roles('3'), 'client_id' => $request->id,'status'=>active_users()])
+        $users_list = User::where(['role' => user_roles('3'), 'client_id' => $request->id, 'status' => active_users()])
             ->orderBy('id', 'desc')
             ->get()
             ->toArray();
 
-        return response()->json($driver_list);
+        return response()->json($users_list);
     }
 
-
-    public function driver_map(Request $request)
+    public function superAdmins()
     {
         $user = auth()->user();
-        $page_name = 'driver_map';
-
-        if (!view_permission($page_name)) {
-            return redirect('/');
-        }
-
-        if ($request->has('id')) {
-
-            if (isset($user->role) && $user->role == user_roles('3')) {
-                $trip = Trip::with(['addresses' => function ($query) {
-                    $query->orderBy('order_no', 'ASC');
-                }])->find($request->id);
-
-                $tripData = $trip->toArray();
-                $tripData['addresses'] = $trip->addresses->toArray();
-
-                return view('driver_map', ['data' => $tripData, 'user' => $user]);
-            }
-        } else {
-            return redirect('/routes');
-        }
-    }
-
-    public function announcements_alerts()
-    {
-        return view('announcements_alerts');
-    }
-
-    public function pdf_templates()
-    {
-        return view('pdf_templates');
-    }
-
-    public function home(Request $request)
-    {
-
-        if (session()->has('user_details')) {
-
-            $user = auth()->user();
-            $page_name = 'home';
-
-            if (!view_permission($page_name)) {
-                return redirect()->back();
-            }
-        }
-
-
-        if ($request->has('id')) {
-
-            $package  = Package::where('id', $request->id)->first();
-            return view('subscription', ['data' => $package]);
-        } else {
-
-            $package = Package::orderBy('id', 'ASC')->get()->toArray();
-            return view('home', ['data' => $package]);
-        }
-    }
-
-    public function subscription()
-    {
-        return view('subscription');
-    }
-
-
-    public function calender()
-    {
-        $user = auth()->user();
-        $page_name = 'calender';
+        $page_name = 'super_admins';
 
         if (!view_permission($page_name)) {
             return redirect()->back();
         }
 
-        if (isset($user->role) && $user->role == user_roles('1')) {
-            $data['trips'] = Trip::join('users as drivers', 'drivers.id', '=', 'trips.driver_id')
-                ->join('users as clients', 'clients.id', '=', 'trips.client_id')
-                ->select('trips.id', 'trips.trip_date', 'trips.title', 'trips.status', 'drivers.id as driver_id', 'drivers.name as driver_name')
-                ->orderBy('trips.trip_date', 'ASC')
-                ->get();
-
-            $data['dragable'] = 1;
-        } else if (isset($user->role) && $user->role == user_roles('2')) {
-            $data['trips'] = Trip::join('users', 'users.id', '=', 'trips.driver_id')
-                ->where('trips.client_id', $user->id)
-                ->select('trips.id', 'trips.trip_date', 'trips.title', 'trips.status', 'users.id as driver_id', 'users.name as driver_name')
-                ->orderBy('trips.trip_date', 'ASC')
-                ->get();
-
-            $data['dragable'] = 1;
-        } else {
-            $data['trips'] = Trip::join('users', 'users.id', '=', 'trips.client_id')
-                ->where('trips.driver_id', $user->id)
-                ->select('trips.id', 'trips.trip_date', 'trips.title', 'trips.status', 'users.id as client_id', 'users.name as  driver_name', 'users.role as  dragable')
-                ->orderBy('trips.trip_date', 'ASC')
-                ->get();
-
-            $data['dragable'] = 2;
-        }
-
-        $data['user'] = $user;
-
-        return view('calender', $data);
+        $users = User::where(['role' => user_roles(1)])->orderBy('id', 'desc')->get()->toArray();
+        return view('superAdmins', ['data' => $users, 'user' => $user, 'add_as_user' => user_roles('1')]);
     }
-
-    public function calendar_maintable()
-    {
-        $user = auth()->user();
-        $page_name = 'calendar_maintable';
-
-        if (!view_permission($page_name)) {
-            return redirect()->back();
-        }
-
-        if (isset($user->role) && $user->role == user_roles('1')) {
-
-            $trips = Trip::join('users as drivers', 'drivers.id', '=', 'trips.driver_id')
-                ->join('users as clients', 'clients.id', '=', 'trips.client_id')
-                ->select('trips.*', 'drivers.id as driver_id', 'drivers.name as driver_name', 'drivers.user_pic as driver_pic', 'clients.user_pic as client_pic', 'clients.name as client_name')
-                ->orderBy('trips.id', 'desc')
-                ->get()
-                ->toArray();
-
-            return view('calendar_maintable', ['data' => $trips, 'user' => $user]);
-        } else if (isset($user->role) && $user->role == user_roles('2')) {
-            $trips = Trip::join('users', 'users.id', '=', 'trips.driver_id')
-                ->where('trips.client_id', $user->id)
-                ->select('trips.*', 'users.id as driver_id', 'users.name as driver_name', 'users.user_pic  as driver_pic')
-                ->orderBy('trips.id', 'desc')
-                ->get()
-                ->toArray();
-            return view('calendar_maintable', ['data' => $trips, 'user' => $user]);
-        } else {
-            $trips = Trip::join('users', 'users.id', '=', 'trips.client_id')
-                ->where('trips.driver_id', $user->id)
-                ->select('trips.*', 'users.id as client_id', 'users.name as client_name', 'users.user_pic  as client_pic')
-                ->orderBy('trips.id', 'desc')
-                ->get()
-                ->toArray();
-            return view('calendar_maintable', ['data' => $trips, 'user' => $user]);
-        }
-    }
-
-    public function users()
-    {
-        $user = auth()->user();
-        $page_name = 'users';
-
-        if (!view_permission($page_name)) {
-            return redirect()->back();
-        }
-
-        $users = User::where(['role' => 'Admin'])->orderBy('id', 'desc')->get()->toArray();
-        return view('users', ['data' => $users, 'user' => $user, 'add_as_user' => user_roles('1')]);
-    }
-
-    public function notifications(Request $request)
-    {
-        $user = auth()->user();
-        $page_name = 'notifications';
-
-        if (!view_permission($page_name)) {
-            return redirect()->back();
-        }
-
-        $notifications = NULL;
-        if (isset($user->role) && $user->role == user_roles('1')) {
-            if ($request->has('all_read')) {
-                Notification::where('status', '!=', 'seen') // Add any other condition if needed
-                    ->update(['status' => 'seen']);
-
-                return redirect()->back();
-            }
-
-            $notifications  = Notification::orderBy('id', 'desc')->get()->toArray();
-        }
-        return view('notifications', ['data' => $notifications, 'user' => $user]);
-    }
-
-    public function announcements(Request $request)
-    {
-        $user = auth()->user();
-        $page_name = 'announcements';
-
-        if (!view_permission($page_name)) {
-            return redirect()->back();
-        }
-
-        if ($request->has('id')) {
-
-            $announcmnent  = Announcement::where('id', $request->id)->get()->toArray();
-            $announcmnents = Announcement::where('status', 'on')->orderBy('id', 'desc')->get()->toArray();
-            return view('announcements', ['data' => $announcmnents, 'user' => $user, 'announcmnent' => $announcmnent[0]]);
-        } else {
-
-            $announcmnents = Announcement::where('status', 'on')->orderBy('id', 'desc')->get()->toArray();
-            return view('announcements', ['data' => $announcmnents, 'user' => $user]);
-        }
-    }
-
-    public function packages(Request $request)
-    {
-        $user = auth()->user();
-        $page_name = 'packages';
-
-        if (!view_permission($page_name)) {
-            return redirect()->back();
-        }
-
-        if ($request->has('id')) {
-
-            $package  = Package::where('id', $request->id)->get()->toArray();
-            $packages = Package::where('status', 'on')->orderBy('id', 'DESC')->get()->toArray();
-            return view('packages', ['data' => $packages, 'user' => $user, 'package' => $package[0]]);
-        } else {
-            $packages = Package::where('status', 'on')->orderBy('id', 'DESC')->get()->toArray();
-            return view('packages', ['data' => $packages, 'user' => $user]);
-        }
-    }
-
 
     public function settings()
     {
@@ -951,135 +700,6 @@ class UserController extends Controller
             $user->status     = $request->status;
             $save = $user->save();
             echo $save;
-        }
-    }
-
-    public function pay(Request $request)
-    {
-        $user = auth()->user();
-        if ($user) {
-            try {
-                $payment = new Payment();
-                $payment->amount = $request->amount;
-                $payment->currency = config('constants.PAYPAL.CURRENCY');
-                $payment->package_id = $request->package_id;
-                $payment->payment_method = 'PayPal';
-                $payment->exp_date = Carbon::now()->addDays(30);
-                $payment->created_by = Auth::id();
-                $payment->save();
-
-                $payment = Payment::where('created_by', Auth::id())->latest()->first();
-
-                $response = $this->gateway->purchase(array(
-                    'amount'    => $request->amount,
-                    'currency'  => config('constants.PAYPAL.CURRENCY'),
-                    'returnUrl' => url('/payment_success'),
-                    'cancelUrl' => url('/payment_cancel')
-                ))->send();
-
-                if ($response->isRedirect()) {
-                    $response->redirect();
-                } else {
-
-                    if ($payment) {
-                        $this->fail_trans($response->getMessage(), null, null, 'error');
-                    }
-
-                    return redirect()->back()->with('error', 'Payment could not proceed futher contact to Admin!!.');
-                }
-            } catch (\Throwable $th) {
-
-                if ($payment) {
-                    $this->fail_trans(null, $th->getMessage(), null, 'server_error');
-                }
-
-                return redirect()->back()->with('error', 'PayPal is declined to Connet. Check Your Network or Contact to Admin.');
-            }
-        } else {
-            return redirect('/login');
-        }
-    }
-
-    public function payment_success(Request $request)
-    {
-        $payment = Payment::where('created_by', Auth::id())->latest()->first();
-        $user = auth()->user();
-
-        if ($request->input('paymentId') && $request->input('PayerID')) {
-
-            $transaction = $this->gateway->completePurchase(array(
-                'payer_id' => $request->input('PayerID'),
-                'transactionReference' => $request->input('paymentId')
-            ));
-
-            $response = $transaction->send();
-
-            if ($response->isSuccessful()) {
-
-                $arr = $response->getData();
-
-                if ($payment) {
-                    $payment->payment_id = $arr['id'];
-                    $payment->payer_id = $arr['payer']['payer_info']['payer_id'];
-                    $payment->payer_email = $arr['payer']['payer_info']['email'];
-                    $payment->amount = $arr['transactions'][0]['amount']['total'];
-                    $payment->currency = config('constants.PAYPAL.CURRENCY');
-                    $payment->payment_status = $arr['state'];
-                    $payment->transaction_status = $arr['state'];
-                    $payment->payment_token = $request->input('token');;
-                    $payment->save();
-
-                    $user->sub_id  = $payment->id;
-                    $user->sub_exp_date  = $payment->exp_date;
-                    $user->sub_package_id = $payment->package_id;
-                    $user->status = 1;
-                    $saved = $user->save();
-
-                    if ($saved) {
-                        $emailData = [
-                            'package_name' => $payment->package->title,
-                            'name' => $user->name,
-                            'body' => 'Congratulations! You have successfully subscribed to our package.',
-                        ];
-
-                        SendSubscriptionPurchasedEmail::dispatch($user, $payment)->onQueue('emails');
-                    }
-                }
-
-                return redirect('/')->with('subscription_active', 'Your subscription is now active.');
-            } else {
-                if ($payment) {
-                    $this->fail_trans($response->getMessage(), null, null, 'error');
-                    $url = url('/home');
-                    return redirect($url)->with('error', 'Payment Could Completed!!.');
-                }
-            }
-        } else {
-            if ($payment) {
-                $this->fail_trans($response->getMessage(), null, null, 'error');
-                $url = url('/home');
-                return redirect($url)->with('error', 'Payment declined!!.');
-            }
-        }
-    }
-
-    public function payment_cancel(Request $request)
-    {
-        $this->fail_trans(null, null, $request->input('token'), 'cancel');
-        $url = url('/home');
-        return redirect($url)->with('error', 'Your Decliened Payment and Cancel Subscription.');
-    }
-
-    public function fail_trans($transaction_error = null, $server_error = null, $token = null, $status = null)
-    {
-
-        $payment = Payment::where('created_by', Auth::id())->latest()->first();
-        if ($payment) {
-            $payment->transaction_error = $transaction_error;
-            $payment->server_error      = $server_error;
-            $payment->payment_token     = $token;
-            $payment->payment_status    = $status;
-            $payment->save();
         }
     }
 

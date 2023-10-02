@@ -34,7 +34,7 @@ class UserProfile extends Mailable
     public function envelope()
     {
         return new Envelope(
-            subject: 'QIC Software Profile',
+            subject: 'TSP CRM Profile',
         );
     }
 
