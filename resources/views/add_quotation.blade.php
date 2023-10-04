@@ -76,7 +76,6 @@
 @php
 $services = config('constants.SERVICES');
 $location = config('constants.LOCATIONS');
-$currencies = config('constants.CURRENCIES');
 @endphp
 <div class="content-wrapper py-0 my-2">
     <div style="border: none;">
@@ -179,7 +178,7 @@ $currencies = config('constants.CURRENCIES');
                                 <option disabled selected> @lang('currency')</option>
                                 @forelse($currencies as $key => $value)
                                 <option value="{{ $key}}" {{ isset($data['currency_code']) && $data['currency_code'] == $key ? 'selected' : '' }}>
-                                    {{ $key }}
+                                    {{ $value }}
                                 </option>
                                 @empty
                                 <!-- Code to handle the case when $driver_list is empty or null -->
@@ -442,11 +441,6 @@ $currencies = config('constants.CURRENCIES');
                 $('#q_desc_error').text('*Please enter client description.');
                 event.preventDefault();
             }
-
-            // if (service_id === null) {
-            //     $('#service_id_error').text('*Please select a service.');
-            //     event.preventDefault();
-            // }
 
             if (q_amount == '') {
                 $('#q_amount_error').text('*Please enter quoted ammount.');

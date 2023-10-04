@@ -68,6 +68,8 @@ function view_permission($page_name) {
                 case 'contracts':
                 case 'super_admins': 
                 case 'logout': 
+                case 'currencies': 
+                case 'revenue': 
                     return true;
                 default:
                     return false;

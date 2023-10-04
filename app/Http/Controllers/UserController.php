@@ -28,6 +28,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Quotation;
 use App\Models\Contract;
 use App\Models\Invoice;
+use App\Models\Currency;
 use App;
 
 class UserController extends Controller
@@ -40,6 +41,8 @@ class UserController extends Controller
     protected $status;
     protected $userStatus;
     protected $curFormatDate;
+    protected $currencyTypes;
+
 
     public function __construct()
     {
@@ -50,6 +53,7 @@ class UserController extends Controller
         $this->currencies = config('constants.CURRENCIES');
         $this->userStatus = config('constants.USER_STATUS');
         $this->curFormatDate = Carbon::now()->format('Y-m-d');
+        $this->currencyTypes = config('constants.CURRENCY_TYPES');
     }
 
     public function lang_change(Request $request)
@@ -125,12 +129,15 @@ class UserController extends Controller
                 $data['sadminsCount']    = User::where('role', user_roles('1'))->count();
                 $data['adminsCount']   = User::where('role', user_roles('2'))->count();
                 $data['usersCount']   = User::where('role', user_roles('3'))->count();
-                $data['revenue']        = Invoice::where('status', $this->status['Completed'])
-                    ->whereIn('currency_code', array_keys($this->currencies))
-                    ->groupBy('currency_code')
-                    ->select('currency_code', DB::raw('SUM(amount) as total_amount'))
-                    ->pluck('total_amount', 'currency_code')
-                    ->toArray();
+
+                $data['revenue']  = Invoice::join('currencies as c','invoices.currency_code','=','c.code')
+                    ->where('invoices.status', $this->status['Completed'])
+                    ->where('c.type', $this->currencyTypes[1])
+                    ->groupBy('invoices.currency_code','c.name')
+                    ->select('invoices.currency_code', 'c.name', DB::raw('SUM(amount) as total_amount'))
+                    ->get()
+                    ->toArray(); 
+
                 $data['totalQuotion']         = Quotation::count();
                 $data['totalInvoice']         = Invoice::count();
                 $data['completedContract']    = Contract::where('status', $this->status['Completed'])->count();
@@ -313,9 +320,9 @@ class UserController extends Controller
             return redirect()->back();
         }
         $data['duplicate_trip'] = NULL;
+        $data['currencies'] = Currency::select('code', 'name')->pluck('name','code')->toArray();
 
         if ($request->has('id')) {
-
             $data['duplicate_trip'] = $request->duplicate_trip ?? NULL;
 
             if (isset($user->role) && ($user->role == user_roles('1'))) {
@@ -351,6 +358,7 @@ class UserController extends Controller
             return redirect()->back();
         }
         $data['duplicate_trip'] = NULL;
+        $data['currencies'] = Currency::select('code', 'name')->pluck('name','code')->toArray();
 
         if ($request->has('id')) {
 
@@ -389,6 +397,7 @@ class UserController extends Controller
             return redirect()->back();
         }
         $data['duplicate_trip'] = NULL;
+        $data['currencies'] = Currency::select('code', 'name')->pluck('name','code')->toArray();
 
         if ($request->has('id')) {
 
@@ -720,5 +729,59 @@ class UserController extends Controller
         } else {
             return redirect('/login')->with('error', 'Invalid verification link.');
         }
+    }
+
+    public function currencies(REQUEST $request){
+        $user = auth()->user();
+        $page_name = 'currencies';
+
+        if (!view_permission($page_name)) {
+            return redirect()->back();
+        }
+        $currency = NULL;
+        $message  = NULL;
+        Session::forget('msg');
+
+        if($request->action == 'edit'){
+            $currency = Currency::findOrFail($request->id)->toArray();
+        }
+        else if($request->action == 'save'){
+            $saved = Currency::updateOrCreate(
+                ['id' => $request->id ?? NULL], 
+                [
+                    'name' => ucwords($request->name),
+                    'code' => strtoupper($request->code),
+                    'type' => $request->type,
+                    'created_by' => $user->id,
+                ] 
+            );
+            $message = "Currency " . ($request->id ? "Updated" : "Saved") . " Successfully";
+            Session::flash('msg', $message);
+        }
+        else if($request->action == 'dell'){
+            $deleted = Currency::find($request->id)->delete();
+            $message = "Currency has been deleted Successfully";
+            Session::flash('msg', $message);
+        }
+
+         $currencies = Currency::all()->toArray();
+        return view('currencies', ['user' => $user, 'currency'=>$currency,'data'=>$currencies ,'types' => $this->currencyTypes]);
+    }
+
+    public function revenue(REQUEST $request){
+        $user = auth()->user();
+        $page_name = 'revenue';
+
+        if (!view_permission($page_name)) {
+            return redirect()->back();
+        }
+
+        $data  = Invoice::join('currencies as c','invoices.currency_code','=','c.code')
+        ->where('invoices.status', $this->status['Completed'])
+        ->groupBy('invoices.currency_code','c.name')
+        ->select('invoices.currency_code', 'c.name', DB::raw('SUM(amount) as total_amount'))
+        ->get()
+        ->toArray();   
+        return view('revenue', ['user' => $user, 'data'=>$data]);
     }
 }

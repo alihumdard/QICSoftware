@@ -118,6 +118,12 @@ return [
         'CNY' => 'Chinese Yuan Renminbi',
         'AED' => 'United Arab Emirates Dirham',
     ],
+
+    'CURRENCY_TYPES' => [
+        '1'=>'Default',
+        '2'=>'Basic',
+        '3'=>'Aditional',
+    ],
         
     'PAYPAL' => [
         'CLIENT_ID' => 'AX5AHiCaQb9E7Y01nr0-X_ibBPgRuuU5bb-K0K6xcS5Yo4zUOwSZh7nOJg-QgfD4-7EEosSR0BBdZ9Ki',

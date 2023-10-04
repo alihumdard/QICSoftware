@@ -39,7 +39,7 @@
                     <p id="charCountContainer" class="text-secondary text-right" style="display: none;"><span id="charCount">250</span> /250</p>
                     <div class="text-danger error-message" id="desc-error"></div>
                   </div>
-                <!-- <link href="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.9/summernote-bs4.css" rel="stylesheet">
+                <link href="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.9/summernote-bs4.css" rel="stylesheet">
                 <script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.9/summernote-bs4.js"></script>
                     <script>
                               $('#desc').summernote({
@@ -49,19 +49,19 @@
                                 toolbar: [
                                       ['style', ['style']],
                                       ['font', ['bold', 'italic', 'underline', 'clear']],
-                                      // ['font', ['bold', 'italic', 'underline', 'strikethrough', 'superscript', 'subscript', 'clear']],
-                                      //['fontname', ['fontname']],
+                                      ['font', ['bold', 'italic', 'underline', 'strikethrough', 'superscript', 'subscript', 'clear']],
+                                      ['fontname', ['fontname']],
                                       ['fontsize', ['fontsize']],
                                       ['color', ['color']],
                                       ['para', ['ul', 'ol', 'paragraph']],
                                       ['height', ['height']],
                                       ['table', ['table']],
                                       ['insert', ['link', 'picture', 'hr']],
-                                      //['view', ['fullscreen', 'codeview']],
-                                      // ['help', ['help']]
+                                      ['view', ['fullscreen', 'codeview']],
+                                      ['help', ['help']]
                                     ],
                               });
-                    </script> -->
+                    </script>
                 <div class="col-lg-2 col-sm-2 mt-4 text-center" style="font-size: 12px;">
                     <input type="radio" name="type" class="type" required value="Mandatory" {{ ($announcmnent['type'] ?? '') === 'Mandatory' ? 'checked' : '' }}> @lang('lang.mandatory')
                 </div>

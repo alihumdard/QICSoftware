@@ -36,14 +36,17 @@ Route::middleware('check.userAuthCheck')->group(function () {
     // contracts module ...
     Route::match(['post', 'get'], '/contracts', [UserController::class, 'contracts'])->name('contracts');
     Route::match(['post', 'get'], '/add_contract', [UserController::class, 'add_contract'])->name('add_contract');
-Route::match(['post','get'],'/announcements', [UserController::class, 'announcements']);
 
     // invoices module ...
     Route::match(['post', 'get'], '/invoices', [UserController::class, 'invoices'])->name('invoices');
     Route::match(['post', 'get'], '/add_invoice', [UserController::class, 'add_invoice'])->name('add_invoice');
 
+    //other modules 
     Route::match(['post', 'get'], '/settings', [UserController::class, 'settings']);
     Route::match(['post', 'get'], '/lang_change', [UserController::class, 'lang_change']);
+    Route::match(['post','get'],'/currencies', [UserController::class, 'currencies']);
+    Route::match(['post','get'],'/revenue', [UserController::class, 'revenue']);
+
 });
 
 // basic routes of login and registeration ...

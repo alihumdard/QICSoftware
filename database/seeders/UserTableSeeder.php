@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 use Carbon\Carbon;
 
+
 class UserTableSeeder extends Seeder
 {
     /**
@@ -16,9 +17,22 @@ class UserTableSeeder extends Seeder
      *
      * @return void
      */
+    protected $quoteStatus;
+    protected $currencies;
+    protected $curFormatDate;
+    protected $currencyTypes;
+
+    public function __construct()
+    {
+        $this->quoteStatus = config('constants.QUOTE_STATUS');
+        $this->currencyTypes = config('constants.CURRENCY_TYPES');
+        $this->currencies = config('constants.CURRENCIES');
+        $this->curFormatDate = Carbon::now()->format('Y-m-d');
+    }
+
     public function run()
     {
-            // Create an admin user
+            // Create an Super Admins
             User::factory()->create([
                 'name' => 'Super Admin',
                 'email' => 'superadmin@gmail.com',
@@ -27,7 +41,7 @@ class UserTableSeeder extends Seeder
                 'status' => '1',
             ]);
     
-            // Create a client user
+            // Create a Admins 
             User::factory()->create([
                 'name' => 'Admin',
                 'email' => 'admin@gmail.com',
@@ -38,7 +52,7 @@ class UserTableSeeder extends Seeder
                 'sub_exp_date' => Carbon::now()->addDays(30),
             ]);
     
-            // Create a driver user
+            // Create a Users
             User::factory()->create([
                 'name' => 'User',
                 'email' => 'user@gmail.com',
@@ -48,6 +62,7 @@ class UserTableSeeder extends Seeder
                 'client_id' => '2',
                 'status' => '1'
             ]);
-        }
-    
+
+
+    }
 }
