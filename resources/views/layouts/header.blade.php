@@ -278,6 +278,24 @@ $notifications = NULL;
       </li>
       @endif
 
+      @if(view_permission('revenue'))
+      <li>
+        <a href="{{'/revenue'}}">
+          <i class="ml-3 fas fa-coins"></i>
+          <span class="link_name">@lang('Revenue')</span>
+        </a>
+      </li>
+      @endif
+
+      @if(view_permission('currencies'))
+      <li>
+        <a href="{{'/currencies'}}">
+          <i class=" ml-3 fas fa-money-bill"></i>
+          <span class="link_name">@lang('Currencies')</span>
+        </a>
+      </li>
+      @endif
+
       @if(view_permission('settings'))
       <li>
         <a href="{{'/settings'}}">

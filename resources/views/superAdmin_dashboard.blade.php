@@ -131,11 +131,11 @@ $quote_status = config('constants.QUOTE_STATUS_' . app()->getLocale());
               <div class="revenue-section">
                 @foreach($revenue as $key => $val)
                 <div class="revenue-item">
-                  <span class="currency">{{ $key }}</span>
-                  <span class="amount" style="color: #E45F00;">{{ number_format($val, 2) }}</span>
+                  <span class="currency">{{ $val['currency_code'] }}</span>
+                  <span class="amount" style="color: #E45F00;">{{ number_format($val['total_amount'], 2) }}</span>
                 </div>
                 @endforeach
-                <a class="currency btn btn-link">View All...</a>
+                <a href="/revenue" class="currency btn btn-link">View All...</a>
               </div>
             </div>
           </div>
