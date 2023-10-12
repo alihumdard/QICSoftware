@@ -32,6 +32,7 @@ Route::middleware('check.userAuthCheck')->group(function () {
     // quotations module...
     Route::match(['post', 'get'], '/quotations', [UserController::class, 'quotations'])->name('quotations');
     Route::match(['post', 'get'], '/add_quotation', [UserController::class, 'add_quotation'])->name('add_quotation');
+    Route::match(['post', 'get'], '/create_quotation', [UserController::class, 'create_quotation'])->name('create_quotation');
 
     // contracts module ...
     Route::match(['post', 'get'], '/contracts', [UserController::class, 'contracts'])->name('contracts');

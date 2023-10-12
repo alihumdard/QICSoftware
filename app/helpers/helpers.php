@@ -63,6 +63,7 @@ function view_permission($page_name) {
                 case 'admins':
                 case 'users':
                 case 'add_quotation':
+                case 'create_quotation':
                 case 'add_contract':
                 case 'add_invoice':
                 case 'contracts':
@@ -83,6 +84,7 @@ function view_permission($page_name) {
                 case 'invoices':
                 case 'users':
                 case 'add_quotation':
+                case 'create_quotation':
                 case 'add_contract':
                 case 'add_invoice':
                 case 'contracts':
@@ -99,6 +101,7 @@ function view_permission($page_name) {
                 case 'quotations':
                 case 'invoices':
                 case 'add_quotation':
+                case 'create_quotation':    
                 case 'add_invoice':
                 case 'add_contract':
                 case 'contracts':    

@@ -12,13 +12,27 @@
         var locations = @json(config('constants.LOCATIONS'));
         var contracts = @json(config('constants.CONTRACTS'));
 
-        $(document).on('click','.btn_status_q', function() {
+        $(document).on('click', '.btn_status_q', function() {
             var id = $(this).find('span').attr('data-qoute_id');
             $('#qoute_id').val(id);
             $('#qoute_sts_modal').modal('show');
         });
 
         var login_alert;
+
+        function toast_message(text, bg_color) {
+            if (bg_color) {
+                $('#snackbar').css('background-color', bg_color)
+            }
+            if (text) {
+                $("#snackbar").text(text);
+            }
+            var x = document.getElementById("snackbar");
+            x.className = "show";
+            setTimeout(function() {
+                x.className = x.className.replace("show", "");
+            }, 3000);
+        }
 
         $(document).on('click', '.delete-row', function() {
             const row = $(this).closest('tr');
@@ -123,6 +137,53 @@
             }
         });
 
+        // Adding  comment in through the api...
+        $('#commentform').on('submit', function(e) {
+
+            e.preventDefault();
+            var apiname = $(this).attr('action');
+            var apiurl = "{{ end_url('') }}" + apiname;
+            var formData = new FormData(this);
+            var inv_id = formData.get('id');
+            var inv_comment = formData.get('comment');
+            var bearerToken = "{{session('user')}}";
+            $.ajax({
+                url: apiurl,
+                type: 'POST',
+                data: formData,
+                headers: {
+                    'Authorization': 'Bearer ' + bearerToken
+                },
+                contentType: false,
+                processData: false,
+                beforeSend: function() {
+                    $('#spinner_coment').removeClass('d-none');
+                    $('#coment_btn').addClass('d-none');
+                },
+                success: function(response) {
+
+                    $('#comment_inv_' + inv_id).attr('data-comment', inv_comment);
+                    $('#spinner_coment').addClass('d-none');
+                    $('#coment_btn').removeClass('d-none').prop('disabled', false);
+
+                    if (response.status === 'success') {
+                        toast_message(response.message, 'green');
+                    } else if (response.status === 'error') {
+
+                        showAlert("Warning", "Please fill the form correctly", response.status);
+                        console.log(response.message);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.log(status);
+                    $('#spinner_coment').addClass('d-none');
+                    $('#coment_btn').removeClass('d-none').prop('disabled', false);
+                    showAlert("Warning", 'Sytem Error', 'Can not Procceed furhter');
+
+                }
+            });
+        });
+
         // Adding  data in through the api...
         $('#formData').on('submit', function(e) {
 
@@ -205,11 +266,74 @@
                 },
                 error: function(xhr, status, error) {
                     console.log(status);
+                    console.log(status);
+                    $('#spinner').addClass('d-none');
+                    $('#add_btn').removeClass('d-none').prop('disabled', false);
+                    showAlert("Warning", 'Sytem Error', 'Can not Procceed furhter');
 
+                }
+            });
+        });
+
+        // Adding savetemplate data in through the api...
+        $('#savetemplate').on('submit', function(e) {
+
+            e.preventDefault();
+            var button = $(this);
+            var spinner = button.find('#spinner');
+            var buttonText = button.find('#text');
+
+            button.prop('disabled', true);
+            spinner.removeClass('d-none');
+
+            var apiname = $(this).attr('action');
+            var apiurl = "{{ end_url('') }}" + apiname;
+            var formData = new FormData(this);
+            var bearerToken = "{{session('user')}}";
+            $.ajax({
+                url: apiurl,
+                type: 'POST',
+                data: formData,
+                headers: {
+                    'Authorization': 'Bearer ' + bearerToken
+                },
+                contentType: false,
+                processData: false,
+                beforeSend: function() {
+                    showlogin('Wait', 'saving......');
+                },
+                success: function(response) {
+                    button.prop('disabled', false);
                     spinner.addClass('d-none');
                     buttonText.removeClass('d-none');
+
+                    if (response.status === 'success') {
+
+                        showAlert("Success", response.message, response.status);
+                    } else if (response.status === 'error') {
+
+                        showAlert("Warning", "Please fill the form correctly", response.status);
+                        console.log(response.message);
+                        $('.error-label').remove();
+
+                        $.each(response.message, function(field, errorMessages) {
+                            var inputField = $('input[name="' + field + '"]');
+
+                            $.each(errorMessages, function(index, errorMessage) {
+                                var errorLabel = $('<label class="error-label text-danger">* ' + errorMessage + '</label>');
+                                inputField.addClass('error');
+                                inputField.after(errorLabel);
+                            });
+                        });
+
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.log(status);
                     button.prop('disabled', false);
-                    showAlert("Error", 'Request Can not Procceed', 'Can not Procceed furhter');
+                    spinner.addClass('d-none');
+                    buttonText.removeClass('d-none');
+                    showAlert("Warning", 'Sytem Error', 'Can not Procceed furhter');
                 }
             });
         });
@@ -392,6 +516,46 @@
             });
         });
 
+        // send mail invoice .....
+        $(document).on('click', '.send_mail', function() {
+            var id = $(this).attr('data-id');
+            var apiname = 'sendMail';
+            var apiurl = "{{ end_url('') }}" + apiname;
+            var bearerToken = "{{session('user')}}";
+            $.ajax({
+                url: apiurl + '?id=' + id,
+                type: 'GET',
+                data: {
+                    'id': id
+                },
+                headers: {
+                    'Authorization': 'Bearer ' + bearerToken
+                },
+                contentType: false,
+                processData: false,
+                beforeSend: function() {
+                    $('#spinner_mail').removeClass('d-none');
+                    $('#mail_btn').addClass('d-none').prop('disabled', true);
+                },
+                success: function(response) {
+
+                    if (response.status === 'success') {
+                        $('#spinner_mail').addClass('d-none');
+                        $('#mail_btn').removeClass('d-none').prop('disabled', false).text('Resend');;
+                        toast_message(response.message, 'green');
+
+                    } else {
+                        showAlert("Warning", response.message, response.status);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    $('#spinner_mail').addClass('d-none');
+                    $('#mail_btn').removeClass('d-none').prop('disabled', false);
+                    showAlert("Warning", status, error);
+                }
+            });
+        });
+
         function dismissModal(modle_id) {
             $('#addclient').modal('hide');
             $('#formData')[0].reset();
@@ -534,7 +698,7 @@
         });
 
         // Quote Detail  data in through the api...
-        $(document).on('click', '.quoteDetail_view',function(e) {
+        $(document).on('click', '.quoteDetail_view', function(e) {
             e.preventDefault();
             var quoteDetail = $(this);
             var quoteId = quoteDetail.attr('data-id');
@@ -563,7 +727,7 @@
                 success: function(response) {
 
                     if (response.status === 'success') {
-                        let s_id =response.data.service_id;
+                        let s_id = response.data.service_id;
                         if (response.data.admin_pic) {
                             $('#tripDetail_clientimg').attr('src', "{{ asset('storage') }}/" + response.data.admin_pic);
                         } else {
@@ -589,9 +753,9 @@
                         var ind = 1;
                         $.each(JSON.parse(serviceData), function(index, key) {
                             var row = $("<tr class='text-center'>");
-                            $("<td>").text(ind++).appendTo(row); 
+                            $("<td>").text(ind++).appendTo(row);
                             $("<td>").text(services[key.service_id]).appendTo(row);
-                            $("<td>").text( key.s_amount + ' (' + response.data.currency_code + ')').appendTo(row);
+                            $("<td>").text(key.s_amount + ' (' + response.data.currency_code + ')').appendTo(row);
                             row.appendTo(tbody);
                         });
 
@@ -615,7 +779,7 @@
         });
 
         // Contract Detail  data in through the api...
-        $(document).on('click', '.contractDetail_view',function(e) {
+        $(document).on('click', '.contractDetail_view', function(e) {
             e.preventDefault();
             var quoteDetail = $(this);
             var quoteId = quoteDetail.attr('data-id');
@@ -644,7 +808,7 @@
                 success: function(response) {
 
                     if (response.status === 'success') {
-                        let s_id =response.data.service_id;
+                        let s_id = response.data.service_id;
                         if (response.data.admin_pic) {
                             $('#tripDetail_clientimg').attr('src', "{{ asset('storage') }}/" + response.data.admin_pic);
                         } else {
@@ -680,13 +844,23 @@
                 },
                 error: function(xhr, status, error) {
                     console.log(status);
-                    showAlert("Error", 'Request Can not Procceed', 'Can not Procceed furhter');
+                    showAlert("Warning", 'Request Can not Procceed', 'Can not Procceed furhter');
                 }
             });
         });
 
         // Invoice Detail  data in through the api...
-        $(document).on('click', '.invoiceDetail_view',function(e) {
+        $(document).on('click', '.invComment', function(e) {
+            e.preventDefault();
+            var commentrow = $(this);
+            var rowId = commentrow.attr('data-id');
+            var rowComment = commentrow.attr('data-comment');
+            $('#inv_id').val(rowId);
+            $('#inv_comment').val(rowComment);
+        });
+
+        // Invoice Detail  data in through the api...
+        $(document).on('click', '.invoiceDetail_view', function(e) {
             e.preventDefault();
             var quoteDetail = $(this);
             var quoteId = quoteDetail.attr('data-id');
@@ -715,7 +889,7 @@
                 success: function(response) {
 
                     if (response.status === 'success') {
-                        let s_id =response.data.service_id;
+                        let s_id = response.data.service_id;
                         if (response.data.admin_pic) {
                             $('#tripDetail_clientimg').attr('src', "{{ asset('storage') }}/" + response.data.admin_pic);
                         } else {
@@ -754,7 +928,6 @@
             });
         });
 
-
         // datatables only for client table and users table
         var users_table = $('#users-table').DataTable();
 
@@ -771,17 +944,6 @@
         $('#btn_cancel').click(function() {
             $('#addclient').modal('hide');
         });
-
-        function showtoast(bg_color) {
-            if (bg_color) {
-                $('#snackbar').css('background-color', bg_color)
-            }
-            let xid = document.getElementById("snackbar");
-            xid.className = "show";
-            setTimeout(function() {
-                xid.className = xid.className.replace("show", "");
-            }, 3000);
-        }
 
         $('.closeModalButton').click(function() {
             // Get the modal ID from the clicked button's parent modal

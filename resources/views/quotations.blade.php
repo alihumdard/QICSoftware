@@ -30,7 +30,7 @@ $location = config('constants.LOCATIONS');
           <div class="col-lg-12">
             <div class="row mx-1">
               <div class="col-lg-6 col-md-12 col-sm-12 my-2 pr-0" style="text-align: right;">
-                <a>
+                <a href="{{ route('create_quotation') }}">
                   <button class="btn content-background add-btn text-white"><span><i class=" fa-regular fa-file-lines"></i> @lang('lang.create_quotation')</span></button>
                 </a>
                 <a href="{{ route('add_quotation') }}">

@@ -7,6 +7,7 @@ $qouteStatus_trans = config('constants.QUOTE_STATUS_' . app()->getLocale());
 $services = config('constants.INVOICES');
 $location = config('constants.LOCATIONS');
 @endphp
+
 <!-- partial -->
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA3YWssMkDiW3F1noE6AVbiJEL40MR0IFU&libraries=places"></script>
 <div class="content-wrapper py-0 my-0">
@@ -95,14 +96,14 @@ $location = config('constants.LOCATIONS');
                   <th>@lang('lang.client_name')</th>
                   <th>@lang('Location')</th>
                   <th>@lang('lang.invoice_amount')</th>
-                  <th>@lang('Service')</th>
+                  <th>@lang('Send Mail')</th>
                   <th>@lang('Invoice Status')</th>
                   <th>@lang('lang.actions')</th>
                 </tr>
               </thead>
-              <tbody id="tableData" >
+              <tbody id="tableData">
                 @foreach($data as $key => $value)
-                
+
                 <tr style="font-size: small;">
                   <td>{{ ++$key }}</td>
                   <td>{{ date('M d, Y', strtotime($value['date']))}}</td>
@@ -115,7 +116,17 @@ $location = config('constants.LOCATIONS');
                   <td>{{ $value['client_name'] ?? '' }}</td>
                   <td>{{ $location[$value['location']] ?? ''}}</td>
                   <td>{{ $value['amount'].' ('.$value['currency_code'].') ' ?? '' }}</td>
-                  <td>{{ $services[$value['service_id']] }}</td>
+                  <td>
+                    <b>{{ $value['client_mail'] ?? ''}}</b>
+                    <span data-qoute_id="{{$value['id']}}">
+                      <div data-id="{{ $value['id'] }}" class=" mt-1 send_mail bg-primary text-white f-w-bold rounded-1" style="cursor:pointer; width: 100%; height: 100%; padding-top: 7px; padding-bottom: 7px; padding-left: 12px; padding-right: 13px; justify-content: center; align-items: center; display: inline-flex">
+                        <div style="text-align: center; font-size: 14px; font-weight:700; word-wrap: break-word">
+                          <div class="spinner-border spinner-border-sm text-white d-none" id="spinner_mail"></div>
+                          <span id="mail_btn"> {{ $value['send_mail'] ?? 'Send' }}</span>
+                        </div>
+                      </div>
+                    </span>
+                  </td>
                   <td>
                     <button class="btn btn_status_q">
                       @if ($value['status'] == $qouteStatus['In Progress'])
@@ -163,16 +174,16 @@ $location = config('constants.LOCATIONS');
                       </form>
                       @endif
                       <a href="{{ asset('storage/'.$value['file']) }}" download="Invoice{{$value['id']}}_for_{{$value['client_name']}}">
-                        
-                          <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <circle opacity="0.1" cx="18" cy="18" r="18" fill="#452C88" />
-                            <path d="M23.2857 12.8571V12H20.7143V16.2857H21.5714V14.5714H22.8572V13.7143H21.5714V12.8571H23.2857Z" fill="#452C88" />
-                            <path d="M21.5715 21.4285V23.1428H14.7143V21.4285H13.8571V23.1428C13.8571 23.3701 13.9475 23.5881 14.1082 23.7489C14.2689 23.9096 14.487 23.9999 14.7143 23.9999H21.5715C21.7988 23.9999 22.0168 23.9096 22.1776 23.7489C22.3383 23.5881 22.4286 23.3701 22.4286 23.1428V21.4285H21.5715Z" fill="#452C88" />
-                            <path d="M20.2857 20.1428L19.6797 19.5368L18.5714 20.6451V17.1428H17.7143V20.6451L16.606 19.5368L16 20.1428L18.1429 22.2857L20.2857 20.1428Z" fill="#452C88" />
-                            <path d="M18.5715 16.2857H16.8572V12H18.5715C18.9123 12.0004 19.2392 12.136 19.4802 12.377C19.7212 12.618 19.8568 12.9448 19.8572 13.2857V15C19.8568 15.3409 19.7212 15.6677 19.4802 15.9087C19.2392 16.1498 18.9123 16.2854 18.5715 16.2857ZM17.7143 15.4286H18.5715C18.6851 15.4285 18.794 15.3833 18.8744 15.3029C18.9547 15.2226 18.9999 15.1136 19 15V13.2857C18.9999 13.1721 18.9547 13.0632 18.8744 12.9828C18.794 12.9025 18.6851 12.8573 18.5715 12.8571H17.7143V15.4286Z" fill="#452C88" />
-                            <path d="M15.1429 12H13V16.2857H13.8571V15H15.1429C15.3701 14.9997 15.5879 14.9093 15.7486 14.7486C15.9093 14.5879 15.9997 14.3701 16 14.1429V12.8571C15.9998 12.6299 15.9094 12.412 15.7487 12.2513C15.588 12.0907 15.3701 12.0003 15.1429 12ZM13.8571 14.1429V12.8571H15.1429L15.1433 14.1429H13.8571Z" fill="#452C88" />
-                          </svg>
-                        </a>
+
+                        <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <circle opacity="0.1" cx="18" cy="18" r="18" fill="#452C88" />
+                          <path d="M23.2857 12.8571V12H20.7143V16.2857H21.5714V14.5714H22.8572V13.7143H21.5714V12.8571H23.2857Z" fill="#452C88" />
+                          <path d="M21.5715 21.4285V23.1428H14.7143V21.4285H13.8571V23.1428C13.8571 23.3701 13.9475 23.5881 14.1082 23.7489C14.2689 23.9096 14.487 23.9999 14.7143 23.9999H21.5715C21.7988 23.9999 22.0168 23.9096 22.1776 23.7489C22.3383 23.5881 22.4286 23.3701 22.4286 23.1428V21.4285H21.5715Z" fill="#452C88" />
+                          <path d="M20.2857 20.1428L19.6797 19.5368L18.5714 20.6451V17.1428H17.7143V20.6451L16.606 19.5368L16 20.1428L18.1429 22.2857L20.2857 20.1428Z" fill="#452C88" />
+                          <path d="M18.5715 16.2857H16.8572V12H18.5715C18.9123 12.0004 19.2392 12.136 19.4802 12.377C19.7212 12.618 19.8568 12.9448 19.8572 13.2857V15C19.8568 15.3409 19.7212 15.6677 19.4802 15.9087C19.2392 16.1498 18.9123 16.2854 18.5715 16.2857ZM17.7143 15.4286H18.5715C18.6851 15.4285 18.794 15.3833 18.8744 15.3029C18.9547 15.2226 18.9999 15.1136 19 15V13.2857C18.9999 13.1721 18.9547 13.0632 18.8744 12.9828C18.794 12.9025 18.6851 12.8573 18.5715 12.8571H17.7143V15.4286Z" fill="#452C88" />
+                          <path d="M15.1429 12H13V16.2857H13.8571V15H15.1429C15.3701 14.9997 15.5879 14.9093 15.7486 14.7486C15.9093 14.5879 15.9997 14.3701 16 14.1429V12.8571C15.9998 12.6299 15.9094 12.412 15.7487 12.2513C15.588 12.0907 15.3701 12.0003 15.1429 12ZM13.8571 14.1429V12.8571H15.1429L15.1433 14.1429H13.8571Z" fill="#452C88" />
+                        </svg>
+                      </a>
 
                       <button data-id="{{ $value['id'] }}" data-role="{{ $user->role}}" id="quoteDetail_btn" class="btn p-0 invoiceDetail_view" data-toggle="modal" data-target="#invoicedetail">
                         <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -180,12 +191,26 @@ $location = config('constants.LOCATIONS');
                           <path d="M17.7167 13C13.5 13 11 18 11 18C11 18 13.5 23 17.7167 23C21.8333 23 24.3333 18 24.3333 18C24.3333 18 21.8333 13 17.7167 13ZM17.6667 14.6667C19.5167 14.6667 21 16.1667 21 18C21 19.85 19.5167 21.3333 17.6667 21.3333C15.8333 21.3333 14.3333 19.85 14.3333 18C14.3333 16.1667 15.8333 14.6667 17.6667 14.6667ZM17.6667 16.3333C16.75 16.3333 16 17.0833 16 18C16 18.9167 16.75 19.6667 17.6667 19.6667C18.5833 19.6667 19.3333 18.9167 19.3333 18C19.3333 17.8333 19.2667 17.6833 19.2333 17.5333C19.1 17.8 18.8333 18 18.5 18C18.0333 18 17.6667 17.6333 17.6667 17.1667C17.6667 16.8333 17.8667 16.5667 18.1333 16.4333C17.9833 16.3833 17.8333 16.3333 17.6667 16.3333Z" fill="black" />
                         </svg>
                       </button>
+
+                      <button style="cursor:pointer;" id="comment_inv_{{$value['id']}}" data-id="{{ $value['id'] }}" data-comment="{{ $value['comment'] }}" class="btn p-0 invComment" data-toggle="modal" data-target="#invoiceComment" title="{{ $value['comment'] }}">
+
+                        <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="32" height="32" viewBox="0 0 172 172" style=" fill:#26e07f;">
+                          <g fill="none" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" font-family="none" font-weight="none" font-size="none" text-anchor="none" style="mix-blend-mode: normal">
+                            <path d="M0,172v-172h172v172z" fill="none"></path>
+                            <g fill="#1fb141">
+                              <path d="M21.5,21.5v129h64.5v-32.25v-64.5v-32.25zM86,53.75c0,17.7805 14.4695,32.25 32.25,32.25c17.7805,0 32.25,-14.4695 32.25,-32.25c0,-17.7805 -14.4695,-32.25 -32.25,-32.25c-17.7805,0 -32.25,14.4695 -32.25,32.25zM118.25,86c-17.7805,0 -32.25,14.4695 -32.25,32.25c0,17.7805 14.4695,32.25 32.25,32.25c17.7805,0 32.25,-14.4695 32.25,-32.25c0,-17.7805 -14.4695,-32.25 -32.25,-32.25z"></path>
+                            </g>
+                          </g>
+                        </svg>
+                      </button>
+
                     </div>
                   </td>
                 </tr>
                 @endforeach
               </tbody>
             </table>
+
           </div>
         </div>
       </div>
@@ -193,6 +218,34 @@ $location = config('constants.LOCATIONS');
   </div>
 </div>
 <!-- content-wrapper ends -->
+<!-- Button trigger modal -->
+
+<!-- Modal -->
+<div class="modal fade" id="invoiceComment" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Invoice Comment</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form action="commentStore" id="commentform" method="POST">
+        <div class="modal-body">
+          <input type="hidden" id="inv_id" name="id" value="">
+          <textarea name="comment" id="inv_comment" class="form-control"></textarea>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="submit" id="btn_comment" class="btn btn-primary">
+            <div class="spinner-border spinner-border-sm text-white d-none" id="spinner_coment"></div>
+            <span id="coment_btn">@lang('Save Comment')</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
 
 
 <!-- Quote Status Modal -->
@@ -207,8 +260,8 @@ $location = config('constants.LOCATIONS');
           </svg>
         </button>
       </div>
-      
-      <form  id="formData" method="post" action="invoiceStatus">
+
+      <form id="formData" method="post" action="invoiceStatus">
         <input type="hidden" id="qoute_id" name="id">
         <div class="modal-body pt-0">
           <svg width="56" height="56" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -217,14 +270,14 @@ $location = config('constants.LOCATIONS');
             <rect x="4" y="4" width="48" height="48" rx="24" stroke="#ECFDF3" stroke-width="8" />
           </svg>
           <select name="status" id="status" class="form-select mt-3">
-            <option disabled selected> select status  </option>
+            <option disabled selected> select status </option>
             @foreach($qouteStatus_trans as $key => $value)
             <option value="{{$key}}">{{ $value }}</option>
             @endforeach
           </select>
         </div>
         <div class="modal-footer">
-          <button class="btn btn-sm text-white px-5" id="change_sts"  type="submit" style="background-color: #233A85; border-radius: 8px;">
+          <button class="btn btn-sm text-white px-5" id="change_sts" type="submit" style="background-color: #233A85; border-radius: 8px;">
             <div class="spinner-border spinner-border-sm text-white d-none" id="spinner"></div>
             <span id="add_btn">@lang('lang.ok')</span>
           </button>
@@ -248,7 +301,6 @@ $location = config('constants.LOCATIONS');
     var selectedLocation = $(this).val();
     users_table.column(5).search(selectedLocation).draw();
   });
-
 </script>
 @elseif($user->role == user_roles('2'))
 <script>
@@ -276,8 +328,6 @@ $location = config('constants.LOCATIONS');
 </script>
 @endif
 <script>
-
-
   function downloadPDF() {
     // Create a link element
     var link = document.createElement('a');
@@ -292,5 +342,6 @@ $location = config('constants.LOCATIONS');
   }
 </script>
 @include('invoicedetail_modal')
+@include('snaktoast')
 
 @endsection

@@ -20,6 +20,7 @@ return new class extends Migration
             $table->integer('admin_id');
             $table->integer('user_id');
             $table->string('client_name');
+            $table->string('client_mail');
             $table->integer('service_id');
             $table->integer('amount');
             $table->string('file')->nullable();
@@ -27,6 +28,8 @@ return new class extends Migration
             $table->string('currency_code')->nullable();
             $table->string('location_id')->nullable();
             $table->string('location')->nullable();
+            $table->string('comment')->nullable();
+            $table->string('send_email')->nullable();
             $table->integer('status')->default(2);
             $table->integer('created_by');
             $table->integer('updated_by')->nullable();
