@@ -122,7 +122,7 @@ $location = config('constants.LOCATIONS');
                       <div data-id="{{ $value['id'] }}" class=" mt-1 send_mail bg-primary text-white f-w-bold rounded-1" style="cursor:pointer; width: 100%; height: 100%; padding-top: 7px; padding-bottom: 7px; padding-left: 12px; padding-right: 13px; justify-content: center; align-items: center; display: inline-flex">
                         <div style="text-align: center; font-size: 14px; font-weight:700; word-wrap: break-word">
                           <div class="spinner-border spinner-border-sm text-white d-none" id="spinner_mail"></div>
-                          <span id="mail_btn"> {{ $value['send_mail'] ?? 'Send' }}</span>
+                          <span id="mail_btn"> {{ $value['send_email'] ?? 'Send' }}</span>
                         </div>
                       </div>
                     </span>
