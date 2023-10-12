@@ -18,19 +18,25 @@ use App\Models\Quotation;
 use App\Models\Contract;
 use Illuminate\Foundation\Auth\Authenticatable;
 use App\Jobs\UserProfileEmail;
+use App\Jobs\SendInvoiceEmail;
 use Illuminate\Support\Str;
 use App\Models\Invoice;
+use App\Models\Template;
 
 class APIController extends Controller
 {
 
     protected $userStatus;
     protected $status;
+    protected $temp_status;
+
 
     public function __construct()
     {
         $this->userStatus = config('constants.USER_STATUS');
         $this->status = config('constants.QUOTE_STATUS');
+        $this->temp_status = config('constants.TEMP_STATUS');
+
     }
 
     public function index()
@@ -600,6 +606,7 @@ class APIController extends Controller
             $invoices->service_id    = $request->service_id;
             $invoices->desc          = $request->desc;
             $invoices->client_name   = $request->client_name;
+            $invoices->client_mail   = $request->client_mail;
             $invoices->amount        = $request->amount;
 
             if ($request->hasFile('file')) {
@@ -616,6 +623,24 @@ class APIController extends Controller
             $save = $invoices->save();
 
             $message = $isExistInvoice ? 'Invoice updated successfully' : 'Invoice saved successfully';
+            return response()->json(['status' => 'success', 'message' => $message, 'data' => $save]);
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => 'Error storing Invoice', 'error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function comment_store(Request $request): JsonResponse
+    {
+        try {
+            $invoices = Invoice::find($request->id);
+
+            $isExistInvoice = $invoices->exists;
+
+            $invoices->comment = $request->comment;
+
+            $save = $invoices->save();
+
+            $message = $isExistInvoice ? 'Comment added successfully' : 'Comment added successfully';
             return response()->json(['status' => 'success', 'message' => $message, 'data' => $save]);
         } catch (\Exception $e) {
             return response()->json(['status' => 'error', 'message' => 'Error storing Invoice', 'error' => $e->getMessage()], 500);
@@ -717,4 +742,57 @@ class APIController extends Controller
             return response()->json(['status' => 'error', 'message' => 'Error retrieving data', 'error' => $e->getMessage()], 500);
         }
     }
+
+    public function template_store(Request $request): JsonResponse
+    {
+
+        try {
+            $template = ($request->id) ? Template::find($request->id) : new Template();
+
+            $isExistTemplate = $template->exists;
+
+            $template->user_id        = $request->user_id;
+            $template->template_for   = $request->template_for;
+            $template->save_as        = $request->save_as;
+            $template->template_body  = base64_encode($request->template_body);
+            $template->status         = $this->temp_status['Active'];
+            $template->created_by     = Auth::id();
+            $template->updated_by     = Auth::id();
+            $save = $template->save();
+
+            $message = $isExistTemplate ? 'Template updated successfully' : 'Template saved successfully';
+            return response()->json(['status' => 'success', 'message' => $message, 'data' => $save]);
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => 'Error storing Quotation', 'error' => $e->getMessage()], 500);
+        }
+    }
+    
+    public function sendMail_invoice(Request $request): JsonResponse
+    {
+
+        try {
+            $invoices = Invoice::find($request->id);
+            $invoices->send_email  = 'Resend';
+            $invoices->created_by  = Auth::id();
+            $save = $invoices->save();
+            
+            if ($invoices) {
+                $emailData = [
+                    'name'  => $invoices->client_name,
+                    'email' => $invoices->client_mail,
+                    'file' =>  public_path('storage/' . $invoices->file),
+                    'body'  => "We hope this message finds you well. We wanted to remind you about an invoice from TechSolution Pro.",
+                ];
+                
+                SendInvoiceEmail::dispatch($emailData)->onQueue('emails');
+            }
+
+            $message = 'Invoice mail sended successfully';
+            return response()->json(['status' => 'success', 'message' => $message]);
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => 'Error storing Invoice', 'error' => $e->getMessage()], 500);
+        }
+    }
+    
+    
 }

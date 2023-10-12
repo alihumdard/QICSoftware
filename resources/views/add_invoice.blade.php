@@ -95,7 +95,7 @@ $location = config('constants.LOCATIONS');
                 <form action="invoiceStore" id="formData" method="post">
                     <div class="row">
                         @csrf
-                        <div class="col-lg-{{ ($user->role == user_roles('3')) ? (($user->role == user_roles('2')) ? '4' : '6') : '3' }} col-md-6 col-sm-12  my-2">
+                        <div class="col-lg-{{ ($user->role == user_roles('3')) ? '4' : (($user->role == user_roles('2')) ? '3' : '4') }} col-md-6 col-sm-12  my-2">
                             <label for="q_date">@lang('lang.date')</label>
                             <input required type="date" name="date" id="q_date" value="{{ ($duplicate_trip ?? '' == 1) ? date('Y-m-d') : ((isset($data['id'])) ? $data['date'] : date('Y-m-d') ) }}" min="{{ ($duplicate_trip ?? '' == 1) ? date('Y-m-d') : ((isset($data['id'])) ? $data['date'] : date('Y-m-d') ) }}" class="form-control">
                             <span id="q_date_error" class="error-message text-danger"></span>
@@ -103,7 +103,7 @@ $location = config('constants.LOCATIONS');
                         </div>
 
                         @if(isset($user->role) && ($user->role == user_roles('1')))
-                        <div class="col-lg-{{ $user->role === 'Client' ? '4' : '3' }} col-md-6 col-sm-12 my-2">
+                        <div class="col-lg-{{ $user->role == user_roles('2') ? '3' : '4' }} col-md-6 col-sm-12 my-2">
                             <label for="admin_id">@lang('lang.admins') </label>
                             <select required name="admin_id" id="admin_id" class="form-select" onchange="getDrivers(this.value)">
                                 <option disabled selected> Select @lang('lang.admins') </option>
@@ -120,7 +120,7 @@ $location = config('constants.LOCATIONS');
                         @endif
 
                         @if (isset($user->role) && ($user->role == user_roles('1') || $user->role == user_roles('2')))
-                        <div class="col-lg-{{ $user->role === 'Client' ? '4' : '3' }} col-md-6 col-sm-12 my-2">
+                        <div class="col-lg-{{ $user->role == user_roles('2') ? '3' : '4' }} col-md-6 col-sm-12 my-2">
                             <label for="user_id">@lang('lang.users')</label>
                             <select required name="user_id" id="user_id" class="form-select">
                                 <option disabled selected> Select @lang('lang.users')</option>
@@ -138,10 +138,16 @@ $location = config('constants.LOCATIONS');
                         <input type="hidden" name="user_id" id="user_id" value="{{$user->id}}" />               
                         @endif
 
-                        <div class="col-lg-{{ ($user->role == user_roles('3')) ? (($user->role == user_roles('2')) ? '4' : '6') : '3' }} col-md-6 col-sm-12">
+                        <div class="col-lg-{{ ($user->role == user_roles('3')) ? '4' : (($user->role == user_roles('2')) ? '3' : '4') }} col-md-6 col-sm-12">
                             <label for="client_name">@lang('lang.client_name')</label>
                             <input required type="text" maxlength="100" name="client_name" id="client_name" value="{{ $data['client_name'] ?? '' }}" placeholder="@lang('lang.client_name')" class="form-control">
                             <span id="client_name_error" class="error-message text-danger"></span>
+                        </div>
+
+                        <div class="col-lg-{{ ($user->role == user_roles('3')) ? '4': (($user->role == user_roles('2')) ? '3' : '4')  }} col-md-6 col-sm-12">
+                            <label for="client_mail">@lang('Client Email')</label>
+                            <input required type="email" maxlength="100" name="client_mail" id="client_mail" value="{{ $data['client_mail'] ?? '' }}" placeholder="@lang('client email')" class="form-control">
+                            <span id="client_mail_error" class="error-message text-danger"></span>
                         </div>
 
                         <div class="col-lg-12 mb-2">
@@ -284,6 +290,7 @@ $location = config('constants.LOCATIONS');
             var q_amount = $('#q_amount').val();
             var currency_code = $('#currency_code').val();
             var location = $('#location').val();
+            var client_mail = $('#client_mail').val();
 
             // Reset error messages
             $('.error-message text-danger').text('');
@@ -333,6 +340,10 @@ $location = config('constants.LOCATIONS');
                 event.preventDefault();
             }
 
+            if (client_mail == '') {
+                $('#client_mail_error').text('*Please write a email.');
+                event.preventDefault();
+            }
         });
 
 
@@ -367,6 +378,10 @@ $location = config('constants.LOCATIONS');
 
         $('#q_desc').on('input', function() {
             $('#q_desc_error').text('');
+        });   
+        
+        $('#client_mail').on('input', function() {
+            $('#client_mail_error').text('');
         });
 
         $('#location').on('change', function() {

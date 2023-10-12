@@ -29,6 +29,7 @@ use App\Models\Quotation;
 use App\Models\Contract;
 use App\Models\Invoice;
 use App\Models\Currency;
+use App\Models\Template;
 use App;
 
 class UserController extends Controller
@@ -42,7 +43,10 @@ class UserController extends Controller
     protected $userStatus;
     protected $curFormatDate;
     protected $currencyTypes;
-
+    protected $template_for;
+    protected $temp_saveAs;
+    protected $temp_status;
+    protected $temp_status_as;
 
     public function __construct()
     {
@@ -54,6 +58,10 @@ class UserController extends Controller
         $this->userStatus = config('constants.USER_STATUS');
         $this->curFormatDate = Carbon::now()->format('Y-m-d');
         $this->currencyTypes = config('constants.CURRENCY_TYPES');
+        $this->template_for = config('constants.TEMPLATE_FOR');
+        $this->temp_saveAs = config('constants.TEMP_SAVE_AS');
+        $this->temp_status = config('constants.TEMP_STATUS');
+        $this->temp_status_as = config('constants.TEMP_SAVE_AS_NAME');
     }
 
     public function lang_change(Request $request)
@@ -95,7 +103,7 @@ class UserController extends Controller
 
                 $data['totalTodayINV']   = Invoice::whereDate('date', $this->curFormatDate)->whereIn('status', [$this->status['Pending'], $this->status['In Progress']])->where('admin_id', $user->id)->count();
                 $data['TodayINVcomp']    = Invoice::whereDate('date', $this->curFormatDate)->whereIn('status', [$this->status['In Progress']])->where('admin_id', $user->id)->count();
-                $data['compINV_percent'] = $data['totalTodayINV'] > 0 ? round(($data['TodayCTcomp'] / $data['TodayINVcomp']) * 100, 1) : 0;
+                $data['compINV_percent'] = $data['totalTodayINV'] > 0 ? round(($data['totalTodayINV'] / $data['totalTodayINV']) * 100, 1) : 0;
 
                 $data['activeQuotes']   = Quotation::with(['admins:id,name', 'users:id,name'])
                     ->whereDate('date', $this->curFormatDate)
@@ -202,7 +210,7 @@ class UserController extends Controller
             return view('users', ['data' => $users, 'user' => $user, 'add_as_user' => user_roles('3')]);
         }
     }
-
+// quotations managment module....
     public function quotations()
     {
         $user = auth()->user();
@@ -239,77 +247,6 @@ class UserController extends Controller
         return view('quotations', ['data' => $quotations, 'user' => $user]);
     }
 
-    public function contracts()
-    {
-        $user = auth()->user();
-        $page_name = 'contracts';
-
-        if (!view_permission($page_name)) {
-            return redirect()->back();
-        }
-        if (isset($user->role) && $user->role == user_roles('1')) {
-            $contracts = Contract::join('users as u', 'u.id', '=', 'contracts.user_id')
-                ->join('users as admins', 'admins.id', '=', 'contracts.admin_id')
-                ->select('contracts.*', 'u.name as user_name', 'admins.name as admin_name')
-                ->orderBy('contracts.id', 'desc')
-                ->get()
-                ->toArray();
-        } else if (isset($user->role) && $user->role == user_roles('2')) {
-            $contracts = Contract::join('users as u', 'u.id', '=', 'contracts.user_id')
-                ->join('users as admins', 'admins.id', '=', 'contracts.admin_id')
-                ->select('contracts.*', 'u.name as user_name', 'admins.name as admin_name')
-                ->where('contracts.admin_id', $user->id)
-                ->orderBy('contracts.id', 'desc')
-                ->get()
-                ->toArray();
-        } else {
-            $contracts = Contract::join('users as u', 'u.id', '=', 'contracts.user_id')
-                ->join('users as admins', 'admins.id', '=', 'contracts.admin_id')
-                ->select('contracts.*', 'u.name as user_name', 'admins.name as admin_name')
-                ->where('contracts.user_id', $user->id)
-                ->orderBy('contracts.id', 'desc')
-                ->get()
-                ->toArray();
-        }
-
-        return view('contracts', ['data' => $contracts, 'user' => $user]);
-    }
-
-    public function invoices()
-    {
-        $user = auth()->user();
-        $page_name = 'invoices';
-
-        if (!view_permission($page_name)) {
-            return redirect()->back();
-        }
-        if (isset($user->role) && $user->role == user_roles('1')) {
-            $invoices = Invoice::join('users as u', 'u.id', '=', 'invoices.user_id')
-                ->join('users as admins', 'admins.id', '=', 'invoices.admin_id')
-                ->select('invoices.*', 'u.name as user_name', 'admins.name as admin_name')
-                ->orderBy('invoices.id', 'desc')
-                ->get()
-                ->toArray();
-        } else if (isset($user->role) && $user->role == user_roles('2')) {
-            $invoices = Invoice::join('users as u', 'u.id', '=', 'invoices.user_id')
-                ->join('users as admins', 'admins.id', '=', 'invoices.admin_id')
-                ->select('invoices.*', 'u.name as user_name', 'admins.name as admin_name')
-                ->where('invoices.admin_id', $user->id)
-                ->orderBy('invoices.id', 'desc')
-                ->get()
-                ->toArray();
-        } else {
-            $invoices = Invoice::join('users as u', 'u.id', '=', 'invoices.user_id')
-                ->join('users as admins', 'admins.id', '=', 'invoices.admin_id')
-                ->select('invoices.*', 'u.name as user_name', 'admins.name as admin_name')
-                ->where('invoices.user_id', $user->id)
-                ->orderBy('invoices.id', 'desc')
-                ->get()
-                ->toArray();
-        }
-
-        return view('invoices', ['data' => $invoices, 'user' => $user]);
-    }
     public function add_quotation(Request $request)
     {
         $user = auth()->user();
@@ -346,6 +283,58 @@ class UserController extends Controller
         }
 
         return view('add_quotation', $data);
+    }
+
+    public function create_quotation(Request $request)
+    {
+        $user = auth()->user();
+        $data['user'] = $user;
+        $page_name = 'create_quotation';
+        if (!view_permission($page_name)) {
+            return redirect()->back();
+        }
+ 
+        $data['draft_template'] = Template::where('save_as',$this->temp_status_as['Draft'])->orderBy('id','DESC')->first();
+        $data['template_for'] = $this->template_for['1'];
+        $data['save_as'] = $this->temp_saveAs;
+        return view('create_quotation', $data);
+    }
+
+// contracts managment module....
+    public function contracts()
+    {
+        $user = auth()->user();
+        $page_name = 'contracts';
+
+        if (!view_permission($page_name)) {
+            return redirect()->back();
+        }
+        if (isset($user->role) && $user->role == user_roles('1')) {
+            $contracts = Contract::join('users as u', 'u.id', '=', 'contracts.user_id')
+                ->join('users as admins', 'admins.id', '=', 'contracts.admin_id')
+                ->select('contracts.*', 'u.name as user_name', 'admins.name as admin_name')
+                ->orderBy('contracts.id', 'desc')
+                ->get()
+                ->toArray();
+        } else if (isset($user->role) && $user->role == user_roles('2')) {
+            $contracts = Contract::join('users as u', 'u.id', '=', 'contracts.user_id')
+                ->join('users as admins', 'admins.id', '=', 'contracts.admin_id')
+                ->select('contracts.*', 'u.name as user_name', 'admins.name as admin_name')
+                ->where('contracts.admin_id', $user->id)
+                ->orderBy('contracts.id', 'desc')
+                ->get()
+                ->toArray();
+        } else {
+            $contracts = Contract::join('users as u', 'u.id', '=', 'contracts.user_id')
+                ->join('users as admins', 'admins.id', '=', 'contracts.admin_id')
+                ->select('contracts.*', 'u.name as user_name', 'admins.name as admin_name')
+                ->where('contracts.user_id', $user->id)
+                ->orderBy('contracts.id', 'desc')
+                ->get()
+                ->toArray();
+        }
+
+        return view('contracts', ['data' => $contracts, 'user' => $user]);
     }
 
     public function add_contract(Request $request)
@@ -385,6 +374,43 @@ class UserController extends Controller
         }
 
         return view('add_contract', $data);
+    }
+
+// invoces managment module....
+    public function invoices()
+    {
+        $user = auth()->user();
+        $page_name = 'invoices';
+
+        if (!view_permission($page_name)) {
+            return redirect()->back();
+        }
+        if (isset($user->role) && $user->role == user_roles('1')) {
+            $invoices = Invoice::join('users as u', 'u.id', '=', 'invoices.user_id')
+                ->join('users as admins', 'admins.id', '=', 'invoices.admin_id')
+                ->select('invoices.*', 'u.name as user_name', 'admins.name as admin_name')
+                ->orderBy('invoices.id', 'desc')
+                ->get()
+                ->toArray();
+        } else if (isset($user->role) && $user->role == user_roles('2')) {
+            $invoices = Invoice::join('users as u', 'u.id', '=', 'invoices.user_id')
+                ->join('users as admins', 'admins.id', '=', 'invoices.admin_id')
+                ->select('invoices.*', 'u.name as user_name', 'admins.name as admin_name')
+                ->where('invoices.admin_id', $user->id)
+                ->orderBy('invoices.id', 'desc')
+                ->get()
+                ->toArray();
+        } else {
+            $invoices = Invoice::join('users as u', 'u.id', '=', 'invoices.user_id')
+                ->join('users as admins', 'admins.id', '=', 'invoices.admin_id')
+                ->select('invoices.*', 'u.name as user_name', 'admins.name as admin_name')
+                ->where('invoices.user_id', $user->id)
+                ->orderBy('invoices.id', 'desc')
+                ->get()
+                ->toArray();
+        }
+
+        return view('invoices', ['data' => $invoices, 'user' => $user]);
     }
 
     public function add_invoice(Request $request)

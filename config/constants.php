@@ -131,26 +131,26 @@ return [
         'CURRENCY' => 'EUR'
     ],
 
-    // extra
-    
-    // in progress mean route is active...
-    'TRIP_STATUS_en' => [
-        1 => 'In Progress',
-        2 => 'Pending',
-        3 => 'Completed',
-        4 => 'Deleted'
+    'TEMPLATE_FOR' => [
+        1 =>'Quotation',
+        2 =>'Contract',
+        3 =>'Invoce'
     ],
 
-    'TRIP_STATUS_es' => [
-        1 => 'Devam etmekte',
-        2 => 'Askıda Olması',
-        3 => 'Tamamlanmış',
-        4 => 'Silindi'
+    'TEMP_SAVE_AS' => [
+        1 =>'Draft',
+        2 =>'Common',
+        3 =>'Self'
     ],
-    'TRIP_STATUS' => [
-        'In Progress' => 1,
-        'Pending'     => 2,
-        'Completed'   => 3,
-        'Deleted'     => 4
+
+    'TEMP_SAVE_AS_NAME' => [
+        'Draft' => 1,
+        'Common' => 2,
+        'Self' => 3
+    ],
+
+    'TEMP_STATUS' => [
+        'Active' => 1,
+        'Deactive' =>2
     ],
 ];

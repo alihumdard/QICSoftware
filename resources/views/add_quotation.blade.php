@@ -199,7 +199,6 @@ $location = config('constants.LOCATIONS');
                             <p class="float-right mr-3" style="font-size: smaller;"><a href="{{ asset('storage/excel_files/template_for_scooble.xlsx') }}" download="template_for_scooble.xlsx">@lang('lang.download_sample')!</a></p>
                         </div>
 
-
                         <div id="existing_row">
                             @forelse( json_decode($data['service_data'] ?? '[]') as $key => $serv_data)
                             <div class="row">
@@ -256,12 +255,12 @@ $location = config('constants.LOCATIONS');
                                         <!-- Code to handle the case when $driver_list is empty or null -->
                                         @endforelse
                                     </select>
-                                    <span   class="error-message text-danger service_id_error"></span>
+                                    <span class="error-message text-danger service_id_error"></span>
                                 </div>
 
                                 <div class="col-lg-3 col-md-6 col-sm-12">
                                     <label for="q_amount">@lang('Service Amount')</label>
-                                    <input required type="number"  min="1" name="s_amount[]" value="{{ $serv_data->s_amount ?? 1 }}" placeholder="@lang('serivce amount')" class="form-control s_amount">
+                                    <input required type="number" min="1" name="s_amount[]" value="{{ $serv_data->s_amount ?? 1 }}" placeholder="@lang('serivce amount')" class="form-control s_amount">
                                     <span class="error-message text-danger s_amount_error "></span>
                                 </div>
                             </div>
@@ -278,7 +277,7 @@ $location = config('constants.LOCATIONS');
                         <div class="row justify-content-end mt-2  ">
                             <div class="col-lg-2 col-md-6 col-sm-12 mb-3 mb-lg-4 ">
                                 <a href="/quotations" id="btn_cancel_quotation" class="btn btn-block btn-warning text-white" style="border-radius: 8px;">
-                                    <span id="text">@lang('Cancel')</span>
+                                    <span>@lang('Cancel')</span>
                                 </a>
                             </div>
                             <div class="col-lg-2 col-md-6 col-sm-12 mb-5 mb-md-5 mb-lg-4 text-right">
@@ -386,16 +385,16 @@ $location = config('constants.LOCATIONS');
 
             // Reset error messages
             $('.error-message text-danger').text('');
-            var hasEmptyDropdown = false; 
-            var hasEmptyservice = false; 
+            var hasEmptyDropdown = false;
+            var hasEmptyservice = false;
 
             $('.service_id_error').each(function() {
                 var selectedValue = $(this).prev('.service_id').val();
                 if (selectedValue === null || selectedValue === '') {
                     $(this).text('*Please select a service.');
-                    hasEmptyDropdown = true; 
+                    hasEmptyDropdown = true;
                 } else {
-                    $(this).text(''); 
+                    $(this).text('');
                 }
             });
 
@@ -403,20 +402,20 @@ $location = config('constants.LOCATIONS');
                 var s_amount = $(this).prev('.s_amount').val();
                 if (s_amount == null || s_amount == '') {
                     $(this).text('*Please select a quote amount.');
-                    hasEmptyservice = true; 
+                    hasEmptyservice = true;
                 } else {
-                    $(this).text(''); 
+                    $(this).text('');
                 }
             });
 
             if (hasEmptyDropdown) {
-                event.preventDefault(); 
+                event.preventDefault();
             }
-            
+
             if (hasEmptyservice) {
-                event.preventDefault(); 
+                event.preventDefault();
             }
-            
+
             if (qDate === '') {
                 $('#q_date_error').text('*Please enter a quatation date.');
                 event.preventDefault();
@@ -461,15 +460,15 @@ $location = config('constants.LOCATIONS');
 
 
         $('.s_amount').on('input', function() {
-    $('.s_amount_error').each(function() {
-        var s_amount = $(this).prev('.s_amount').val();
-        if (s_amount == null || s_amount == '') {
-            $(this).text('*Please enter a quote amount.');
-        } else {
-            $(this).text('');
-        }
-    });
-});
+            $('.s_amount_error').each(function() {
+                var s_amount = $(this).prev('.s_amount').val();
+                if (s_amount == null || s_amount == '') {
+                    $(this).text('*Please enter a quote amount.');
+                } else {
+                    $(this).text('');
+                }
+            });
+        });
 
 
 
