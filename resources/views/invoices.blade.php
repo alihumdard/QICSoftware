@@ -121,8 +121,8 @@ $location = config('constants.LOCATIONS');
                     <span data-qoute_id="{{$value['id']}}">
                       <div data-id="{{ $value['id'] }}" class=" mt-1 send_mail bg-primary text-white f-w-bold rounded-1" style="cursor:pointer; width: 100%; height: 100%; padding-top: 7px; padding-bottom: 7px; padding-left: 12px; padding-right: 13px; justify-content: center; align-items: center; display: inline-flex">
                         <div style="text-align: center; font-size: 14px; font-weight:700; word-wrap: break-word">
-                          <div class="spinner-border spinner-border-sm text-white d-none" id="spinner_mail"></div>
-                          <span id="mail_btn"> {{ $value['send_email'] ?? 'Send' }}</span>
+                          <div class="spinner-border spinner-border-sm text-white d-none" id="spinner_mail_{{$value['id']}}"></div>
+                          <span id="mail_btn_{{$value['id']}}"> {{ $value['send_email'] ?? 'Send' }}</span>
                         </div>
                       </div>
                     </span>
@@ -193,14 +193,8 @@ $location = config('constants.LOCATIONS');
                       </button>
 
                       <button style="cursor:pointer;" id="comment_inv_{{$value['id']}}" data-id="{{ $value['id'] }}" data-comment="{{ $value['comment'] }}" class="btn p-0 invComment" data-toggle="modal" data-target="#invoiceComment" title="{{ $value['comment'] }}">
-
-                        <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="32" height="32" viewBox="0 0 172 172" style=" fill:#26e07f;">
-                          <g fill="none" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" font-family="none" font-weight="none" font-size="none" text-anchor="none" style="mix-blend-mode: normal">
-                            <path d="M0,172v-172h172v172z" fill="none"></path>
-                            <g fill="#1fb141">
-                              <path d="M21.5,21.5v129h64.5v-32.25v-64.5v-32.25zM86,53.75c0,17.7805 14.4695,32.25 32.25,32.25c17.7805,0 32.25,-14.4695 32.25,-32.25c0,-17.7805 -14.4695,-32.25 -32.25,-32.25c-17.7805,0 -32.25,14.4695 -32.25,32.25zM118.25,86c-17.7805,0 -32.25,14.4695 -32.25,32.25c0,17.7805 14.4695,32.25 32.25,32.25c17.7805,0 32.25,-14.4695 32.25,-32.25c0,-17.7805 -14.4695,-32.25 -32.25,-32.25z"></path>
-                            </g>
-                          </g>
+                        <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 512 512">
+                          <path d="M256 32C114.6 32 0 125.1 0 240c0 49.6 21.4 95 57 130.7C44.5 421.1 2.7 466 2.2 466.5c-2.2 2.3-2.8 5.7-1.5 8.7S4.8 480 8 480c66.3 0 116-31.8 140.6-51.4 32.7 12.3 69 19.4 107.4 19.4 141.4 0 256-93.1 256-208S397.4 32 256 32zM128 272c-17.7 0-32-14.3-32-32s14.3-32 32-32 32 14.3 32 32-14.3 32-32 32zm128 0c-17.7 0-32-14.3-32-32s14.3-32 32-32 32 14.3 32 32-14.3 32-32 32zm128 0c-17.7 0-32-14.3-32-32s14.3-32 32-32 32 14.3 32 32-14.3 32-32 32z" />
                         </svg>
                       </button>
 

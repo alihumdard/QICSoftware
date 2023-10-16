@@ -534,14 +534,14 @@
                 contentType: false,
                 processData: false,
                 beforeSend: function() {
-                    $('#spinner_mail').removeClass('d-none');
-                    $('#mail_btn').addClass('d-none').prop('disabled', true);
+                    $('#spinner_mail_' + id).removeClass('d-none');
+                    $('#mail_btn_' + id).addClass('d-none').prop('disabled', true);
                 },
                 success: function(response) {
 
                     if (response.status === 'success') {
-                        $('#spinner_mail').addClass('d-none');
-                        $('#mail_btn').removeClass('d-none').prop('disabled', false).text('Resend');;
+                        $('#spinner_mail_' + id).addClass('d-none');
+                        $('#mail_btn_' + id).removeClass('d-none').prop('disabled', false).text('Resend');;
                         toast_message(response.message, 'green');
 
                     } else {
@@ -549,8 +549,8 @@
                     }
                 },
                 error: function(xhr, status, error) {
-                    $('#spinner_mail').addClass('d-none');
-                    $('#mail_btn').removeClass('d-none').prop('disabled', false);
+                    $('#spinner_mail_' + id).addClass('d-none');
+                    $('#mail_btn_' + id).removeClass('d-none').prop('disabled', false);
                     showAlert("Warning", status, error);
                 }
             });
