@@ -36,6 +36,6 @@ class SendInvoiceEmail implements ShouldQueue
     {
         $mail = new InvoiceEmail($this->emailData);
         $send = Mail::to($this->emailData['email'])
-            ->cc('alihumdard125@gmail.com')->send($mail);
+            ->cc('hamza@techsolutionspro.co.uk')->send($mail);
     }
 }
