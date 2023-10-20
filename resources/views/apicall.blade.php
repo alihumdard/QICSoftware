@@ -11,6 +11,7 @@
         var services = @json(config('constants.SERVICES'));
         var locations = @json(config('constants.LOCATIONS'));
         var contracts = @json(config('constants.CONTRACTS'));
+        var user      = @json(auth()->user());
 
         $(document).on('click', '.btn_status_q', function() {
             var id = $(this).find('span').attr('data-qoute_id');
@@ -137,14 +138,93 @@
             }
         });
 
+        // get comments  data in through the api...
+        $(document).on('click', '.invComment', function(e) {
+            e.preventDefault();
+            var commentrow = $(this);
+            var rowId = commentrow.attr('data-id');
+            $('#invo_id').val(rowId);
+            var apiname = 'comments';
+            var apiurl = "{{ end_url('') }}" + apiname;
+            var payload = {
+                comment_for: 'Invoice',
+                comment_for_id: rowId,
+            };
+
+            var bearerToken = "{{session('user')}}";
+
+            $.ajax({
+                url: apiurl,
+                type: 'POST',
+                data: JSON.stringify(payload),
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + bearerToken
+                },
+                beforeSend: function() {
+                    $('#mdl-data').addClass('d-none');
+                    $('#mdl-spinner').removeClass('d-none');
+                },
+                success: function(response) {
+
+                    if (response.status === 'success') {
+                        var comment_html = '';
+                        if(response.data != ''){
+                            $('.no_comment').addClass('d-none');
+                            $.each(response.data, function(index , data){
+                                let createdDate = new Date(data.created_at);
+                                let formattedDate = createdDate.toLocaleString();
+                                formattedDate = formattedDate.replace(/\//g, '-');
+    
+                                let comment_data = '<div class="card mb-1">'+
+                                                    '<div class="card-body py-3 px-5">'+
+                                                        '<p>'+data.comment+'</p>'+
+                                                        '<div class="d-flex justify-content-between">'+
+                                                        '<div class="d-flex flex-row align-items-center">'+
+                                                            '<img src="'+ data.user_pic+'" alt="user image" width="25" height="25" />'+
+                                                            '<p class="small mb-0 ms-2">'+data.user_name+'</p>'+
+                                                        '</div>'+
+                                                        '<div class="d-flex flex-row align-items-center">'+
+                                                            '<p class="small text-muted mb-0">'+formattedDate+'</p>'+
+                                                        '</div>'+
+                                                        '</div>'+
+                                                    '</div>'+
+                                                    '</div>';
+    
+                                comment_html += comment_data;                     
+                            });
+                        }else{
+                            $('.no_comment').removeClass('d-none');
+                        }
+                        $('.comment_data').html(comment_html);
+                        $('#inv_comment').val('');
+
+                        setTimeout(function() {
+                            $('#mdl-spinner').addClass('d-none');
+                            $('#mdl-data').removeClass('d-none');
+                        }, 500);
+
+                    } else if (response.status === 'error') {
+
+                        showAlert("Warning", "Please fill the form correctly", response.status);
+                        console.log(response.message);
+
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.log(status);
+                    showAlert("Error", 'Request Can not Procceed', 'Can not Procceed furhter');
+                }
+            });
+        });
         // Adding  comment in through the api...
         $('#commentform').on('submit', function(e) {
-
             e.preventDefault();
+
             var apiname = $(this).attr('action');
             var apiurl = "{{ end_url('') }}" + apiname;
             var formData = new FormData(this);
-            var inv_id = formData.get('id');
+            var inv_id = formData.get('comment_for_id');
             var inv_comment = formData.get('comment');
             var bearerToken = "{{session('user')}}";
             $.ajax({
@@ -162,14 +242,35 @@
                 },
                 success: function(response) {
 
-                    $('#comment_inv_' + inv_id).attr('data-comment', inv_comment);
-                    $('#spinner_coment').addClass('d-none');
-                    $('#coment_btn').removeClass('d-none').prop('disabled', false);
-
+                    
                     if (response.status === 'success') {
+                        $('#comment_inv_' + inv_id).attr('data-comment', inv_comment);
+                        let createdDate = new Date();
+                        let formattedDate = createdDate.toLocaleString();
+                        formattedDate = formattedDate.replace(/\//g, '-');
+                        let user_pic = user.user_pic ?? 'assets/images/user.png';
+                        let comment_data = '<div class="card mb-1">'+
+                                                        '<div class="card-body py-3 px-5">'+
+                                                            '<p>'+inv_comment+'</p>'+
+                                                            '<div class="d-flex justify-content-between">'+
+                                                            '<div class="d-flex flex-row align-items-center">'+
+                                                                '<img src="'+ user_pic +'" alt="user image" width="25" height="25" />'+
+                                                                '<p class="small mb-0 ms-2">'+user.name+'</p>'+
+                                                            '</div>'+
+                                                            '<div class="d-flex flex-row align-items-center">'+
+                                                                '<p class="small text-muted mb-0">'+formattedDate+'</p>'+
+                                                            '</div>'+
+                                                            '</div>'+
+                                                        '</div>'+
+                                                        '</div>';
+                        $('.no_comment').addClass('d-none');
+                        $('.comment_data').append(comment_data);
+                        $('#invo_id').val('');
+                        $('#inv_comment').val('');
+                        $('#spinner_coment').addClass('d-none');
+                        $('#coment_btn').removeClass('d-none').prop('disabled', false);
                         toast_message(response.message, 'green');
                     } else if (response.status === 'error') {
-
                         showAlert("Warning", "Please fill the form correctly", response.status);
                         console.log(response.message);
                     }
@@ -847,16 +948,6 @@
                     showAlert("Warning", 'Request Can not Procceed', 'Can not Procceed furhter');
                 }
             });
-        });
-
-        // Invoice Detail  data in through the api...
-        $(document).on('click', '.invComment', function(e) {
-            e.preventDefault();
-            var commentrow = $(this);
-            var rowId = commentrow.attr('data-id');
-            var rowComment = commentrow.attr('data-comment');
-            $('#inv_id').val(rowId);
-            $('#inv_comment').val(rowComment);
         });
 
         // Invoice Detail  data in through the api...

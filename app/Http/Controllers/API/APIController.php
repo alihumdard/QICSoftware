@@ -22,6 +22,7 @@ use App\Jobs\SendInvoiceEmail;
 use Illuminate\Support\Str;
 use App\Models\Invoice;
 use App\Models\Template;
+use App\Models\Comment;
 
 class APIController extends Controller
 {
@@ -629,24 +630,6 @@ class APIController extends Controller
         }
     }
 
-    public function comment_store(Request $request): JsonResponse
-    {
-        try {
-            $invoices = Invoice::find($request->id);
-
-            $isExistInvoice = $invoices->exists;
-
-            $invoices->comment = $request->comment;
-
-            $save = $invoices->save();
-
-            $message = $isExistInvoice ? 'Comment added successfully' : 'Comment added successfully';
-            return response()->json(['status' => 'success', 'message' => $message, 'data' => $save]);
-        } catch (\Exception $e) {
-            return response()->json(['status' => 'error', 'message' => 'Error storing Invoice', 'error' => $e->getMessage()], 500);
-        }
-    }
-
     public function update_invoice_status(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
@@ -794,5 +777,38 @@ class APIController extends Controller
         }
     }
     
+    // comments
+    public function comments(Request $request): JsonResponse
+    {
+        try {
+
+            $data = Comment::where(['comment_for'=> $request->comment_for,'comment_for_id'=> $request->comment_for_id])->get()->toArray();
+            $message = 'Comments retirved  successfully';
+
+            return response()->json(['status' => 'success', 'message' => $message, 'data' => $data]);
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => 'Error geting comments', 'error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function comment_store(Request $request): JsonResponse
+    {
+        try {            
+            $comment = new Comment();
+            $comment->comment_for = 'Invoice';
+            $comment->comment_for_id = $request->comment_for_id;
+            $comment->user_name = Auth::user()->name;
+            $comment->user_pic = (Auth::user()->user_pic) ? Auth::user()->user_pic : 'assets/images/user.png' ;
+            $comment->comment = $request->comment;
+            $comment->created_by = Auth::id();;
+            $save = $comment->save();
+
+            $message = 'Comment added successfully';
+            return response()->json(['status' => 'success', 'message' => $message, 'data' => $save]);
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => 'Error storing Invoice', 'error' => $e->getMessage()], 500);
+        }
+    }
+
     
 }

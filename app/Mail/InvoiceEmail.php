@@ -9,8 +9,9 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Mail\Mailables\Attachment;
+use Illuminate\Mail\Mailables\Address;
 
-class InvoiceEmail extends Mailable
+class InvoiceEmail extends Mailable  implements ShouldQueue
 {
     use Queueable, SerializesModels;
 
@@ -34,6 +35,9 @@ class InvoiceEmail extends Mailable
     public function envelope()
     {
         return new Envelope(
+            replyTo: [
+                new Address('accountant@techsolutionspro.co.uk', 'Tech Solution Pro Account'),
+            ],
             subject: 'TSP CRM Invoice Mail',
         );
     }
