@@ -11,7 +11,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Mail\Mailables\Attachment;
 use Illuminate\Mail\Mailables\Address;
 
-class InvoiceEmail extends Mailable
+class InvoiceEmail extends Mailable  implements ShouldQueue
 {
     use Queueable, SerializesModels;
 
@@ -35,7 +35,6 @@ class InvoiceEmail extends Mailable
     public function envelope()
     {
         return new Envelope(
-            from: new Address('acctspteam@gmail.com', 'Manager Account'),
             replyTo: [
                 new Address('accountant@techsolutionspro.co.uk', 'Tech Solution Pro Account'),
             ],
