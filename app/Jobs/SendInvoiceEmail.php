@@ -35,7 +35,6 @@ class SendInvoiceEmail implements ShouldQueue
     public function handle()
     {
         $mail = new InvoiceEmail($this->emailData);
-        $send = Mail::to($this->emailData['email'])
-            ->cc('hamza@techsolutionspro.co.uk')->send($mail);
+        $send = Mail::to($this->emailData['email'])->send($mail);
     }
 }

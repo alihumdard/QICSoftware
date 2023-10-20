@@ -30,6 +30,7 @@ use App\Models\Contract;
 use App\Models\Invoice;
 use App\Models\Currency;
 use App\Models\Template;
+use App\Models\Comment;
 use App;
 
 class UserController extends Controller

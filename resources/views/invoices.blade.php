@@ -224,19 +224,56 @@ $location = config('constants.LOCATIONS');
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-      <form action="commentStore" id="commentform" method="POST">
-        <div class="modal-body">
-          <input type="hidden" id="inv_id" name="id" value="">
-          <textarea name="comment" id="inv_comment" class="form-control"></textarea>
+      <div class="modal-body">
+
+        <div id="mdl-spinner" class="d-none">
+          <div style="height:60vh" class="d-flex justify-content-center align-items-center">
+            <div class="spinner-border" role="status">
+              <span class="sr-only">Loading...</span>
+            </div>
+          </div>
         </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          <button type="submit" id="btn_comment" class="btn btn-primary">
-            <div class="spinner-border spinner-border-sm text-white d-none" id="spinner_coment"></div>
-            <span id="coment_btn">@lang('Save Comment')</span>
-          </button>
+        <div id="mdl-data" class="d-none">
+
+          <div class="row d-flex justify-content-center">
+            <div class="col-md-12 col-lg-12 col-xl-12">
+              <div class="card mt-0">
+                <div class="card-body " style="background-color: #eee;">
+                  <div class="d-flex">
+                    <div class=" comment_data mt-0">
+
+                    </div>
+                    <div class=" no_comment mt-0">
+                      <h1 class="text-primary"> No comment Yet! </h1>
+                    </div>
+                  </div>
+
+                </div>
+                <div class="card-footer py-3 border-0" style="background-color: #f8f9fa;">
+                  <form action="commentStore" id="commentform" method="POST">
+                    <div class="d-flex flex-start w-100">
+                      <div class="form-outline w-100">
+                        <input type="hidden" id="invo_id" name="comment_for_id" value="">
+                        <textarea name="comment" id="inv_comment" class="form-control" rows="2" style="background: #fff;"></textarea>
+                      </div>
+                    </div>
+                    <div class="float-end mt-2 pt-1">
+                      <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
+                      <button type="submit" id="btn_comment" class="btn btn-primary btn-sm">
+                        <div class="spinner-border spinner-border-sm text-white d-none" id="spinner_coment"></div>
+                        <span id="coment_btn">@lang('Save Comment')</span>
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-      </form>
+
+
+      </div>
+
     </div>
   </div>
 </div>
