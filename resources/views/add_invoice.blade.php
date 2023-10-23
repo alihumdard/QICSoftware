@@ -73,10 +73,6 @@
         margin-bottom: 0;
     }
 </style>
-@php
-$services = config('constants.INVOICES');
-$location = config('constants.LOCATIONS');
-@endphp
 <div class="content-wrapper py-0 my-2">
     <div style="border: none;">
         <div class="bg-white" style="border-radius: 20px;">
@@ -135,7 +131,7 @@ $location = config('constants.LOCATIONS');
                             <span id="user_id_error" class="error-message text-danger"></span>
                         </div>
                         @else
-                        <input type="hidden" name="user_id" id="user_id" value="{{$user->id}}" />               
+                        <input type="hidden" name="user_id" id="user_id" value="{{$user->id}}" />
                         @endif
 
                         <div class="col-lg-{{ ($user->role == user_roles('3')) ? '4' : (($user->role == user_roles('2')) ? '3' : '4') }} col-md-6 col-sm-12">
@@ -313,13 +309,13 @@ $location = config('constants.LOCATIONS');
             if (client_name == '') {
                 $('#client_name_error').text('*Please enter client name.');
                 event.preventDefault();
-            }            
-            
+            }
+
             if (q_desc == '') {
                 $('#q_desc_error').text('*Please enter client description.');
                 event.preventDefault();
-            }            
-            
+            }
+
             if (service_id === null) {
                 $('#service_id_error').text('*Please select a service.');
                 event.preventDefault();
@@ -359,7 +355,7 @@ $location = config('constants.LOCATIONS');
         $('#user_id').on('change', function() {
             $('#user_id_error').text('');
         });
-        
+
         $('#currency_code').on('change', function() {
             $('#currency_code_error').text('');
         });
@@ -378,8 +374,8 @@ $location = config('constants.LOCATIONS');
 
         $('#q_desc').on('input', function() {
             $('#q_desc_error').text('');
-        });   
-        
+        });
+
         $('#client_mail').on('input', function() {
             $('#client_mail_error').text('');
         });

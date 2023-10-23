@@ -4,8 +4,6 @@
 @php
 $qouteStatus = config('constants.QUOTE_STATUS');
 $qouteStatus_trans = config('constants.QUOTE_STATUS_' . app()->getLocale());
-$services = config('constants.INVOICES');
-$location = config('constants.LOCATIONS');
 @endphp
 
 <!-- partial -->
@@ -102,7 +100,7 @@ $location = config('constants.LOCATIONS');
                 </tr>
               </thead>
               <tbody id="tableData">
-                @foreach($data as $key => $value)
+                @foreach($invoices as $key => $value)
 
                 <tr style="font-size: small;">
                   <td>{{ ++$key }}</td>
