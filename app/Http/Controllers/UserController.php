@@ -30,6 +30,8 @@ use App\Models\Contract;
 use App\Models\Invoice;
 use App\Models\Currency;
 use App\Models\Template;
+use App\Models\Location;
+use App\Models\Service;
 use App\Models\Comment;
 use App;
 
@@ -139,13 +141,13 @@ class UserController extends Controller
                 $data['adminsCount']   = User::where('role', user_roles('2'))->count();
                 $data['usersCount']   = User::where('role', user_roles('3'))->count();
 
-                $data['revenue']  = Invoice::join('currencies as c','invoices.currency_code','=','c.code')
+                $data['revenue']  = Invoice::join('currencies as c', 'invoices.currency_code', '=', 'c.code')
                     ->where('invoices.status', $this->status['Completed'])
                     ->where('c.type', $this->currencyTypes[1])
-                    ->groupBy('invoices.currency_code','c.name')
+                    ->groupBy('invoices.currency_code', 'c.name')
                     ->select('invoices.currency_code', 'c.name', DB::raw('SUM(amount) as total_amount'))
                     ->get()
-                    ->toArray(); 
+                    ->toArray();
 
                 $data['totalQuotion']         = Quotation::count();
                 $data['totalInvoice']         = Invoice::count();
@@ -211,7 +213,7 @@ class UserController extends Controller
             return view('users', ['data' => $users, 'user' => $user, 'add_as_user' => user_roles('3')]);
         }
     }
-// quotations managment module....
+    // quotations managment module....
     public function quotations()
     {
         $user = auth()->user();
@@ -258,7 +260,9 @@ class UserController extends Controller
             return redirect()->back();
         }
         $data['duplicate_trip'] = NULL;
-        $data['currencies'] = Currency::select('code', 'name')->pluck('name','code')->toArray();
+        $data['currencies'] = Currency::select('code', 'name')->pluck('name', 'code')->toArray();
+        $data['services']   = Service::select('code', 'name')->pluck('name', 'code')->toArray();
+        $data['location']   = Location::select('code', 'name')->pluck('name', 'code')->toArray();
 
         if ($request->has('id')) {
             $data['duplicate_trip'] = $request->duplicate_trip ?? NULL;
@@ -294,14 +298,14 @@ class UserController extends Controller
         if (!view_permission($page_name)) {
             return redirect()->back();
         }
- 
-        $data['draft_template'] = Template::where('save_as',$this->temp_status_as['Draft'])->orderBy('id','DESC')->first();
+
+        $data['draft_template'] = Template::where('save_as', $this->temp_status_as['Draft'])->orderBy('id', 'DESC')->first();
         $data['template_for'] = $this->template_for['1'];
         $data['save_as'] = $this->temp_saveAs;
         return view('create_quotation', $data);
     }
 
-// contracts managment module....
+    // contracts managment module....
     public function contracts()
     {
         $user = auth()->user();
@@ -348,7 +352,7 @@ class UserController extends Controller
             return redirect()->back();
         }
         $data['duplicate_trip'] = NULL;
-        $data['currencies'] = Currency::select('code', 'name')->pluck('name','code')->toArray();
+        $data['currencies'] = Currency::select('code', 'name')->pluck('name', 'code')->toArray();
 
         if ($request->has('id')) {
 
@@ -377,7 +381,7 @@ class UserController extends Controller
         return view('add_contract', $data);
     }
 
-// invoces managment module....
+    // invoces managment module....
     public function invoices()
     {
         $user = auth()->user();
@@ -424,7 +428,7 @@ class UserController extends Controller
             return redirect()->back();
         }
         $data['duplicate_trip'] = NULL;
-        $data['currencies'] = Currency::select('code', 'name')->pluck('name','code')->toArray();
+        $data['currencies'] = Currency::select('code', 'name')->pluck('name', 'code')->toArray();
 
         if ($request->has('id')) {
 
@@ -758,7 +762,8 @@ class UserController extends Controller
         }
     }
 
-    public function currencies(REQUEST $request){
+    public function currencies(REQUEST $request)
+    {
         $user = auth()->user();
         $page_name = 'currencies';
 
@@ -769,33 +774,32 @@ class UserController extends Controller
         $message  = NULL;
         Session::forget('msg');
 
-        if($request->action == 'edit'){
+        if ($request->action == 'edit') {
             $currency = Currency::findOrFail($request->id)->toArray();
-        }
-        else if($request->action == 'save'){
+        } else if ($request->action == 'save') {
             $saved = Currency::updateOrCreate(
-                ['id' => $request->id ?? NULL], 
+                ['id' => $request->id ?? NULL],
                 [
                     'name' => ucwords($request->name),
                     'code' => strtoupper($request->code),
                     'type' => $request->type,
                     'created_by' => $user->id,
-                ] 
+                ]
             );
             $message = "Currency " . ($request->id ? "Updated" : "Saved") . " Successfully";
             Session::flash('msg', $message);
-        }
-        else if($request->action == 'dell'){
+        } else if ($request->action == 'dell') {
             $deleted = Currency::find($request->id)->delete();
             $message = "Currency has been deleted Successfully";
             Session::flash('msg', $message);
         }
 
-         $currencies = Currency::all()->toArray();
-        return view('currencies', ['user' => $user, 'currency'=>$currency,'data'=>$currencies ,'types' => $this->currencyTypes]);
+        $currencies = Currency::all()->toArray();
+        return view('currencies', ['user' => $user, 'currency' => $currency, 'data' => $currencies, 'types' => $this->currencyTypes]);
     }
 
-    public function revenue(REQUEST $request){
+    public function revenue(REQUEST $request)
+    {
         $user = auth()->user();
         $page_name = 'revenue';
 
@@ -803,12 +807,12 @@ class UserController extends Controller
             return redirect()->back();
         }
 
-        $data  = Invoice::join('currencies as c','invoices.currency_code','=','c.code')
-        ->where('invoices.status', $this->status['Completed'])
-        ->groupBy('invoices.currency_code','c.name')
-        ->select('invoices.currency_code', 'c.name', DB::raw('SUM(amount) as total_amount'))
-        ->get()
-        ->toArray();   
-        return view('revenue', ['user' => $user, 'data'=>$data]);
+        $data  = Invoice::join('currencies as c', 'invoices.currency_code', '=', 'c.code')
+            ->where('invoices.status', $this->status['Completed'])
+            ->groupBy('invoices.currency_code', 'c.name')
+            ->select('invoices.currency_code', 'c.name', DB::raw('SUM(amount) as total_amount'))
+            ->get()
+            ->toArray();
+        return view('revenue', ['user' => $user, 'data' => $data]);
     }
 }

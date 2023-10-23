@@ -92,6 +92,12 @@ return [
         6 => 'Other'
     ],
 
+    'SERVICE_TYPES' => [
+        '1' => 'Quote',
+        '2' => 'Contract',
+        '3' => 'Invoice',
+    ],
+
     'LOCATIONS' => [
         'PK' => 'Pakistan',
         'ISB' => 'Islamabad',
@@ -105,7 +111,13 @@ return [
         'ERU' => 'Europe',
         'CHN' => 'China'
     ],
-    
+
+    'LOCATION_TYPES' => [
+        '1' => 'Default',
+        '2' => 'Permanent',
+        '3' => 'Temporary',
+    ],
+
     'CURRENCIES' => [
         'PKR' => 'Pakistani Rupee',
         'USD' => 'United States Dollar',
@@ -120,11 +132,11 @@ return [
     ],
 
     'CURRENCY_TYPES' => [
-        '1'=>'Default',
-        '2'=>'Basic',
-        '3'=>'Aditional',
+        '1' => 'Default',
+        '2' => 'Basic',
+        '3' => 'Aditional',
     ],
-        
+
     'PAYPAL' => [
         'CLIENT_ID' => 'AX5AHiCaQb9E7Y01nr0-X_ibBPgRuuU5bb-K0K6xcS5Yo4zUOwSZh7nOJg-QgfD4-7EEosSR0BBdZ9Ki',
         'CLIENT_SECRET' => 'EKIvOEbvrlTb3kdmxRMOtAHePyjViFWH2AveI8GX566SVcqxTVwA8CmSaOGS-sx-CZw9HLu__o-4ZcuT',
@@ -132,15 +144,15 @@ return [
     ],
 
     'TEMPLATE_FOR' => [
-        1 =>'Quotation',
-        2 =>'Contract',
-        3 =>'Invoce'
+        1 => 'Quotation',
+        2 => 'Contract',
+        3 => 'Invoce'
     ],
 
     'TEMP_SAVE_AS' => [
-        1 =>'Draft',
-        2 =>'Common',
-        3 =>'Self'
+        1 => 'Draft',
+        2 => 'Common',
+        3 => 'Self'
     ],
 
     'TEMP_SAVE_AS_NAME' => [
@@ -151,6 +163,12 @@ return [
 
     'TEMP_STATUS' => [
         'Active' => 1,
-        'Deactive' =>2
+        'Deactive' => 2
+    ],
+
+    'STATUS' => [
+        'Active' => 1,
+        'Deactive' => 2,
+        'Deleted' => 3
     ],
 ];
