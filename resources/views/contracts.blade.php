@@ -4,8 +4,6 @@
 @php
 $qouteStatus = config('constants.QUOTE_STATUS');
 $qouteStatus_trans = config('constants.QUOTE_STATUS_' . app()->getLocale());
-$services = config('constants.CONTRACTS');
-$location = config('constants.LOCATIONS');
 @endphp
 <!-- partial -->
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA3YWssMkDiW3F1noE6AVbiJEL40MR0IFU&libraries=places"></script>
@@ -102,7 +100,7 @@ $location = config('constants.LOCATIONS');
                 </tr>
               </thead>
               <tbody id="tableData">
-                @foreach($data as $key => $value)
+                @foreach($contracts as $key => $value)
 
                 <tr style="font-size: small;">
                   <td>{{ ++$key }}</td>

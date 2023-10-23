@@ -50,6 +50,8 @@ class UserController extends Controller
     protected $temp_saveAs;
     protected $temp_status;
     protected $temp_status_as;
+    protected $sev_status;
+    protected $sev_type;
 
     public function __construct()
     {
@@ -65,6 +67,8 @@ class UserController extends Controller
         $this->temp_saveAs = config('constants.TEMP_SAVE_AS');
         $this->temp_status = config('constants.TEMP_STATUS');
         $this->temp_status_as = config('constants.TEMP_SAVE_AS_NAME');
+        $this->sev_status = config('constants.STATUS');
+        $this->sev_type = config('constants.SERVICE_TYPES');
     }
 
     public function lang_change(Request $request)
@@ -222,15 +226,20 @@ class UserController extends Controller
         if (!view_permission($page_name)) {
             return redirect()->back();
         }
+
+        $data['user'] = $user;
+        $data['services']   = Service::select('id', 'title')->where(['status' => $this->sev_status[1], 'type' => $this->sev_type[2]])->pluck('title', 'id')->toArray();
+        $data['location']   = Location::select('code', 'name')->where(['status' => $this->sev_status[1]])->pluck('name', 'code')->toArray();
+
         if (isset($user->role) && $user->role == user_roles('1')) {
-            $quotations = Quotation::join('users as u', 'u.id', '=', 'quotations.user_id')
+            $data['quotations'] = Quotation::join('users as u', 'u.id', '=', 'quotations.user_id')
                 ->join('users as admins', 'admins.id', '=', 'quotations.admin_id')
                 ->select('quotations.*', 'u.name as user_name', 'admins.name as admin_name')
                 ->orderBy('quotations.id', 'desc')
                 ->get()
                 ->toArray();
         } else if (isset($user->role) && $user->role == user_roles('2')) {
-            $quotations = Quotation::join('users as u', 'u.id', '=', 'quotations.user_id')
+            $data['quotations'] = Quotation::join('users as u', 'u.id', '=', 'quotations.user_id')
                 ->join('users as admins', 'admins.id', '=', 'quotations.admin_id')
                 ->select('quotations.*', 'u.name as user_name', 'admins.name as admin_name')
                 ->where('quotations.admin_id', $user->id)
@@ -238,7 +247,7 @@ class UserController extends Controller
                 ->get()
                 ->toArray();
         } else {
-            $quotations = Quotation::join('users as u', 'u.id', '=', 'quotations.user_id')
+            $data['quotations'] = Quotation::join('users as u', 'u.id', '=', 'quotations.user_id')
                 ->join('users as admins', 'admins.id', '=', 'quotations.admin_id')
                 ->select('quotations.*', 'u.name as user_name', 'admins.name as admin_name')
                 ->where('quotations.user_id', $user->id)
@@ -247,22 +256,23 @@ class UserController extends Controller
                 ->toArray();
         }
 
-        return view('quotations', ['data' => $quotations, 'user' => $user]);
+        return view('quotations', $data);
     }
 
     public function add_quotation(Request $request)
     {
         $user = auth()->user();
-        $data['user'] = $user;
         $page_name = 'add_quotation';
 
         if (!view_permission($page_name)) {
             return redirect()->back();
         }
+
+        $data['user'] = $user;
         $data['duplicate_trip'] = NULL;
-        $data['currencies'] = Currency::select('code', 'name')->pluck('name', 'code')->toArray();
-        $data['services']   = Service::select('code', 'name')->pluck('name', 'code')->toArray();
-        $data['location']   = Location::select('code', 'name')->pluck('name', 'code')->toArray();
+        $data['currencies'] = Currency::select('code', 'name')->where(['status' => $this->sev_status[1]])->pluck('name', 'code')->toArray();
+        $data['services']   = Service::select('id', 'title')->where(['status' => $this->sev_status[1], 'type' => $this->sev_type[2]])->pluck('title', 'id')->toArray();
+        $data['location']   = Location::select('code', 'name')->where(['status' => $this->sev_status[1]])->pluck('name', 'code')->toArray();
 
         if ($request->has('id')) {
             $data['duplicate_trip'] = $request->duplicate_trip ?? NULL;
@@ -314,15 +324,20 @@ class UserController extends Controller
         if (!view_permission($page_name)) {
             return redirect()->back();
         }
+
+        $data['user'] = $user;
+        $data['services']   = Service::select('id', 'title')->where(['status' => $this->sev_status[1], 'type' => $this->sev_type[2]])->pluck('title', 'id')->toArray();
+        $data['location']   = Location::select('code', 'name')->where(['status' => $this->sev_status[1]])->pluck('name', 'code')->toArray();
+
         if (isset($user->role) && $user->role == user_roles('1')) {
-            $contracts = Contract::join('users as u', 'u.id', '=', 'contracts.user_id')
+            $data['contracts'] = Contract::join('users as u', 'u.id', '=', 'contracts.user_id')
                 ->join('users as admins', 'admins.id', '=', 'contracts.admin_id')
                 ->select('contracts.*', 'u.name as user_name', 'admins.name as admin_name')
                 ->orderBy('contracts.id', 'desc')
                 ->get()
                 ->toArray();
         } else if (isset($user->role) && $user->role == user_roles('2')) {
-            $contracts = Contract::join('users as u', 'u.id', '=', 'contracts.user_id')
+            $data['contracts'] = Contract::join('users as u', 'u.id', '=', 'contracts.user_id')
                 ->join('users as admins', 'admins.id', '=', 'contracts.admin_id')
                 ->select('contracts.*', 'u.name as user_name', 'admins.name as admin_name')
                 ->where('contracts.admin_id', $user->id)
@@ -330,7 +345,7 @@ class UserController extends Controller
                 ->get()
                 ->toArray();
         } else {
-            $contracts = Contract::join('users as u', 'u.id', '=', 'contracts.user_id')
+            $data['contracts'] = Contract::join('users as u', 'u.id', '=', 'contracts.user_id')
                 ->join('users as admins', 'admins.id', '=', 'contracts.admin_id')
                 ->select('contracts.*', 'u.name as user_name', 'admins.name as admin_name')
                 ->where('contracts.user_id', $user->id)
@@ -339,20 +354,23 @@ class UserController extends Controller
                 ->toArray();
         }
 
-        return view('contracts', ['data' => $contracts, 'user' => $user]);
+        return view('contracts', $data);
     }
 
     public function add_contract(Request $request)
     {
         $user = auth()->user();
-        $data['user'] = $user;
         $page_name = 'add_contract';
 
         if (!view_permission($page_name)) {
             return redirect()->back();
         }
+
+        $data['user'] = $user;
         $data['duplicate_trip'] = NULL;
-        $data['currencies'] = Currency::select('code', 'name')->pluck('name', 'code')->toArray();
+        $data['currencies'] = Currency::select('code', 'name')->where(['status' => $this->sev_status[1]])->pluck('name', 'code')->toArray();
+        $data['services']   = Service::select('id', 'title')->where(['status' => $this->sev_status[1], 'type' => $this->sev_type[2]])->pluck('title', 'id')->toArray();
+        $data['location']   = Location::select('code', 'name')->where(['status' => $this->sev_status[1]])->pluck('name', 'code')->toArray();
 
         if ($request->has('id')) {
 
@@ -390,15 +408,20 @@ class UserController extends Controller
         if (!view_permission($page_name)) {
             return redirect()->back();
         }
+
+        $data['user'] = $user;
+        $data['services']   = Service::select('id', 'title')->where(['status' => $this->sev_status[1], 'type' => $this->sev_type[2]])->pluck('title', 'id')->toArray();
+        $data['location']   = Location::select('code', 'name')->where(['status' => $this->sev_status[1]])->pluck('name', 'code')->toArray();
+
         if (isset($user->role) && $user->role == user_roles('1')) {
-            $invoices = Invoice::join('users as u', 'u.id', '=', 'invoices.user_id')
+            $data['invoices'] = Invoice::join('users as u', 'u.id', '=', 'invoices.user_id')
                 ->join('users as admins', 'admins.id', '=', 'invoices.admin_id')
                 ->select('invoices.*', 'u.name as user_name', 'admins.name as admin_name')
                 ->orderBy('invoices.id', 'desc')
                 ->get()
                 ->toArray();
         } else if (isset($user->role) && $user->role == user_roles('2')) {
-            $invoices = Invoice::join('users as u', 'u.id', '=', 'invoices.user_id')
+            $data['invoices'] = Invoice::join('users as u', 'u.id', '=', 'invoices.user_id')
                 ->join('users as admins', 'admins.id', '=', 'invoices.admin_id')
                 ->select('invoices.*', 'u.name as user_name', 'admins.name as admin_name')
                 ->where('invoices.admin_id', $user->id)
@@ -406,7 +429,7 @@ class UserController extends Controller
                 ->get()
                 ->toArray();
         } else {
-            $invoices = Invoice::join('users as u', 'u.id', '=', 'invoices.user_id')
+            $data['invoices'] = Invoice::join('users as u', 'u.id', '=', 'invoices.user_id')
                 ->join('users as admins', 'admins.id', '=', 'invoices.admin_id')
                 ->select('invoices.*', 'u.name as user_name', 'admins.name as admin_name')
                 ->where('invoices.user_id', $user->id)
@@ -415,20 +438,23 @@ class UserController extends Controller
                 ->toArray();
         }
 
-        return view('invoices', ['data' => $invoices, 'user' => $user]);
+        return view('invoices', $data);
     }
 
     public function add_invoice(Request $request)
     {
         $user = auth()->user();
-        $data['user'] = $user;
         $page_name = 'add_invoice';
 
         if (!view_permission($page_name)) {
             return redirect()->back();
         }
+
+        $data['user'] = $user;
         $data['duplicate_trip'] = NULL;
-        $data['currencies'] = Currency::select('code', 'name')->pluck('name', 'code')->toArray();
+        $data['currencies'] = Currency::select('code', 'name')->where(['status' => $this->sev_status[1]])->pluck('name', 'code')->toArray();
+        $data['services']   = Service::select('id', 'title')->where(['status' => $this->sev_status[1], 'type' => $this->sev_type[2]])->pluck('title', 'id')->toArray();
+        $data['location']   = Location::select('code', 'name')->where(['status' => $this->sev_status[1]])->pluck('name', 'code')->toArray();
 
         if ($request->has('id')) {
 

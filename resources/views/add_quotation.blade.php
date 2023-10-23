@@ -73,10 +73,7 @@
         margin-bottom: 0;
     }
 </style>
-@php
-$services = config('constants.SERVICES');
-$location = config('constants.LOCATIONS');
-@endphp
+
 <div class="content-wrapper py-0 my-2">
     <div style="border: none;">
         <div class="bg-white" style="border-radius: 20px;">
@@ -219,7 +216,7 @@ $location = config('constants.LOCATIONS');
                                     <label for="service_id">@lang('Service')</label>
                                     <select required name="service_id[]" class="form-select service_id ">
                                         <option disabled selected> Select @lang('quote service')</option>
-                                        @forelse($services as $key => $value)
+                                        @forelse($services as $value)
                                         <option value="{{ $key}}" {{ isset($serv_data->service_id) && $serv_data->service_id == $key ? 'selected' : '' }}>
                                             {{ $value }}
                                         </option>
