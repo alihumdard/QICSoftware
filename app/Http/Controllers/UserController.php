@@ -106,7 +106,7 @@ class UserController extends Controller
 
                 $data['totalTodayCT']   = Contract::whereDate('end_date', $this->curFormatDate)->whereIn('status', [$this->status['Pending'], $this->status['In Progress'], $this->status['Completed']])->where('admin_id', $user->id)->count();
                 $data['TodayCTcomp']    = Contract::whereDate('end_date', $this->curFormatDate)->whereIn('status', [$this->status['Completed']])->where('admin_id', $user->id)->count();
-                $data['compCT_percent'] = $data['totalTodayCT'] > 0 ? round(($data['TodayCTcomp'] / $data['totalTodayQT']) * 100, 1) : 0;
+                $data['compCT_percent'] = $data['totalTodayCT'] > 0 ? round(($data['TodayCTcomp'] / $data['totalTodayCT']) * 100, 1) : 0;
 
                 $data['totalTodayINV']   = Invoice::whereDate('date', $this->curFormatDate)->whereIn('status', [$this->status['Pending'], $this->status['In Progress']])->where('admin_id', $user->id)->count();
                 $data['TodayINVcomp']    = Invoice::whereDate('date', $this->curFormatDate)->whereIn('status', [$this->status['In Progress']])->where('admin_id', $user->id)->count();
@@ -326,22 +326,17 @@ class UserController extends Controller
         }
 
         $data['user'] = $user;
-        $data['location']   = Location::select('code', 'name')->where(['status' => $this->sev_status['Active']])->pluck('name', 'code')->toArray();
-        $data['services']   = Service::select('id', 'title')->where(['status' => $this->sev_status['Active'], 'type' => $this->sev_type[2]])->pluck('title', 'id')->toArray();
-
         if (isset($user->role) && $user->role == user_roles('1')) {
-            $data['contracts'] = Contract::with('location')
+            $data['contracts'] = Contract::with(['location:id,name,code', 'service:id,title as service_title'])
                 ->join('users as u', 'u.id', '=', 'contracts.user_id')
                 ->join('users as admins', 'admins.id', '=', 'contracts.admin_id')
-                ->join('services as s', 's.id', '=', 'contracts.service_id')
-                ->select('contracts.*', 'u.name as user_name', 'admins.name as admin_name', 's.title as serivce_name')
+                ->select('contracts.*', 'u.name as user_name', 'admins.name as admin_name')
                 ->orderBy('contracts.id', 'desc')
                 ->get()
                 ->toArray();
-                dd($data['contracts']);
-
         } else if (isset($user->role) && $user->role == user_roles('2')) {
-            $data['contracts'] = Contract::join('users as u', 'u.id', '=', 'contracts.user_id')
+            $data['contracts'] = Contract::with(['location:id,name,code', 'service:id,title as service_title'])
+                ->join('users as u', 'u.id', '=', 'contracts.user_id')
                 ->join('users as admins', 'admins.id', '=', 'contracts.admin_id')
                 ->select('contracts.*', 'u.name as user_name', 'admins.name as admin_name')
                 ->where('contracts.admin_id', $user->id)
@@ -349,7 +344,8 @@ class UserController extends Controller
                 ->get()
                 ->toArray();
         } else {
-            $data['contracts'] = Contract::join('users as u', 'u.id', '=', 'contracts.user_id')
+            $data['contracts'] = Contract::with(['location:id,name,code', 'service:id,title as service_title'])
+                ->join('users as u', 'u.id', '=', 'contracts.user_id')
                 ->join('users as admins', 'admins.id', '=', 'contracts.admin_id')
                 ->select('contracts.*', 'u.name as user_name', 'admins.name as admin_name')
                 ->where('contracts.user_id', $user->id)
@@ -357,7 +353,6 @@ class UserController extends Controller
                 ->get()
                 ->toArray();
         }
-
         return view('contracts', $data);
     }
 
@@ -379,17 +374,14 @@ class UserController extends Controller
         if ($request->has('id')) {
 
             $data['duplicate_trip'] = $request->duplicate_trip ?? NULL;
+            $contract = Contract::find($request->id);
+            $data['data'] = $contract->toArray();
 
             if (isset($user->role) && ($user->role == user_roles('1'))) {
-                $contract = Contract::find($request->id);
-                $data['data'] = $contract->toArray();
                 $data['admins_list'] = User::where(['role' => user_roles('2'), 'status' => active_users()])->orderBy('id', 'desc')->select('id', 'name')->get()->toArray();
                 $data['users_list'] = User::where(['role' => user_roles('3'), 'status' => active_users(), 'client_id' => $contract->admin_id])->orderBy('id', 'desc')->get()->toArray();
             } else if (isset($user->role) && ($user->role == user_roles('2'))) {
-                $data['data'] = Contract::find($request->id)->toArray();
                 $data['users_list'] = User::where(['role' => user_roles('3'), 'status' => active_users(), 'client_id' => $user->id])->orderBy('id', 'desc')->get()->toArray();
-            } else {
-                $data['data'] = Contract::find($request->id)->toArray();
             }
         } else {
             if (isset($user->role) && $user->role == user_roles('1')) {
@@ -414,18 +406,17 @@ class UserController extends Controller
         }
 
         $data['user'] = $user;
-        $data['services']   = Service::select('id', 'title')->where(['status' => $this->sev_status[1], 'type' => $this->sev_type[2]])->pluck('title', 'id')->toArray();
-        $data['location']   = Location::select('code', 'name')->where(['status' => $this->sev_status[1]])->pluck('name', 'code')->toArray();
-
         if (isset($user->role) && $user->role == user_roles('1')) {
-            $data['invoices'] = Invoice::join('users as u', 'u.id', '=', 'invoices.user_id')
+            $data['invoices'] = Invoice::with(['location:id,name,code', 'service:id,title as service_title'])
+                ->join('users as u', 'u.id', '=', 'invoices.user_id')
                 ->join('users as admins', 'admins.id', '=', 'invoices.admin_id')
                 ->select('invoices.*', 'u.name as user_name', 'admins.name as admin_name')
                 ->orderBy('invoices.id', 'desc')
                 ->get()
                 ->toArray();
         } else if (isset($user->role) && $user->role == user_roles('2')) {
-            $data['invoices'] = Invoice::join('users as u', 'u.id', '=', 'invoices.user_id')
+            $data['invoices'] = Invoice::with(['location:id,name,code', 'service:id,title as service_title'])
+                ->join('users as u', 'u.id', '=', 'invoices.user_id')
                 ->join('users as admins', 'admins.id', '=', 'invoices.admin_id')
                 ->select('invoices.*', 'u.name as user_name', 'admins.name as admin_name')
                 ->where('invoices.admin_id', $user->id)
@@ -433,7 +424,8 @@ class UserController extends Controller
                 ->get()
                 ->toArray();
         } else {
-            $data['invoices'] = Invoice::join('users as u', 'u.id', '=', 'invoices.user_id')
+            $data['invoices'] = Invoice::with(['location:id,name,code', 'service:id,title as service_title'])
+                ->join('users as u', 'u.id', '=', 'invoices.user_id')
                 ->join('users as admins', 'admins.id', '=', 'invoices.admin_id')
                 ->select('invoices.*', 'u.name as user_name', 'admins.name as admin_name')
                 ->where('invoices.user_id', $user->id)
@@ -463,17 +455,14 @@ class UserController extends Controller
         if ($request->has('id')) {
 
             $data['duplicate_trip'] = $request->duplicate_trip ?? NULL;
+            $invoices = Invoice::find($request->id);
+            $data['data'] = $invoices->toArray();
 
             if (isset($user->role) && ($user->role == user_roles('1'))) {
-                $invoices = Invoice::find($request->id);
-                $data['data'] = $invoices->toArray();
                 $data['admins_list'] = User::where(['role' => user_roles('2'), 'status' => active_users()])->orderBy('id', 'desc')->select('id', 'name')->get()->toArray();
                 $data['users_list'] = User::where(['role' => user_roles('3'), 'status' => active_users(), 'client_id' => $invoices->admin_id])->orderBy('id', 'desc')->get()->toArray();
             } else if (isset($user->role) && ($user->role == user_roles('2'))) {
-                $data['data'] = Invoice::find($request->id)->toArray();
                 $data['users_list'] = User::where(['role' => user_roles('3'), 'status' => active_users(), 'client_id' => $user->id])->orderBy('id', 'desc')->get()->toArray();
-            } else {
-                $data['data'] = Invoice::find($request->id)->toArray();
             }
         } else {
             if (isset($user->role) && $user->role == user_roles('1')) {

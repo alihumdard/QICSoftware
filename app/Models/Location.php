@@ -4,11 +4,23 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Contract;
 
 class Location extends Model
 {
     use HasFactory;
-    public function location() {
-        return $this->belongsTo(Location::class, 'location_id', 'id');
+    protected $table = 'locations';
+
+    protected $fillable = ['name', 'code', 'type', 'created_by'];
+
+    public function location()
+    {
+        return $this->hasOne(Contract::class);
     }
+
+    public static $rules = [
+        'name' => 'required|unique:locations,name',
+        'code' => 'required|unique:locations,code|alpha',
+        'type' => 'required|alpha',
+    ];
 }
