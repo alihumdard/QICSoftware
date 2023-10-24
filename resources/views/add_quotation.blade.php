@@ -197,9 +197,8 @@
                         </div>
 
                         <div id="existing_row">
-                            @forelse( json_decode($data['service_data'] ?? '[]') as $key => $serv_data)
+                            @forelse( json_decode($data['service_data'] ?? '[]') as $key => $serv_data)                            
                             <div class="row">
-
                                 @if($key == '0')
                                 <div class="col-lg-1 col-md-12 col-sm-12 order-lg-last">
                                     <label class="d-none d-lg-block">Add</label>
@@ -216,9 +215,9 @@
                                     <label for="service_id">@lang('Service')</label>
                                     <select required name="service_id[]" class="form-select service_id ">
                                         <option disabled selected> Select @lang('quote service')</option>
-                                        @forelse($services as $value)
-                                        <option value="{{ $key}}" {{ isset($serv_data->service_id) && $serv_data->service_id == $key ? 'selected' : '' }}>
-                                            {{ $value }}
+                                        @forelse($services as $sid => $val)
+                                        <option value="{{ $sid}}" {{ isset($serv_data->service_id) && $serv_data->service_id == $sid ? 'selected' : '' }}>
+                                            {{ $val }}
                                         </option>
                                         @empty
                                         <!-- Code to handle the case when $driver_list is empty or null -->

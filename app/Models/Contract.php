@@ -8,4 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class Contract extends Model
 {
     use HasFactory;
+    
+    public function location(){
+        $this->belongsTo(Location::class,'location_id');
+    }
 }

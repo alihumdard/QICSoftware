@@ -115,7 +115,7 @@ $qouteStatus_trans = config('constants.QUOTE_STATUS_' . app()->getLocale());
                   <td>{{ $value['client_name'] ?? '' }}</td>
                   <td>{{ $location[$value['location']] ?? ''}}</td>
                   <td>{{ $value['amount'].' ('.$value['currency_code'].') ' ?? '' }}</td>
-                  <td>{{ $services[$value['service_id']] }}</td>
+                  <td>{{ $value['serivce_name'] ?? '' }}</td>
                   <td>
                     <button class="btn btn_status_c">
                       @if ($value['status'] == $qouteStatus['In Progress'])

@@ -518,8 +518,8 @@ class APIController extends Controller
             $contract->end_date      = $request->end_date;
             $contract->admin_id      = $request->admin_id;
             $contract->user_id       = $request->user_id;
-            $contract->currency_code = $request->currency_code;
-            $contract->location      = $request->location;
+            $contract->currency_id   = $request->currency_id;
+            $contract->location_id   = $request->location_id;
             $contract->service_id    = $request->service_id;
             $contract->desc          = $request->desc;
             $contract->client_name   = $request->client_name;

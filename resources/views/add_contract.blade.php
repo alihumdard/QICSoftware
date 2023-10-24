@@ -170,7 +170,7 @@
 
                         <div class="col-lg-3 col-md-6  col-sm-12">
                             <label for="service_id">@lang('Contract Location')</label>
-                            <select required name="location" id="location" class="form-select">
+                            <select required name="location_id" id="location" class="form-select">
                                 <option disabled selected>@lang('select contract location')</option>
                                 @forelse($location as $key => $value)
                                 <option value="{{ $key}}" {{ isset($data['location']) && $data['location'] == $key ? 'selected' : '' }}>
@@ -189,8 +189,8 @@
                             <span id="q_amount_error" class="error-message text-danger"></span>
                         </div>
                         <div class="col-lg-2 col-md-6 col-sm-12">
-                            <label for="currency_code">Currency Code</label>
-                            <select required name="currency_code" id="currency_code" class="form-select">
+                            <label for="currency_code">Currency</label>
+                            <select required name="currency_id" id="currency_code" class="form-select">
                                 <option disabled selected> @lang('currency')</option>
                                 @forelse($currencies as $key => $value)
                                 <option value="{{ $key }}" {{ isset($data['currency_code']) && $data['currency_code'] == $key ? 'selected' : '' }}>

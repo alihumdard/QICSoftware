@@ -228,8 +228,8 @@ class UserController extends Controller
         }
 
         $data['user'] = $user;
-        $data['services']   = Service::select('id', 'title')->where(['status' => $this->sev_status[1], 'type' => $this->sev_type[2]])->pluck('title', 'id')->toArray();
-        $data['location']   = Location::select('code', 'name')->where(['status' => $this->sev_status[1]])->pluck('name', 'code')->toArray();
+        $data['location']   = Location::select('code', 'name')->where(['status' => $this->sev_status['Active']])->pluck('name', 'code')->toArray();
+        $data['services']   = Service::select('id', 'title')->where(['status' => $this->sev_status['Active'], 'type' => $this->sev_type[1]])->pluck('title', 'id')->toArray();
 
         if (isset($user->role) && $user->role == user_roles('1')) {
             $data['quotations'] = Quotation::join('users as u', 'u.id', '=', 'quotations.user_id')
@@ -270,9 +270,9 @@ class UserController extends Controller
 
         $data['user'] = $user;
         $data['duplicate_trip'] = NULL;
-        $data['currencies'] = Currency::select('code', 'name')->where(['status' => $this->sev_status[1]])->pluck('name', 'code')->toArray();
-        $data['services']   = Service::select('id', 'title')->where(['status' => $this->sev_status[1], 'type' => $this->sev_type[2]])->pluck('title', 'id')->toArray();
-        $data['location']   = Location::select('code', 'name')->where(['status' => $this->sev_status[1]])->pluck('name', 'code')->toArray();
+        $data['currencies'] = Currency::select('code', 'name')->where(['status' => $this->sev_status['Active']])->pluck('name', 'code')->toArray();
+        $data['location']   = Location::select('code', 'name')->where(['status' => $this->sev_status['Active']])->pluck('name', 'code')->toArray();
+        $data['services']   = Service::select('id', 'title')->where(['status' => $this->sev_status['Active'], 'type' => $this->sev_type[1]])->pluck('title', 'id')->toArray();
 
         if ($request->has('id')) {
             $data['duplicate_trip'] = $request->duplicate_trip ?? NULL;
@@ -326,16 +326,20 @@ class UserController extends Controller
         }
 
         $data['user'] = $user;
-        $data['services']   = Service::select('id', 'title')->where(['status' => $this->sev_status[1], 'type' => $this->sev_type[2]])->pluck('title', 'id')->toArray();
-        $data['location']   = Location::select('code', 'name')->where(['status' => $this->sev_status[1]])->pluck('name', 'code')->toArray();
+        $data['location']   = Location::select('code', 'name')->where(['status' => $this->sev_status['Active']])->pluck('name', 'code')->toArray();
+        $data['services']   = Service::select('id', 'title')->where(['status' => $this->sev_status['Active'], 'type' => $this->sev_type[2]])->pluck('title', 'id')->toArray();
 
         if (isset($user->role) && $user->role == user_roles('1')) {
-            $data['contracts'] = Contract::join('users as u', 'u.id', '=', 'contracts.user_id')
+            $data['contracts'] = Contract::with('location')
+                ->join('users as u', 'u.id', '=', 'contracts.user_id')
                 ->join('users as admins', 'admins.id', '=', 'contracts.admin_id')
-                ->select('contracts.*', 'u.name as user_name', 'admins.name as admin_name')
+                ->join('services as s', 's.id', '=', 'contracts.service_id')
+                ->select('contracts.*', 'u.name as user_name', 'admins.name as admin_name', 's.title as serivce_name')
                 ->orderBy('contracts.id', 'desc')
                 ->get()
                 ->toArray();
+                dd($data['contracts']);
+
         } else if (isset($user->role) && $user->role == user_roles('2')) {
             $data['contracts'] = Contract::join('users as u', 'u.id', '=', 'contracts.user_id')
                 ->join('users as admins', 'admins.id', '=', 'contracts.admin_id')
@@ -368,9 +372,9 @@ class UserController extends Controller
 
         $data['user'] = $user;
         $data['duplicate_trip'] = NULL;
-        $data['currencies'] = Currency::select('code', 'name')->where(['status' => $this->sev_status[1]])->pluck('name', 'code')->toArray();
-        $data['services']   = Service::select('id', 'title')->where(['status' => $this->sev_status[1], 'type' => $this->sev_type[2]])->pluck('title', 'id')->toArray();
-        $data['location']   = Location::select('code', 'name')->where(['status' => $this->sev_status[1]])->pluck('name', 'code')->toArray();
+        $data['currencies'] = Currency::select('id', 'name')->where(['status' => $this->sev_status['Active']])->pluck('name', 'id')->toArray();
+        $data['location']   = Location::select('id', 'name')->where(['status' => $this->sev_status['Active']])->pluck('name', 'id')->toArray();
+        $data['services']   = Service::select('id', 'title')->where(['status' => $this->sev_status['Active'], 'type' => $this->sev_type[2]])->pluck('title', 'id')->toArray();
 
         if ($request->has('id')) {
 

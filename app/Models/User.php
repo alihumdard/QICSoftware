@@ -43,19 +43,4 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    public function payment()
-    {
-        return $this->belongsTo(Payment::class, 'sub_id');
-    }
-
-    public function payments()
-    {
-        return $this->hasMany(Payment::class, 'created_by');
-    }
-
-    public function trips()
-    {
-        return $this->hasMany(Trip::class, 'client_id');
-    }
-
 }
