@@ -112,8 +112,8 @@ $qouteStatus_trans = config('constants.QUOTE_STATUS_' . app()->getLocale());
                   <td>{{ $value['user_name'] ?? ''}} </td>
                   @endif
                   <td>{{ $value['client_name'] ?? '' }}</td>
-                  <td>{{ $location[$value['location']] ?? ''}}</td>
-                  <td>{{ $value['amount'].' ('.$value['currency_code'].') ' ?? '' }}</td>
+                  <td>{{ $value['location']['name'] ?? ''}}</td>
+                  <td>{{ $value['amount'].' ('.$value['currency']['code'].') ' ?? '' }}</td>
                   <td>
                     <b>{{ $value['client_mail'] ?? ''}}</b>
                     <span data-qoute_id="{{$value['id']}}">
@@ -183,7 +183,7 @@ $qouteStatus_trans = config('constants.QUOTE_STATUS_' . app()->getLocale());
                         </svg>
                       </a>
 
-                      <button data-id="{{ $value['id'] }}" data-role="{{ $user->role}}" id="quoteDetail_btn" class="btn p-0 invoiceDetail_view" data-toggle="modal" data-target="#invoicedetail">
+                      <button data-id="{{ $value['id'] }}" data-role="{{ $user->role}}" id="InvoiceDetail_btn" class="btn p-0 invoiceDetail_view" data-toggle="modal" data-target="#invoicedetail">
                         <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
                           <circle opacity="0.1" cx="18" cy="18" r="18" fill="#ACADAE" />
                           <path d="M17.7167 13C13.5 13 11 18 11 18C11 18 13.5 23 17.7167 23C21.8333 23 24.3333 18 24.3333 18C24.3333 18 21.8333 13 17.7167 13ZM17.6667 14.6667C19.5167 14.6667 21 16.1667 21 18C21 19.85 19.5167 21.3333 17.6667 21.3333C15.8333 21.3333 14.3333 19.85 14.3333 18C14.3333 16.1667 15.8333 14.6667 17.6667 14.6667ZM17.6667 16.3333C16.75 16.3333 16 17.0833 16 18C16 18.9167 16.75 19.6667 17.6667 19.6667C18.5833 19.6667 19.3333 18.9167 19.3333 18C19.3333 17.8333 19.2667 17.6833 19.2333 17.5333C19.1 17.8 18.8333 18 18.5 18C18.0333 18 17.6667 17.6333 17.6667 17.1667C17.6667 16.8333 17.8667 16.5667 18.1333 16.4333C17.9833 16.3833 17.8333 16.3333 17.6667 16.3333Z" fill="black" />
@@ -277,7 +277,7 @@ $qouteStatus_trans = config('constants.QUOTE_STATUS_' . app()->getLocale());
 </div>
 
 
-<!-- Quote Status Modal -->
+<!-- Invoice Status Modal -->
 <div class="modal fade" id="qoute_sts_modal" tabindex="-1" aria-labelledby="user_stsLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content bg-white" style="border-radius: 10px;">
@@ -315,7 +315,7 @@ $qouteStatus_trans = config('constants.QUOTE_STATUS_' . app()->getLocale());
     </div>
   </div>
 </div>
-<!-- Quote Status Modal End -->
+<!-- Invoice Status Modal End -->
 
 @if($user->role == user_roles('1'))
 <script>
