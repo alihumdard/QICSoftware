@@ -173,7 +173,7 @@
                             <select required name="location_id" id="location" class="form-select">
                                 <option disabled selected>@lang('select contract location')</option>
                                 @forelse($location as $key => $value)
-                                <option value="{{ $key}}" {{ isset($data['location']) && $data['location'] == $key ? 'selected' : '' }}>
+                                <option value="{{ $key}}" {{ isset($data['location_id']) && $data['location_id'] == $key ? 'selected' : '' }}>
                                     {{ $value }}
                                 </option>
                                 @empty
@@ -193,7 +193,7 @@
                             <select required name="currency_id" id="currency_code" class="form-select">
                                 <option disabled selected> @lang('currency')</option>
                                 @forelse($currencies as $key => $value)
-                                <option value="{{ $key }}" {{ isset($data['currency_code']) && $data['currency_code'] == $key ? 'selected' : '' }}>
+                                <option value="{{ $key }}" {{ isset($data['currency_id']) && $data['currency_id'] == $key ? 'selected' : '' }}>
                                     {{ $value }}
                                 </option>
                                 @empty

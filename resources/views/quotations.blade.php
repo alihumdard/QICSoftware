@@ -4,8 +4,6 @@
 @php
 $qouteStatus = config('constants.QUOTE_STATUS');
 $qouteStatus_trans = config('constants.QUOTE_STATUS_' . app()->getLocale());
-$services = config('constants.SERVICES');
-$location = config('constants.LOCATIONS');
 @endphp
 <!-- partial -->
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA3YWssMkDiW3F1noE6AVbiJEL40MR0IFU&libraries=places"></script>
@@ -113,8 +111,8 @@ $location = config('constants.LOCATIONS');
                   <td>{{ $value['user_name'] ?? ''}} </td>
                   @endif
                   <td>{{ $value['client_name'] ?? '' }}</td>
-                  <td>{{ $location[$value['location']] ?? ''}}</td>
-                  <td>{{ $value['amount'].' ('.$value['currency_code'].') ' ?? '' }}</td>
+                  <td>{{ $value['location']['name'] ?? ''}}</td>
+                  <td>{{ $value['amount'].' ('.$value['currency']['code'].') ' ?? '' }}</td>
                   <!-- <td>{{ $value['service_data'] ?? '' }}</td> -->
                   <td>
                     <button class="btn btn_status_q">
@@ -233,6 +231,7 @@ $location = config('constants.LOCATIONS');
   </div>
 </div>
 <!-- Quote Status Modal End -->
+<!-- Quote details Modal start -->
 
 @if($user->role == user_roles('1'))
 <script>

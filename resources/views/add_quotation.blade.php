@@ -150,10 +150,10 @@
 
                         <div class="col-lg-3 col-md-6  col-sm-12 ">
                             <label for="service_id">@lang('Quote Location')</label>
-                            <select required name="location" id="location" class="form-select">
+                            <select required name="location_id" id="location" class="form-select">
                                 <option disabled selected> Select @lang('quote location')</option>
                                 @forelse($location as $key => $value)
-                                <option value="{{ $key}}" {{ isset($data['location']) && $data['location'] == $key ? 'selected' : '' }}>
+                                <option value="{{ $key}}" {{ isset($data['location_id']) && $data['location_id'] == $key ? 'selected' : '' }}>
                                     {{ $value }}
                                 </option>
                                 @empty
@@ -171,10 +171,10 @@
 
                         <div class="col-lg-3 col-md-6 col-sm-12">
                             <label for="currency_code">Currency</label>
-                            <select required name="currency_code" id="currency_code" class="form-select">
+                            <select required name="currency_id" id="currency_code" class="form-select">
                                 <option disabled selected> @lang('currency')</option>
                                 @forelse($currencies as $key => $value)
-                                <option value="{{ $key}}" {{ isset($data['currency_code']) && $data['currency_code'] == $key ? 'selected' : '' }}>
+                                <option value="{{ $key}}" {{ isset($data['currency_id']) && $data['currency_id'] == $key ? 'selected' : '' }}>
                                     {{ $value }}
                                 </option>
                                 @empty
@@ -197,7 +197,7 @@
                         </div>
 
                         <div id="existing_row">
-                            @forelse( json_decode($data['service_data'] ?? '[]') as $key => $serv_data)                            
+                            @forelse( json_decode($data['service_data'] ?? '[]') as $key => $serv_data)
                             <div class="row">
                                 @if($key == '0')
                                 <div class="col-lg-1 col-md-12 col-sm-12 order-lg-last">
@@ -465,9 +465,6 @@
                 }
             });
         });
-
-
-
 
         $('#q_date').on('input', function() {
             $('#q_date_error').text('');

@@ -434,8 +434,8 @@ class APIController extends Controller
             $quotation->date          = $request->date;
             $quotation->admin_id      = $request->admin_id;
             $quotation->user_id       = $request->user_id;
-            $quotation->currency_code = $request->currency_code;
-            $quotation->location      = $request->location;
+            $quotation->currency_id   = $request->currency_id;
+            $quotation->location_id   = $request->location_id;
             $quotation->service_data  = !empty($combinedArray) ? json_encode($combinedArray, JSON_FORCE_OBJECT) : null;
             $quotation->desc          = $request->desc;
             $quotation->client_name   = $request->client_name;
@@ -495,7 +495,8 @@ class APIController extends Controller
         }
 
         try {
-            $quotations = Quotation::join('users as u', 'u.id', '=', 'quotations.user_id')
+            $quotations = Quotation::with(['location:id,name,code', 'currency:id,code,name'])
+                ->join('users as u', 'u.id', '=', 'quotations.user_id')
                 ->join('users as admins', 'admins.id', '=', 'quotations.admin_id')
                 ->select('quotations.*', 'u.name as user_name', 'u.user_pic as user_pic', 'admins.name as admin_name', 'admins.user_pic as admin_pic')
                 ->where('quotations.id', $request->id)
@@ -507,6 +508,7 @@ class APIController extends Controller
         }
     }
 
+    // contracts module started here ...
     public function contract_store(Request $request): JsonResponse
     {
         try {
@@ -579,7 +581,8 @@ class APIController extends Controller
         }
 
         try {
-            $contracts = Contract::join('users as u', 'u.id', '=', 'contracts.user_id')
+            $contracts = Contract::with(['location:id,name,code', 'currency:id,code,name', 'service:id,title as service_title'])
+                ->join('users as u', 'u.id', '=', 'contracts.user_id')
                 ->join('users as admins', 'admins.id', '=', 'contracts.admin_id')
                 ->select('contracts.*', 'u.name as user_name', 'u.user_pic as user_pic', 'admins.name as admin_name', 'admins.user_pic as admin_pic')
                 ->where('contracts.id', $request->id)
@@ -592,6 +595,7 @@ class APIController extends Controller
         }
     }
 
+    // invoice module started here ...
     public function invoice_store(Request $request): JsonResponse
     {
         try {
@@ -602,8 +606,8 @@ class APIController extends Controller
             $invoices->date          = $request->date;
             $invoices->admin_id      = $request->admin_id;
             $invoices->user_id       = $request->user_id;
-            $invoices->currency_code = $request->currency_code;
-            $invoices->location      = $request->location;
+            $invoices->currency_id   = $request->currency_id;
+            $invoices->location_id   = $request->location_id;
             $invoices->service_id    = $request->service_id;
             $invoices->desc          = $request->desc;
             $invoices->client_name   = $request->client_name;
@@ -664,7 +668,8 @@ class APIController extends Controller
         }
 
         try {
-            $invoices = Invoice::join('users as u', 'u.id', '=', 'invoices.user_id')
+            $invoices = Invoice::with(['location:id,name,code', 'service:id,title as service_title'])
+                ->join('users as u', 'u.id', '=', 'invoices.user_id')
                 ->join('users as admins', 'admins.id', '=', 'invoices.admin_id')
                 ->select('invoices.*', 'u.name as user_name', 'u.user_pic as user_pic', 'admins.name as admin_name', 'admins.user_pic as admin_pic')
                 ->where('invoices.id', $request->id)
@@ -749,7 +754,7 @@ class APIController extends Controller
             return response()->json(['status' => 'error', 'message' => 'Error storing Quotation', 'error' => $e->getMessage()], 500);
         }
     }
-    
+
     public function sendMail_invoice(Request $request): JsonResponse
     {
 
@@ -758,7 +763,7 @@ class APIController extends Controller
             $invoices->send_email  = 'Resend';
             $invoices->created_by  = Auth::id();
             $save = $invoices->save();
-            
+
             if ($invoices) {
                 $emailData = [
                     'name'  => $invoices->client_name,
@@ -766,7 +771,7 @@ class APIController extends Controller
                     'file' =>  public_path('storage/' . $invoices->file),
                     'body'  => "We hope this message finds you well. We wanted to remind you about an invoice from TechSolution Pro.",
                 ];
-                
+
                 SendInvoiceEmail::dispatch($emailData)->onQueue('emails');
             }
 
@@ -776,13 +781,13 @@ class APIController extends Controller
             return response()->json(['status' => 'error', 'message' => 'Error storing Invoice', 'error' => $e->getMessage()], 500);
         }
     }
-    
+
     // comments
     public function comments(Request $request): JsonResponse
     {
         try {
 
-            $data = Comment::where(['comment_for'=> $request->comment_for,'comment_for_id'=> $request->comment_for_id])->get()->toArray();
+            $data = Comment::where(['comment_for' => $request->comment_for, 'comment_for_id' => $request->comment_for_id])->get()->toArray();
             $message = 'Comments retirved  successfully';
 
             return response()->json(['status' => 'success', 'message' => $message, 'data' => $data]);
@@ -793,13 +798,13 @@ class APIController extends Controller
 
     public function comment_store(Request $request): JsonResponse
     {
-        try {            
+        try {
             $comment = new Comment();
-            $comment->comment_for = 'Invoice';
+            $comment->comment_for    = 'Invoice';
             $comment->comment_for_id = $request->comment_for_id;
-            $comment->user_name = Auth::user()->name;
-            $comment->user_pic = (Auth::user()->user_pic) ? Auth::user()->user_pic : 'assets/images/user.png' ;
-            $comment->comment = $request->comment;
+            $comment->user_name  = Auth::user()->name;
+            $comment->user_pic   = Auth::user()->user_pic ?? NULL;
+            $comment->comment    = $request->comment;
             $comment->created_by = Auth::id();;
             $save = $comment->save();
 
@@ -809,6 +814,4 @@ class APIController extends Controller
             return response()->json(['status' => 'error', 'message' => 'Error storing Invoice', 'error' => $e->getMessage()], 500);
         }
     }
-
-    
 }

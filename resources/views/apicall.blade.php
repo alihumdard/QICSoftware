@@ -4,14 +4,12 @@
 <script src="https://cdn.rawgit.com/SheetJS/js-xlsx/master/dist/xlsx.full.min.js"></script>
 <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
-
-
+@php
+$user = auth()->user();
+@endphp
 <script>
     $(document).ready(function() {
-        var services = @json(config('constants.SERVICES'));
-        var locations = @json(config('constants.LOCATIONS'));
-        var contracts = @json(config('constants.CONTRACTS'));
-        var user      = @json(auth()->user());
+        var user = @json($user);
 
         $(document).on('click', '.btn_status_q', function() {
             var id = $(this).find('span').attr('data-qoute_id');
@@ -34,35 +32,6 @@
                 x.className = x.className.replace("show", "");
             }, 3000);
         }
-
-        $(document).on('click', '.delete-row', function() {
-            const row = $(this).closest('tr');
-            row.fadeOut(600, function() {
-                row.remove();
-                updateFormFields();
-            });
-
-        });
-
-        $(document).on('click', '.edit-icon', function() {
-            const row = $(this).closest('tr');
-            const rowIndex = row.index();
-            const title = row.find('td:nth-child(2)').text().trim();
-            const description = row.find('td:nth-child(3)').text().trim();
-            const hasPicture = row.find('input[name="picture"]').is(':checked');
-            const hasSignature = row.find('input[name="signature"]').is(':checked');
-            const hasNote = row.find('input[name="note"]').is(':checked');
-
-            $('#addressTile').val(title);
-            $('#addressDesc').val(description);
-            $('#addressPicture').prop('checked', hasPicture);
-            $('#addressSignature').prop('checked', hasSignature);
-            $('#addressNote').prop('checked', hasNote);
-
-            $('#btn_address_detail').attr('data-row-index', rowIndex);
-
-            $('#addAddressModal').modal('show');
-        });
 
         //login user through API .... 
         $('#login-form').on('submit', function(e) {
@@ -169,31 +138,32 @@
 
                     if (response.status === 'success') {
                         var comment_html = '';
-                        if(response.data != ''){
+                        if (response.data != '') {
                             $('.no_comment').addClass('d-none');
-                            $.each(response.data, function(index , data){
+                            $.each(response.data, function(index, data) {
                                 let createdDate = new Date(data.created_at);
                                 let formattedDate = createdDate.toLocaleString();
                                 formattedDate = formattedDate.replace(/\//g, '-');
-    
-                                let comment_data = '<div class="card mb-1">'+
-                                                    '<div class="card-body py-3 px-5">'+
-                                                        '<p>'+data.comment+'</p>'+
-                                                        '<div class="d-flex justify-content-between">'+
-                                                        '<div class="d-flex flex-row align-items-center">'+
-                                                            '<img src="'+ data.user_pic+'" alt="user image" width="25" height="25" />'+
-                                                            '<p class="small mb-0 ms-2">'+data.user_name+'</p>'+
-                                                        '</div>'+
-                                                        '<div class="d-flex flex-row align-items-center">'+
-                                                            '<p class="small text-muted mb-0">'+formattedDate+'</p>'+
-                                                        '</div>'+
-                                                        '</div>'+
-                                                    '</div>'+
-                                                    '</div>';
-    
-                                comment_html += comment_data;                     
+                                let user_pic = (data.user_pic) ? 'storage/' + data.user_pic : 'assets/images/user.png';
+
+                                let comment_data = '<div class="card mb-1">' +
+                                    '<div class="card-body py-3 px-5">' +
+                                    '<p>' + data.comment + '</p>' +
+                                    '<div class="d-flex justify-content-between">' +
+                                    '<div class="d-flex flex-row align-items-center">' +
+                                    '<img src="' + user_pic + '" alt="user image" width="25" height="25" />' +
+                                    '<p class="small mb-0 ms-2">' + data.user_name + '</p>' +
+                                    '</div>' +
+                                    '<div class="d-flex flex-row align-items-center">' +
+                                    '<p class="small text-muted mb-0">' + formattedDate + '</p>' +
+                                    '</div>' +
+                                    '</div>' +
+                                    '</div>' +
+                                    '</div>';
+
+                                comment_html += comment_data;
                             });
-                        }else{
+                        } else {
                             $('.no_comment').removeClass('d-none');
                         }
                         $('.comment_data').html(comment_html);
@@ -242,30 +212,29 @@
                 },
                 success: function(response) {
 
-                    
+
                     if (response.status === 'success') {
                         $('#comment_inv_' + inv_id).attr('data-comment', inv_comment);
                         let createdDate = new Date();
                         let formattedDate = createdDate.toLocaleString();
                         formattedDate = formattedDate.replace(/\//g, '-');
-                        let user_pic = user.user_pic ?? 'assets/images/user.png';
-                        let comment_data = '<div class="card mb-1">'+
-                                                        '<div class="card-body py-3 px-5">'+
-                                                            '<p>'+inv_comment+'</p>'+
-                                                            '<div class="d-flex justify-content-between">'+
-                                                            '<div class="d-flex flex-row align-items-center">'+
-                                                                '<img src="'+ user_pic +'" alt="user image" width="25" height="25" />'+
-                                                                '<p class="small mb-0 ms-2">'+user.name+'</p>'+
-                                                            '</div>'+
-                                                            '<div class="d-flex flex-row align-items-center">'+
-                                                                '<p class="small text-muted mb-0">'+formattedDate+'</p>'+
-                                                            '</div>'+
-                                                            '</div>'+
-                                                        '</div>'+
-                                                        '</div>';
+                        let user_pic = (user.user_pic) ? 'storage/' + user.user_pic : 'assets/images/user.png';
+                        let comment_data = '<div class="card mb-1">' +
+                            '<div class="card-body py-3 px-5">' +
+                            '<p>' + inv_comment + '</p>' +
+                            '<div class="d-flex justify-content-between">' +
+                            '<div class="d-flex flex-row align-items-center">' +
+                            '<img src="' + user_pic + '" alt="user image" width="25" height="25" />' +
+                            '<p class="small mb-0 ms-2">' + user.name + '</p>' +
+                            '</div>' +
+                            '<div class="d-flex flex-row align-items-center">' +
+                            '<p class="small text-muted mb-0">' + formattedDate + '</p>' +
+                            '</div>' +
+                            '</div>' +
+                            '</div>' +
+                            '</div>';
                         $('.no_comment').addClass('d-none');
                         $('.comment_data').append(comment_data);
-                        $('#invo_id').val('');
                         $('#inv_comment').val('');
                         $('#spinner_coment').addClass('d-none');
                         $('#coment_btn').removeClass('d-none').prop('disabled', false);
@@ -545,13 +514,6 @@
             });
         });
 
-        // deleting users ... calling modals
-        $(document).on('click', '#btn_dell_user', function() {
-            let user_id = $(this).attr('data-id');
-            $('#userDeleteModal #user_id').val(user_id);
-            $('#userDeleteModal').modal('show');
-        });
-
         // get api .....
         $(document).on('click', '#btn_edit_client', function() {
             var id = $(this).data('client_id');
@@ -655,6 +617,13 @@
                     showAlert("Warning", status, error);
                 }
             });
+        });
+
+        // deleting users ... calling modals
+        $(document).on('click', '#btn_dell_user', function() {
+            let user_id = $(this).attr('data-id');
+            $('#userDeleteModal #user_id').val(user_id);
+            $('#userDeleteModal').modal('show');
         });
 
         function dismissModal(modle_id) {
@@ -794,227 +763,6 @@
                         $('#user_sts').off('submit');
                         window.location.href = window.location.href;
                     }
-                }
-            });
-        });
-
-        // Quote Detail  data in through the api...
-        $(document).on('click', '.quoteDetail_view', function(e) {
-            e.preventDefault();
-            var quoteDetail = $(this);
-            var quoteId = quoteDetail.attr('data-id');
-
-            var apiname = 'quoteDetail';
-            var apiurl = "{{ end_url('') }}" + apiname;
-            var payload = {
-                id: quoteId,
-                role: 'Admin',
-            };
-
-            var bearerToken = "{{session('user')}}";
-
-            $.ajax({
-                url: apiurl,
-                type: 'POST',
-                data: JSON.stringify(payload),
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + bearerToken
-                },
-                beforeSend: function() {
-                    $('#data-qouteDetails').addClass('d-none');
-                    $('#mdl-spinner').removeClass('d-none');
-                },
-                success: function(response) {
-
-                    if (response.status === 'success') {
-                        let s_id = response.data.service_id;
-                        if (response.data.admin_pic) {
-                            $('#tripDetail_clientimg').attr('src', "{{ asset('storage') }}/" + response.data.admin_pic);
-                        } else {
-                            $('#tripDetail_clientimg').attr('src', "assets/images/user.png")
-                        }
-
-                        if (response.data.user_pic) {
-                            $('#tripDetail_driverimg').attr('src', "{{ asset('storage') }}/" + response.data.user_pic);
-                        } else {
-                            $('#tripDetail_driverimg').attr('src', "assets/images/user.png")
-                        }
-
-                        $("#tripDetail_client").val(response.data.admin_name);
-                        $("#tripDetail_driver").val(response.data.user_name);
-                        $("#tripDetail_title").val(response.data.client_name);
-                        $("#tripDetail_description").val(response.data.desc);
-                        $("#tripDetail_date").val(response.data.date);
-                        $("#tripDetail_startpoint").val(response.data.amount + ' (' + response.data.currency_code + ')');
-                        $("#tripDetail_endpoint").val(services[s_id]);
-
-                        var serviceData = response.data.service_data;
-                        var tbody = $("#tbl_sevice_data");
-                        var ind = 1;
-                        $.each(JSON.parse(serviceData), function(index, key) {
-                            var row = $("<tr class='text-center'>");
-                            $("<td>").text(ind++).appendTo(row);
-                            $("<td>").text(services[key.service_id]).appendTo(row);
-                            $("<td>").text(key.s_amount + ' (' + response.data.currency_code + ')').appendTo(row);
-                            row.appendTo(tbody);
-                        });
-
-                        setTimeout(function() {
-                            $('#mdl-spinner').addClass('d-none');
-                            $('#data-qouteDetails').removeClass('d-none');
-                        }, 500);
-
-                    } else if (response.status === 'error') {
-
-                        showAlert("Warning", "Please fill the form correctly", response.status);
-                        console.log(response.message);
-
-                    }
-                },
-                error: function(xhr, status, error) {
-                    console.log(status);
-                    showAlert("Error", 'Request Can not Procceed', 'Can not Procceed furhter');
-                }
-            });
-        });
-
-        // Contract Detail  data in through the api...
-        $(document).on('click', '.contractDetail_view', function(e) {
-            e.preventDefault();
-            var quoteDetail = $(this);
-            var quoteId = quoteDetail.attr('data-id');
-
-            var apiname = 'contractDetail';
-            var apiurl = "{{ end_url('') }}" + apiname;
-            var payload = {
-                id: quoteId,
-                role: 'Admin',
-            };
-
-            var bearerToken = "{{session('user')}}";
-
-            $.ajax({
-                url: apiurl,
-                type: 'POST',
-                data: JSON.stringify(payload),
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + bearerToken
-                },
-                beforeSend: function() {
-                    $('#data-qouteDetails').addClass('d-none');
-                    $('#mdl-spinner').removeClass('d-none');
-                },
-                success: function(response) {
-
-                    if (response.status === 'success') {
-                        let s_id = response.data.service_id;
-                        if (response.data.admin_pic) {
-                            $('#tripDetail_clientimg').attr('src', "{{ asset('storage') }}/" + response.data.admin_pic);
-                        } else {
-                            $('#tripDetail_clientimg').attr('src', "assets/images/user.png")
-                        }
-
-                        if (response.data.user_pic) {
-                            $('#tripDetail_driverimg').attr('src', "{{ asset('storage') }}/" + response.data.user_pic);
-                        } else {
-                            $('#tripDetail_driverimg').attr('src', "assets/images/user.png")
-                        }
-
-                        $("#tripDetail_client").val(response.data.admin_name);
-                        $("#tripDetail_driver").val(response.data.user_name);
-                        $("#tripDetail_title").val(response.data.client_name);
-                        $("#tripDetail_description").val(response.data.desc);
-                        $("#c_start_date").val(response.data.start_date);
-                        $("#c_end_date").val(response.data.end_date);
-                        $("#c_location").val(locations[response.data.location]);
-                        $("#c_ammount").val(response.data.amount + ' (' + response.data.currency_code + ')');
-                        $("#c_category").val(contracts[s_id]);
-                        setTimeout(function() {
-                            $('#mdl-spinner').addClass('d-none');
-                            $('#data-qouteDetails').removeClass('d-none');
-                        }, 500);
-
-                    } else if (response.status === 'error') {
-
-                        showAlert("Warning", "Please fill the form correctly", response.status);
-                        console.log(response.message);
-
-                    }
-                },
-                error: function(xhr, status, error) {
-                    console.log(status);
-                    showAlert("Warning", 'Request Can not Procceed', 'Can not Procceed furhter');
-                }
-            });
-        });
-
-        // Invoice Detail  data in through the api...
-        $(document).on('click', '.invoiceDetail_view', function(e) {
-            e.preventDefault();
-            var quoteDetail = $(this);
-            var quoteId = quoteDetail.attr('data-id');
-
-            var apiname = 'invoiceDetail';
-            var apiurl = "{{ end_url('') }}" + apiname;
-            var payload = {
-                id: quoteId,
-                role: 'Admin',
-            };
-
-            var bearerToken = "{{session('user')}}";
-
-            $.ajax({
-                url: apiurl,
-                type: 'POST',
-                data: JSON.stringify(payload),
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + bearerToken
-                },
-                beforeSend: function() {
-                    $('#data-qouteDetails').addClass('d-none');
-                    $('#mdl-spinner').removeClass('d-none');
-                },
-                success: function(response) {
-
-                    if (response.status === 'success') {
-                        let s_id = response.data.service_id;
-                        if (response.data.admin_pic) {
-                            $('#tripDetail_clientimg').attr('src', "{{ asset('storage') }}/" + response.data.admin_pic);
-                        } else {
-                            $('#tripDetail_clientimg').attr('src', "assets/images/user.png")
-                        }
-
-                        if (response.data.user_pic) {
-                            $('#tripDetail_driverimg').attr('src', "{{ asset('storage') }}/" + response.data.user_pic);
-                        } else {
-                            $('#tripDetail_driverimg').attr('src', "assets/images/user.png")
-                        }
-
-                        $("#tripDetail_client").val(response.data.admin_name);
-                        $("#tripDetail_driver").val(response.data.user_name);
-                        $("#tripDetail_title").val(response.data.client_name);
-                        $("#tripDetail_description").val(response.data.desc);
-                        $("#tripDetail_date").val(response.data.date);
-                        $("#tripDetail_startpoint").val(response.data.amount + ' (' + response.data.currency_code + ')');
-                        $("#tripDetail_endpoint").val(services[s_id]);
-                        setTimeout(function() {
-                            $('#mdl-spinner').addClass('d-none');
-                            $('#data-qouteDetails').removeClass('d-none');
-                        }, 500);
-
-                    } else if (response.status === 'error') {
-
-                        showAlert("Warning", "Please fill the form correctly", response.status);
-                        console.log(response.message);
-
-                    }
-                },
-                error: function(xhr, status, error) {
-                    console.log(status);
-                    showAlert("Error", 'Request Can not Procceed', 'Can not Procceed furhter');
                 }
             });
         });

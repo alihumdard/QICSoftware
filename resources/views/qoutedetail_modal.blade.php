@@ -26,11 +26,11 @@
                                   <div class="col-lg-6 mt-4 mb-1">
                                     <div class="d-flex justify-content-evenly">
                                       <div class="">
-                                        <img src="assets/images/user.png" id="tripDetail_clientimg" style="border-radius: 12px !important; object-fit: cover; width: 65px; height: 65px;" alt="no image">
+                                        <img src="assets/images/user.png" id="quoteDetail_adminImg" style="border-radius: 12px !important; object-fit: cover; width: 65px; height: 65px;" alt="no image">
                                       </div>
                                       <div>
-                                        <label for="client_name" class="mb-0"><span style="color: #452C88;">@lang('Admin Name')</span></label>
-                                        <input type="text" disabled id="tripDetail_client" class="form-control" value="">
+                                        <label for="quoteDetail_admin" class="mb-0"><span style="color: #452C88;">@lang('Admin Name')</span></label>
+                                        <input type="text" disabled id="quoteDetail_admin" class="form-control" value="">
                                       </div>
                                     </div>
                                   </div>
@@ -38,11 +38,11 @@
                                   <div class="col-lg-6 mt-4 mb-1">
                                     <div class="d-flex justify-content-evenly">
                                       <div class="">
-                                        <img src="assets/images/user.png" id="tripDetail_driverimg" style="border-radius: 12px !important; object-fit: cover; width: 65px; height: 65px;" alt="no image">
+                                        <img src="assets/images/user.png" id="quoteDetail_userImg" style="border-radius: 12px !important; object-fit: cover; width: 65px; height: 65px;" alt="no image">
                                       </div>
                                       <div>
-                                        <label for="client_name" class="mb-0"><span style="color: #452C88;">@lang('User Name')</span></label>
-                                        <input type="text" disabled id="tripDetail_driver" class="form-control" value="">
+                                        <label for="quoteDetail_user" class="mb-0"><span style="color: #452C88;">@lang('User Name')</span></label>
+                                        <input type="text" disabled id="quoteDetail_user" class="form-control" value="">
                                       </div>
                                     </div>
                                   </div>
@@ -52,31 +52,31 @@
 
                                   <div class="col-lg-4  mt-2 pr-0">
                                     <div class="pl-lg-4 pr-lg-2 pl-sm-0 pr-sm-3 pl-0 pr-3">
-                                      <label for="trip_title" class="mb-0"><span style="color: #452C88;">@lang('Client Name')</span></label>
-                                      <input type="text" disabled id="tripDetail_title" class="form-control" value="">
+                                      <label for="quoteDetail_clientName" class="mb-0"><span style="color: #452C88;">@lang('Client Name')</span></label>
+                                      <input type="text" disabled id="quoteDetail_clientName" class="form-control" value="">
                                     </div>
                                   </div>
 
                                   <div class="col-lg-4 mt-2 pr-0">
                                     <div class="pl-sm-0 pr-sm-3 pl-0 pr-3">
-                                      <label for="trip_desc" class="mb-0"><span style="color: #452C88;">@lang('Total Ammount')</span></label>
-                                      <input type="text" id="tripDetail_startpoint" class="form-control" disabled value="">
+                                      <label for="quoteDetail_ammount" class="mb-0"><span style="color: #452C88;">@lang('Total Ammount')</span></label>
+                                      <input type="text" id="quoteDetail_ammount" class="form-control" disabled value="">
                                     </div>
                                   </div>
 
 
                                   <div class="col-lg-4  mt-2 ">
                                     <div class=" pl-sm-0 pr-sm-3 pl-0 pr-3">
-                                      <label for="trip_title" class="mb-0"><span style="color: #452C88;">@lang('Qouted Date')</span></label>
-                                      <input type="text" disabled class="form-control" id="tripDetail_date" value="">
+                                      <label for="quoteDetail_date" class="mb-0"><span style="color: #452C88;">@lang('Qouted Date')</span></label>
+                                      <input type="text" disabled class="form-control" id="quoteDetail_date" value="">
                                     </div>
                                   </div>
 
 
                                   <div class="col-lg-12 mt-2">
                                     <div class="px-lg-4 px-sm-0 px-0">
-                                      <label for="trip_desc" class="mb-0"><span style="color: #452C88;">@lang('Quotation Description')</span></label>
-                                      <textarea rows="5" name="" id="tripDetail_description" class="form-control" disabled></textarea>
+                                      <label for="quoteDetail_description" class="mb-0"><span style="color: #452C88;">@lang('Quotation Description')</span></label>
+                                      <textarea rows="5" name="" id="quoteDetail_description" class="form-control" disabled></textarea>
                                     </div>
                                   </div>
 
@@ -105,4 +105,87 @@
                           </div>
                         </div>
                       </div>
-                      <!-- Trip Detail Modal End -->
+                      <!-- quote Detail Modal End -->
+                      <script>
+                        var services = @json($services);
+                        // Quote Detail  data in through the api...
+                        $(document).on('click', '.quoteDetail_view', function(e) {
+                          e.preventDefault();
+                          var quoteDetail = $(this);
+                          var quoteId = quoteDetail.attr('data-id');
+
+                          var apiname = 'quoteDetail';
+                          var apiurl = "{{ end_url('') }}" + apiname;
+                          var payload = {
+                            id: quoteId,
+                            role: 'Admin',
+                          };
+
+                          var bearerToken = "{{session('user')}}";
+
+                          $.ajax({
+                            url: apiurl,
+                            type: 'POST',
+                            data: JSON.stringify(payload),
+                            headers: {
+                              'Content-Type': 'application/json',
+                              'Authorization': 'Bearer ' + bearerToken
+                            },
+                            beforeSend: function() {
+                              $('#data-qouteDetails').addClass('d-none');
+                              $('#mdl-spinner').removeClass('d-none');
+                            },
+                            success: function(response) {
+
+                              if (response.status === 'success') {
+                                let s_id = response.data.service_id;
+                                if (response.data.admin_pic) {
+                                  $('#quoteDetail_adminImg').attr('src', "{{ asset('storage') }}/" + response.data.admin_pic);
+                                } else {
+                                  $('#quoteDetail_adminImg').attr('src', "assets/images/user.png")
+                                }
+
+                                if (response.data.user_pic) {
+                                  $('#quoteDetail_userImg').attr('src', "{{ asset('storage') }}/" + response.data.user_pic);
+                                } else {
+                                  $('#quoteDetail_userImg').attr('src', "assets/images/user.png")
+                                }
+
+                                $("#quoteDetail_admin").val(response.data.admin_name);
+                                $("#quoteDetail_user").val(response.data.user_name);
+                                $("#quoteDetail_clientName").val(response.data.client_name);
+                                $("#quoteDetail_description").val(response.data.desc);
+                                $("#quoteDetail_date").val(response.data.date);
+                                $("#quoteDetail_ammount").val(response.data.amount + ' (' + response.data.currency.code + ')');
+                                $("#quoteDetail_service").val(services[s_id]);
+
+                                var serviceData = response.data.service_data;
+                                var tbody = $("#tbl_sevice_data");
+                                var ind = 1;
+                                $.each(JSON.parse(serviceData), function(index, key) {
+                                  var row = $("<tr class='text-center'>");
+                                  $("<td>").text(ind++).appendTo(row);
+                                  $("<td>").text(services[key.service_id]).appendTo(row);
+                                  $("<td>").text(key.s_amount + ' (' + response.data.currency.code + ')').appendTo(row);
+                                  row.appendTo(tbody);
+                                });
+
+                                setTimeout(function() {
+                                  $('#mdl-spinner').addClass('d-none');
+                                  $('#data-qouteDetails').removeClass('d-none');
+                                }, 500);
+
+                              } else if (response.status === 'error') {
+
+                                showAlert("Warning", "Please fill the form correctly", response.status);
+                                console.log(response.message);
+
+                              }
+                            },
+                            error: function(xhr, status, error) {
+                              console.log(status);
+                              showAlert("Error", 'Request Can not Procceed', 'Can not Procceed furhter');
+                            }
+                          });
+                        });
+                      </script>

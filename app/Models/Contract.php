@@ -21,4 +21,9 @@ class Contract extends Model
     {
         return $this->belongsTo(Service::class);
     }
+
+    public function currency()
+    {
+        return $this->belongsTo(Currency::class);
+    }
 }
