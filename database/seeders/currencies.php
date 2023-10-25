@@ -9,7 +9,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
 
-class currencies extends Seeder
+class Currencies extends Seeder
 {
     /**
      * Run the database seeds.
@@ -33,10 +33,10 @@ class currencies extends Seeder
     public function run()
     {
         // Create  Currencies
-        foreach($this->currencies as $key => $val){
-            ($key =='PKR') ? $type = $this->currencyTypes['1'] : (($key =='USD') ? $type = $this->currencyTypes['2'] : $type = $this->currencyTypes['3']); 
+        foreach ($this->currencies as $key => $val) {
+            ($key == 'PKR') ? $type = $this->currencyTypes['1'] : (($key == 'USD') ? $type = $this->currencyTypes['2'] : $type = $this->currencyTypes['3']);
             Currency::create([
-                'code' => strtoupper($key), 
+                'code' => strtoupper($key),
                 'name' => ucwords($val),
                 'type' => $type,
                 'created_by' => 1
