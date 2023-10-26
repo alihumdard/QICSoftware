@@ -70,6 +70,7 @@ function view_permission($page_name) {
                 case 'super_admins': 
                 case 'logout': 
                 case 'currencies': 
+                case 'locations': 
                 case 'revenue': 
                     return true;
                 default:

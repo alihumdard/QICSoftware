@@ -296,6 +296,16 @@ $notifications = NULL;
       </li>
       @endif
 
+      
+      @if(view_permission('locations'))
+      <li>
+        <a href="{{'/locations'}}">
+          <i class=" ml-3 fas fa-map-marker-alt"></i>
+          <span class="link_name">@lang('Locations')</span>
+        </a>
+      </li>
+      @endif
+
       @if(view_permission('settings'))
       <li>
         <a href="{{'/settings'}}">
