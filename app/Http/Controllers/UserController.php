@@ -52,6 +52,7 @@ class UserController extends Controller
     protected $temp_status_as;
     protected $sev_status;
     protected $sev_type;
+    protected $locationType;
 
     public function __construct()
     {
@@ -69,6 +70,7 @@ class UserController extends Controller
         $this->temp_status_as = config('constants.TEMP_SAVE_AS_NAME');
         $this->sev_status = config('constants.STATUS');
         $this->sev_type = config('constants.SERVICE_TYPES');
+        $this->locationType = config('constants.LOCATION_TYPES');
     }
 
     public function lang_change(Request $request)
@@ -89,13 +91,15 @@ class UserController extends Controller
             $now = Carbon::now('Asia/Karachi');
             $current_date = $now->format('Y-m-d H:i:s');
             $currentDate = Carbon::now();
+            $data['user']       = $user;
+            $data['services']   = Service::select('id', 'title')->where(['type' => $this->sev_type[1]])->pluck('title', 'id')->toArray();
+
             // User roles: 1 for Super Admin, 2 for Admin, 3 for User
             if (isset($user->role) && $user->role == user_roles('2')) {
-
-                $data['user']         = $user;
                 $data['users']      = User::where(['role' => user_roles('3'), 'client_id' => $user->id, 'status' => $this->userStatus['Active']])->select('id', 'name', 'user_pic')->get()->toArray();
                 $data['usersCount'] = count($data['users'] ?? []);
                 $data['user_quote_percentage'] = 0;
+
                 $data['totalQuotion']     = Quotation::where('admin_id', $user->id)->count();
                 $data['totalInvoice']     = Invoice::where('admin_id', $user->id)->count();
                 $data['totalContract']    = Contract::where('admin_id', $user->id)->count();
@@ -122,8 +126,6 @@ class UserController extends Controller
             } else if (isset($user->role) && $user->role == user_roles('3')) {
                 $admin = User::where(['role' => user_roles('2'), 'id' => $user->client_id])->first();
                 if ($admin) {
-
-                    $data['user']           = $user;
                     $data['totalQuotion']   = Quotation::where('user_id', $user->id)->count();
                     $data['totalInvoice']   = Invoice::where('user_id', $user->id)->count();
                     $data['totalContract']  = Contract::where('user_id', $user->id)->count();
@@ -140,7 +142,6 @@ class UserController extends Controller
                     return redirect('/login');
                 }
             } else {
-                $data['user']           = $user;
                 $data['sadminsCount']    = User::where('role', user_roles('1'))->count();
                 $data['adminsCount']   = User::where('role', user_roles('2'))->count();
                 $data['usersCount']   = User::where('role', user_roles('3'))->count();
@@ -819,6 +820,78 @@ class UserController extends Controller
 
         $currencies = Currency::all()->toArray();
         return view('currencies', ['user' => $user, 'currency' => $currency, 'data' => $currencies, 'types' => $this->currencyTypes]);
+    }
+
+    public function locations(REQUEST $request)
+    {
+        $user = auth()->user();
+        $page_name = 'locations';
+
+        if (!view_permission($page_name)) {
+            return redirect()->back();
+        }
+        $location = NULL;
+        $message  = NULL;
+        Session::forget('msg');
+
+        if ($request->action == 'edit') {
+            $location = Location::findOrFail($request->id)->toArray();
+        } else if ($request->action == 'save') {
+            $saved = Location::updateOrCreate(
+                ['id' => $request->id ?? NULL],
+                [
+                    'name' => ucwords($request->name),
+                    'code' => strtoupper($request->code),
+                    'type' => $request->type,
+                    'created_by' => $user->id,
+                ]
+            );
+            $message = "Location " . ($request->id ? "Updated" : "Saved") . " Successfully";
+            Session::flash('msg', $message);
+        } else if ($request->action == 'dell') {
+            $deleted = Location::find($request->id)->delete();
+            $message = "Location has been deleted Successfully";
+            Session::flash('msg', $message);
+        }
+
+        $locations = Location::latest('id')->get()->toArray();
+        $data = ['user' => $user, 'location' => $location, 'data' => $locations, 'types' => $this->locationType];
+        return view('locations', $data);
+    }
+    public function services(REQUEST $request)
+    {
+        $user = auth()->user();
+        $page_name = 'services';
+
+        if (!view_permission($page_name)) {
+            return redirect()->back();
+        }
+        $service = NULL;
+        $message  = NULL;
+        Session::forget('msg');
+
+        if ($request->action == 'edit') {
+            $service = Service::findOrFail($request->id)->toArray();
+        } else if ($request->action == 'save') {
+            $saved = Service::updateOrCreate(
+                ['id' => $request->id ?? NULL],
+                [
+                    'title' => ucwords($request->title),
+                    'type' => $request->type,
+                    'created_by' => $user->id,
+                ]
+            );
+            $message = "Service " . ($request->id ? "Updated" : "Saved") . " Successfully";
+            Session::flash('msg', $message);
+        } else if ($request->action == 'dell') {
+            $deleted = Service::find($request->id)->delete();
+            $message = "Service has been deleted Successfully";
+            Session::flash('msg', $message);
+        }
+        
+        $services = Service::latest('id')->get()->toArray();
+        $data = ['user' => $user, 'service' => $service, 'data' => $services, 'types' => $this->sev_type];
+        return view('services', $data);
     }
 
     public function revenue(REQUEST $request)

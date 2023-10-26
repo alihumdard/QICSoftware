@@ -17,7 +17,6 @@
 @php
 $tripStatus = config('constants.TRIP_STATUS');
 $tripStatus_trans = config('constants.TRIP_STATUS_' . app()->getLocale());
-
 $quote_status = config('constants.QUOTE_STATUS_' . app()->getLocale());
 @endphp
 <style>

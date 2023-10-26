@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('comment_for');
             $table->string('comment_for_id');
             $table->string('user_name');
-            $table->string('user_pic');
+            $table->string('user_pic')->nullable();
             $table->text('comment');
             $table->integer('created_by');
             $table->timestamps();
