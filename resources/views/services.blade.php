@@ -39,7 +39,7 @@
           @csrf
           <input type="hidden" name="id" id="id" value="{{ $service['id'] ?? '' }}">
           <input type="hidden" name="action" id="action" value="save">
-          <div class="row mt-1 mb-5">
+          <div class="row mt-1 mb-4">
             <div class="col-lg-4 col-md-4 col-sm-12">
               <label for="title" class="mb-0 mt-1">@lang('Service Name')</label>
               <input type="text" maxlength="60" name="title" id="service_name" class="form-control" value="{{ $service['name'] ?? '' }}" placeholder="@lang('service name')" required>
