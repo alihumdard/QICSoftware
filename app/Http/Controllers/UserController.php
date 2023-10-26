@@ -853,12 +853,46 @@ class UserController extends Controller
             $message = "Location has been deleted Successfully";
             Session::flash('msg', $message);
         }
-        
+
         $locations = Location::latest('id')->get()->toArray();
         $data = ['user' => $user, 'location' => $location, 'data' => $locations, 'types' => $this->locationType];
         return view('locations', $data);
     }
+    public function services(REQUEST $request)
+    {
+        $user = auth()->user();
+        $page_name = 'services';
 
+        if (!view_permission($page_name)) {
+            return redirect()->back();
+        }
+        $service = NULL;
+        $message  = NULL;
+        Session::forget('msg');
+
+        if ($request->action == 'edit') {
+            $service = Service::findOrFail($request->id)->toArray();
+        } else if ($request->action == 'save') {
+            $saved = Service::updateOrCreate(
+                ['id' => $request->id ?? NULL],
+                [
+                    'title' => ucwords($request->title),
+                    'type' => $request->type,
+                    'created_by' => $user->id,
+                ]
+            );
+            $message = "Service " . ($request->id ? "Updated" : "Saved") . " Successfully";
+            Session::flash('msg', $message);
+        } else if ($request->action == 'dell') {
+            $deleted = Service::find($request->id)->delete();
+            $message = "Service has been deleted Successfully";
+            Session::flash('msg', $message);
+        }
+        
+        $services = Service::latest('id')->get()->toArray();
+        $data = ['user' => $user, 'service' => $service, 'data' => $services, 'types' => $this->sev_type];
+        return view('services', $data);
+    }
 
     public function revenue(REQUEST $request)
     {

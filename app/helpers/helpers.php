@@ -71,6 +71,7 @@ function view_permission($page_name) {
                 case 'logout': 
                 case 'currencies': 
                 case 'locations': 
+                case 'services': 
                 case 'revenue': 
                     return true;
                 default:

@@ -296,12 +296,20 @@ $notifications = NULL;
       </li>
       @endif
 
-      
       @if(view_permission('locations'))
       <li>
         <a href="{{'/locations'}}">
           <i class=" ml-3 fas fa-map-marker-alt"></i>
           <span class="link_name">@lang('Locations')</span>
+        </a>
+      </li>
+      @endif
+
+      @if(view_permission('services'))
+      <li>
+        <a href="{{'/services'}}">
+          <i class=" ml-3 fas fa-people-arrows"></i>
+          <span class="link_name">@lang('Services')</span>
         </a>
       </li>
       @endif
