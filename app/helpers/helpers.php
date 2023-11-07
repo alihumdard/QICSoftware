@@ -73,6 +73,7 @@ function view_permission($page_name) {
                 case 'locations': 
                 case 'services': 
                 case 'revenue': 
+                case 'transactional': 
                     return true;
                 default:
                     return false;

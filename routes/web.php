@@ -48,7 +48,8 @@ Route::middleware('check.userAuthCheck')->group(function () {
     Route::match(['post','get'],'/currencies', [UserController::class, 'currencies']);
     Route::match(['post','get'],'/locations', [UserController::class, 'locations']);
     Route::match(['post','get'],'/services', [UserController::class, 'services']);
-    Route::match(['post','get'],'/revenue', [UserController::class, 'revenue']);
+    Route::match(['post','get'],'/revecnue', [UserController::class, 'revenue']);
+    Route::match(['post','get'],'/transactional', [UserController::class, 'email_templates']);
 
 });
 

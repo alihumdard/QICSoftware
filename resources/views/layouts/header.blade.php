@@ -314,6 +314,15 @@ $notifications = NULL;
       </li>
       @endif
 
+      @if(view_permission('transactional'))
+      <li>
+        <a href="{{'/transactional'}}">
+          <i class=" ml-3 fa-solid fa-envelope-open-text"></i>
+          <span class="link_name">@lang('Transactional')</span>
+        </a>
+      </li>
+      @endif
+
       @if(view_permission('settings'))
       <li>
         <a href="{{'/settings'}}">
