@@ -911,4 +911,19 @@ class UserController extends Controller
             ->toArray();
         return view('revenue', ['user' => $user, 'data' => $data]);
     }
+
+    public function email_templates(REQUEST $request)
+    {
+        $user = auth()->user();
+        $data['user'] = $user;
+        $page_name = 'transactional';
+        if (!view_permission($page_name)) {
+            return redirect()->back();
+        }
+
+        // $data['draft_template'] = Template::where('save_as', $this->temp_status_as['Draft'])->orderBy('id', 'DESC')->first();
+        // $data['template_for'] = $this->template_for['1'];
+        $data['save_as'] = $this->temp_saveAs;
+        return view('transactional', $data);
+    }
 }
