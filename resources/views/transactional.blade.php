@@ -18,47 +18,81 @@
           <form action="transectionStore" id="formData" method="post">
             <div class="row">
               <div class="col-lg-4 col-md-6 col-sm-12">
-                <label class="mt-1" for="admin_id">@lang('Admins')</label>
-                <select id="admin_id" name="admin_id" class="form-select">
-                  <option value="" selected disabled>select admin </option>
+                <label class="mt-2 mb-1" for="user_id">@lang('Transactional User')</label>
+                <select id="user_id" name="user_id" class="form-select">
+                  @if($user->role == user_roles('1'))
+                  <option value="{{$user->id}}">Self</option>
+                  @endif
+                  <option value="" selected disabled>select email user </option>
                   @foreach($admins as $key => $val)
                   <option value="{{$key}}">{{$val}}</option>
                   @endforeach
                 </select>
-                <span id="admin_id_error" class="error-message text-danger"></span>
+                <span id="user_id_error" class="error-message text-danger"></span>
               </div>
 
               <div class="col-lg-4 col-md-6 col-sm-12">
-                <label class="mt-1" class="mt-1" class="form-label" for="email">@lang('Transactional Email')</label>
+                <label class="mt-2 mb-1" class="mt-1" class="form-label" for="email">@lang('Transactional Email')</label>
                 <input required type="email" maxlength="100" name="email" id="email" value="{{ $data['email'] ?? '' }}" placeholder="@lang('enter transectional email')" class="form-control">
                 <span id="email_error" class="error-message text-danger"></span>
               </div>
 
               <div class="col-lg-4 col-md-6 col-sm-12">
-                <label class="mt-1" for="password">@lang('Transactional Password')</label>
+                <label class="mt-2 mb-1" for="password">@lang('Transactional Password')</label>
                 <input required type="text" maxlength="100" name="password" id="password" value="{{ $data['password'] ?? '' }}" placeholder="@lang('email password')" class="form-control">
                 <span id="password_error" class="error-message text-danger"></span>
               </div>
 
               <div class="col-lg-4 col-md-6 col-sm-12">
-                <label class="mt-1" for="port">@lang('Mail Port')</label>
+                <label class="mt-2 mb-1" for="port">@lang('Mail Port')</label>
                 <input required type="text" maxlength="100" name="port" id="port" value="{{ $data['port'] ?? '' }}" placeholder="@lang('transectional email port')" class="form-control">
                 <span id="port_error" class="error-message text-danger"></span>
               </div>
 
               <div class="col-lg-4 col-md-6 col-sm-12">
-                <label class="mt-1" for="host">@lang('Mail Host')</label>
+                <label class="mt-2 mb-1" for="host">@lang('Mail Host')</label>
                 <input required type="text" maxlength="100" name="host" id="host" value="{{ $data['host'] ?? '' }}" placeholder="@lang('email host')" class="form-control">
                 <span id="host_error" class="error-message text-danger"></span>
               </div>
 
               <div class="col-lg-4 col-md-6 col-sm-12">
-                <label class="mt-1" for="mail_encryption">@lang('Mail Encryption')</label>
+                <label class="mt-2 mb-1" for="mail_encryption">@lang('Mail Encryption')</label>
                 <select id="mail_encryption" name="mail_encryption" class="form-select">
+                  <option value="" disabled selected>select mail encryption</option>
                   <option value="ssl">SSL</option>
                   <option value="tsl">TSL</option>
                 </select>
                 <span id="mail_encryption_error" class="error-message text-danger"></span>
+              </div>
+
+              <div class="col-lg-4 col-md-6 col-sm-12">
+                <label class="mt-2 mb-1" for="reply_email">@lang('Reply Email')</label>
+                <input type="email" maxlength="200" name="reply_email" id="reply_email" value="{{ $data['reply_email'] ?? '' }}" placeholder="@lang('transection reply email')" class="form-control">
+                <span id="reply_email_error" class="error-message text-danger"></span>
+              </div>
+
+              <div class="col-lg-4 col-md-6 col-sm-12">
+                <label class="mt-2 mb-1" for="cc_email">@lang('Cc Email')</label>
+                <input type="email" maxlength="200" name="cc_email" id="cc_email" value="{{ $data['cc_email'] ?? '' }}" placeholder="@lang('transection cc email')" class="form-control">
+                <span id="cc_email_error" class="error-message text-danger"></span>
+              </div>
+
+              <div class="col-lg-4 col-md-6 col-sm-12">
+                <label class="mt-2 mb-1" for="bcc_email">@lang('Bcc Email')</label>
+                <input type="email" maxlength="200" name="bcc_email" id="bcc_email" value="{{ $data['bcc_email'] ?? '' }}" placeholder="@lang('transection bcc email')" class="form-control">
+                <span id="bcc_email_error" class="error-message text-danger"></span>
+              </div>
+
+              <div class="col-lg-12 col-md-12 col-sm-12">
+                <label class="mt-4 mb-1" for="email_subject">@lang('Email Subject')</label>
+                <input type="text" maxlength="230" name="email_subject" id="email_subject" value="{{ $data['email_subject'] ?? '' }}" placeholder="@lang('transection email Subject')" class="form-control">
+                <span id="email_subject_error" class="error-message text-danger"></span>
+              </div>
+
+              <div class="col-lg-12 col-md-12 col-sm-12">
+                <label class="mt-2 mb-1" for="email_body">@lang('Default Email Body')</label>
+                <textarea name="email_body" id="email_body" class="form-control summernote"> {{ $data['email_body'] ?? '' }} </textarea>
+                <span id="email_body_error" class="error-message text-danger"></span>
               </div>
 
               <div class="mt-3">
@@ -94,7 +128,7 @@
                 <tr style="font-size: small;">
                   <td>{{++$key}}</td>
                   <td>{{table_date($value['created_at'])}}</td>
-                  <td> {{ $value['admin']['name'] ?? ''}} </td>
+                  <td> {{ $value['user']['name'] ?? ''}} </td>
                   <td>{{ $value['email'] ?? '' }}</td>
 
                   @if($value['status'] == 1)
@@ -169,7 +203,7 @@
     let transection_table = $('#transection-table').DataTable();
 
     $('#btn_save').click(function(event) {
-      var adminId = $('#admin_id').val();
+      var adminId = $('#user_id').val();
       var email = $('#email').val();
       var password = $('#password').val();
       var port = $('#port').val();
@@ -181,7 +215,7 @@
 
 
       if (adminId === null) {
-        $('#admin_id_error').text('*Please select a admin.');
+        $('#user_id_error').text('*Please select a admin.');
         event.preventDefault();
       }
 
@@ -227,12 +261,13 @@
       $('#host_error').text('');
     });
 
-    $('#admin_id').on('change', function() {
-      $('#admin_id_error').text('');
+    $('#user_id').on('change', function() {
+      $('#user_id_error').text('');
     });
 
     $('#mail_encryption').on('change', function() {
       $('#mail_encryption_error').text('');
     });
   </script>
+
   @endsection

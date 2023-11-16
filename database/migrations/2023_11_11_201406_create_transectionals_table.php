@@ -15,14 +15,17 @@ return new class extends Migration
     {
         Schema::create('transectionals', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id')->nullable();
-            $table->unsignedBigInteger('admin_id');
-            $table->unsignedBigInteger('sadmin_id');
+            $table->unsignedBigInteger('user_id');
             $table->string('email');
             $table->string('password');
             $table->string('port');
             $table->string('host');
             $table->string('mail_encryption');
+            $table->string('reply_email')->nullable();
+            $table->string('cc_email')->nullable();
+            $table->string('bcc_email')->nullable();
+            $table->string('email_subject')->nullable();
+            $table->longText('email_body')->nullable();
             $table->string('status')->default('1');
             $table->string('created_by');
             $table->string('updated_by')->nullable();

@@ -4,12 +4,35 @@
 <script src="https://cdn.rawgit.com/SheetJS/js-xlsx/master/dist/xlsx.full.min.js"></script>
 <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.9/summernote-bs4.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.9/summernote-bs4.js"></script>
 @php
 $user = auth()->user();
 @endphp
 <script>
     $(document).ready(function() {
         var user = @json($user);
+
+        var simple_toolbar = [
+            ['style', ['style']],
+            ['font', ['bold', 'italic', 'underline']],
+            ['color', ['color']],
+            ['para', ['paragraph', 'ol', 'ul']],
+        ];
+        var full_toolbar = [
+            ['style', ['style']],
+            ['font', ['bold', 'italic', 'underline', 'strikethrough', 'superscript', 'subscript', 'clear']],
+            ['fontname', ['fontname']],
+            ['fontsize', ['fontsize']],
+            ['color', ['color']],
+            ['para', ['paragraph', 'ol', 'ul']],
+            ['height', ['height']],
+            ['table', ['table']],
+            ['insert', ['picture']],
+            ['view', ['fullscreen', 'codeview']],
+            ['help', ['help']]
+        ];
+
 
         $(document).on('click', '.btn_status_q', function() {
             var id = $(this).find('span').attr('data-qoute_id');
@@ -294,7 +317,6 @@ $user = auth()->user();
                         // $('#formData')[0].reset();
 
                         const lastSegment = location.href.substring(location.href.lastIndexOf("/") + 1);
-
                         if (lastSegment == 'settings' || lastSegment == 'announcements' || lastSegment == 'add_quotation' || lastSegment == 'add_contract' || lastSegment == 'add_invoice') {
                             if (lastSegment == 'add_quotation' || lastSegment == 'add_contract' || lastSegment == 'add_invoice') {
                                 setTimeout(function() {
@@ -309,13 +331,15 @@ $user = auth()->user();
 
                         } else {
                             $('#tableData').load(location.href + " #tableData > *");
-                            $('#formData').load(location.href + " #formData > *");
+                            $('#formData').load(location.href + " #formData > *", function() {
+                                destory_summernote('.summernote');
+                                init_summernote('.summernote', simple_toolbar);
+                            });
                             $('#closeicon').trigger('click');
                         }
 
                         $('#addclient').modal('hide');
                         showAlert("Success", response.message, response.status);
-                        // $('#formData').trigger('reset');
                     } else if (response.status === 'error') {
 
                         showAlert("Warning", "Please fill the form correctly", response.status);
@@ -679,6 +703,21 @@ $user = auth()->user();
             });
 
             return login_alert;
+        }
+
+        init_summernote('.summernote', simple_toolbar);
+
+        function init_summernote(selector, toolbar, height = 250) {
+            $(selector).summernote({
+                placeholder: 'Email Body here ',
+                tabsize: 2,
+                height: height,
+                toolbar: toolbar ?? full_toolbar,
+            });
+        }
+
+        function destory_summernote(selector) {
+            $(selector).summernote('destroy');
         }
 
         $('input').on('input', function() {
