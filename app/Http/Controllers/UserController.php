@@ -33,6 +33,8 @@ use App\Models\Template;
 use App\Models\Location;
 use App\Models\Service;
 use App\Models\Comment;
+use App\Models\Transectional;
+
 use App;
 
 class UserController extends Controller
@@ -921,9 +923,11 @@ class UserController extends Controller
             return redirect()->back();
         }
 
-        // $data['draft_template'] = Template::where('save_as', $this->temp_status_as['Draft'])->orderBy('id', 'DESC')->first();
-        // $data['template_for'] = $this->template_for['1'];
-        $data['save_as'] = $this->temp_saveAs;
+        if($user->role == user_roles('1')){
+            $data['admins'] = User::select('id','name')->where(['role' => user_roles('2'), 'sadmin_id' => $user->id, 'status' => $this->userStatus['Active'] ])->orderBy('id', 'desc')->pluck('name', 'id')->toArray();
+            $data['data']   = Transectional::with(['admin:id,name','user:id,name'])->where(['sadmin_id' => $user->id , 'status' => $this->userStatus['Active']])->get()->toArray();
+        // dd($data['data']);
+        }
         return view('transactional', $data);
     }
 }

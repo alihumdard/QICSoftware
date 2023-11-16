@@ -23,6 +23,7 @@ use Illuminate\Support\Str;
 use App\Models\Invoice;
 use App\Models\Template;
 use App\Models\Comment;
+use App\Models\Transectional;
 
 class APIController extends Controller
 {
@@ -37,7 +38,6 @@ class APIController extends Controller
         $this->userStatus = config('constants.USER_STATUS');
         $this->status = config('constants.QUOTE_STATUS');
         $this->temp_status = config('constants.TEMP_STATUS');
-
     }
 
     public function index()
@@ -812,6 +812,59 @@ class APIController extends Controller
             return response()->json(['status' => 'success', 'message' => $message, 'data' => $save]);
         } catch (\Exception $e) {
             return response()->json(['status' => 'error', 'message' => 'Error storing Invoice', 'error' => $e->getMessage()], 500);
+        }
+    }
+
+    // transetional emails ....
+    public function transectional_store(Request $request): JsonResponse
+    {
+        $validator = Validator::make($request->all(), [
+            'admin_id' => 'required',
+            'port' => 'required',
+            'password' => 'required',
+            'host' => 'required',
+            'password' => 'required',
+            'email' => [
+                'required',
+                'email',
+                Rule::unique('transectionals')->ignore($request->id),
+            ],
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['status' => 'error', 'message' => $validator->errors()]);
+        }
+        try {
+            $transectional = ($request->id) ? Transectional::find($request->id) : new Transectional();
+
+            $isExistingUser = $transectional->exists;
+
+            $transectional->sadmin_id         = auth()->user()->id;
+            $transectional->admin_id          = $request->admin_id;
+            $transectional->email             = $request->email;
+            $transectional->password          = $request->password;
+            $transectional->port              = $request->port;
+            $transectional->host              = $request->host;
+            $transectional->mail_encryption   = $request->mail_encryption;
+            $transectional->created_by        = auth()->user()->id;
+
+            $save = $transectional->save();
+
+            // if ($save) {
+                
+            //             $emailData = [
+            //                 'password' => '',
+            //                 'name'  => $request->name,
+            //                 'email' => $request->email,
+            //                 'body'  => "Congratulations! You profile has been created successfully on this Email.",
+            //             ];
+            //             UserProfileEmail::dispatch($emailData)->onQueue('emails');
+            //         }
+
+            $message = $isExistingUser ? 'User updated successfully' : 'User added successfully';
+            return response()->json(['status' => 'success', 'message' => $message, 'data' => $save]);
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => 'Error storing user', 'error' => $e->getMessage()], 500);
         }
     }
 }
