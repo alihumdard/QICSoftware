@@ -39,6 +39,7 @@ class Users extends Seeder
             'password' => Hash::make('12345'),
             'role' => 'Super Admin',
             'status' => '1',
+            'created_by' => '1',
         ]);
 
         // Create a Admins 
@@ -50,6 +51,8 @@ class Users extends Seeder
             'added_user_id' => '1',
             'status' => '1',
             'sub_exp_date' => Carbon::now()->addDays(30),
+            'sadmin_id' => '1',
+            'created_by' => '1'
         ]);
 
         // Create a Users
@@ -60,7 +63,9 @@ class Users extends Seeder
             'role' => 'User',
             'added_user_id' => '1',
             'client_id' => '2',
-            'status' => '1'
+            'status' => '1',
+            'sadmin_id' => '1',
+            'created_by' => '1'
         ]);
     }
 }
