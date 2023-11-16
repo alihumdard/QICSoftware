@@ -412,7 +412,7 @@ class UserController extends Controller
 
         $data['user']       = $user;
         $data['location']   = Location::select('id', 'name')->pluck('name', 'id')->toArray();
-
+        $data['transData']   = Transectional::with(['user:id,name'])->where(['user_id' => $user->id, 'status' => $this->userStatus['Active']])->latest('id')->first();  
         if (isset($user->role) && $user->role == user_roles('1')) {
             $data['invoices'] = Invoice::with(['location:id,name,code', 'currency:id,code,name', 'service:id,title as service_title'])
                 ->join('users as u', 'u.id', '=', 'invoices.user_id')
@@ -890,7 +890,7 @@ class UserController extends Controller
             $message = "Service has been deleted Successfully";
             Session::flash('msg', $message);
         }
-        
+
         $services = Service::latest('id')->get()->toArray();
         $data = ['user' => $user, 'service' => $service, 'data' => $services, 'types' => $this->sev_type];
         return view('services', $data);
@@ -923,10 +923,10 @@ class UserController extends Controller
             return redirect()->back();
         }
 
-        if($user->role == user_roles('1')){
-            $data['admins'] = User::select('id','name')->where(['role' => user_roles('2'), 'sadmin_id' => $user->id, 'status' => $this->userStatus['Active'] ])->orderBy('id', 'desc')->pluck('name', 'id')->toArray();
-            $data['data']   = Transectional::with(['admin:id,name','user:id,name'])->where(['sadmin_id' => $user->id , 'status' => $this->userStatus['Active']])->get()->toArray();
-        // dd($data['data']);
+        if ($user->role == user_roles('1')) {
+            $data['admins'] = User::select('id', 'name')->where(['role' => user_roles('2'), 'sadmin_id' => $user->id, 'status' => $this->userStatus['Active']])->orderBy('id', 'desc')->pluck('name', 'id')->toArray();
+            $data['data']   = Transectional::with(['user:id,name'])->where(['created_by' => $user->id, 'status' => $this->userStatus['Active']])->latest('id')->get()->toArray();
+            // dd($data['data']);
         }
         return view('transactional', $data);
     }

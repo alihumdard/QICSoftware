@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class Transectional extends Model
 {
@@ -23,5 +24,25 @@ class Transectional extends Model
     public function super_admin()
     {
         return $this->belongsTo(User::class, 'sadmin_id', 'id');
+    }
+
+    public function getEmailBodyAttribute($value)
+    {
+        return base64_decode($value);
+    }
+
+    public function setEmailBodyAttribute($value)
+    {
+        $this->attributes['email_body'] = base64_encode($value);
+    }
+
+    public function getPasswordAttribute($value)
+    {
+        return base64_decode($value);
+    }
+
+    public function setPasswordAttribute($value)
+    {
+        $this->attributes['password'] = base64_encode($value);
     }
 }

@@ -819,7 +819,7 @@ class APIController extends Controller
     public function transectional_store(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
-            'admin_id' => 'required',
+            'user_id' => 'required',
             'port' => 'required',
             'password' => 'required',
             'host' => 'required',
@@ -838,20 +838,23 @@ class APIController extends Controller
             $transectional = ($request->id) ? Transectional::find($request->id) : new Transectional();
 
             $isExistingUser = $transectional->exists;
-
-            $transectional->sadmin_id         = auth()->user()->id;
-            $transectional->admin_id          = $request->admin_id;
-            $transectional->email             = $request->email;
-            $transectional->password          = $request->password;
-            $transectional->port              = $request->port;
-            $transectional->host              = $request->host;
-            $transectional->mail_encryption   = $request->mail_encryption;
-            $transectional->created_by        = auth()->user()->id;
+            $transectional->user_id        = $request->user_id;
+            $transectional->email           = $request->email;
+            $transectional->password        = $request->password;
+            $transectional->port            = $request->port;
+            $transectional->host            = $request->host;
+            $transectional->mail_encryption = $request->mail_encryption;
+            $transectional->reply_email     = $request->reply_email ?? NULL;
+            $transectional->cc_email        = $request->cc_email ?? NULL;
+            $transectional->bcc_email       = $request->bcc_email ?? NULL;
+            $transectional->email_subject   = $request->email_subject ?? NULL;
+            $transectional->email_body      = $request->email_body ?? NULL;
+            $transectional->created_by      = auth()->user()->id;
 
             $save = $transectional->save();
 
             // if ($save) {
-                
+
             //             $emailData = [
             //                 'password' => '',
             //                 'name'  => $request->name,
