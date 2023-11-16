@@ -117,7 +117,7 @@ $qouteStatus_trans = config('constants.QUOTE_STATUS_' . app()->getLocale());
                   <td>
                     <b>{{ $value['client_mail'] ?? ''}}</b>
                     <span data-qoute_id="{{$value['id']}}">
-                      <div data-id="{{ $value['id'] }}" class=" mt-1 send_mail bg-primary text-white f-w-bold rounded-1" style="cursor:pointer; width: 100%; height: 100%; padding-top: 7px; padding-bottom: 7px; padding-left: 12px; padding-right: 13px; justify-content: center; align-items: center; display: inline-flex">
+                      <div data-id="{{ $value['id'] }}" class=" mt-1 bg-primary text-white f-w-bold rounded-1" style="cursor:pointer; width: 100%; height: 100%; padding-top: 7px; padding-bottom: 7px; padding-left: 12px; padding-right: 13px; justify-content: center; align-items: center; display: inline-flex" data-toggle="modal" data-target="#invoiceMail">
                         <div style="text-align: center; font-size: 14px; font-weight:700; word-wrap: break-word">
                           <div class="spinner-border spinner-border-sm text-white d-none" id="spinner_mail_{{$value['id']}}"></div>
                           <span id="mail_btn_{{$value['id']}}"> {{ $value['send_email'] ?? 'Send' }}</span>
@@ -371,6 +371,7 @@ $qouteStatus_trans = config('constants.QUOTE_STATUS_' . app()->getLocale());
   }
 </script>
 @include('invoicedetail_modal')
+@include('invoiceMail_modal')
 @include('snaktoast')
 
 @endsection
