@@ -369,6 +369,98 @@ $user = auth()->user();
             });
         });
 
+        // Adding  data in through the api...
+        $('.apiform').on('submit', function(e) {
+
+            e.preventDefault();
+            var button = $(this);
+            var spinner = button.find('.btn_spinner');
+            var buttonText = button.find('#text');
+
+            button.prop('disabled', true);
+            spinner.removeClass('d-none');
+            buttonText.addClass('d-none');
+
+            var apiname = $(this).attr('action');
+            var apiurl = "{{ end_url('') }}" + apiname;
+            var formData = new FormData(this);
+            var bearerToken = "{{session('user')}}";
+            $.ajax({
+                url: apiurl,
+                type: 'POST',
+                data: formData,
+                headers: {
+                    'Authorization': 'Bearer ' + bearerToken
+                },
+                contentType: false,
+                processData: false,
+                beforeSend: function() {
+                    $('#spinner').removeClass('d-none');
+                    $('#add_btn').addClass('d-none');
+                    showlogin('Wait', 'saving......');
+                },
+                success: function(response) {
+
+                    $('#spinner').addClass('d-none');
+                    $('#add_btn').removeClass('d-none').prop('disabled', false);
+
+                    if (response.status === 'success') {
+
+                        // $('#formData')[0].reset();
+
+                        const lastSegment = location.href.substring(location.href.lastIndexOf("/") + 1);
+                        if (lastSegment == 'settings' || lastSegment == 'announcements' || lastSegment == 'add_quotation' || lastSegment == 'add_contract' || lastSegment == 'add_invoice') {
+                            if (lastSegment == 'add_quotation' || lastSegment == 'add_contract' || lastSegment == 'add_invoice') {
+                                setTimeout(function() {
+                                    window.location.href = document.referrer;
+                                }, 1500);
+                            } else {
+                                $('#closeicon').trigger('click');
+                                setTimeout(function() {
+                                    window.location.href = window.location.href;
+                                }, 1500);
+                            }
+
+                        } else {
+                            $('#tableData').load(location.href + " #tableData > *");
+                            $('#formData').load(location.href + " #formData > *", function() {
+                                destory_summernote('.summernote');
+                                init_summernote('.summernote', simple_toolbar);
+                            });
+                            $('#closeicon').trigger('click');
+                        }
+
+                        $('#addclient').modal('hide');
+                        showAlert("Success", response.message, response.status);
+                    } else if (response.status === 'error') {
+
+                        showAlert("Warning", "Please fill the form correctly", response.status);
+                        console.log(response.message);
+                        $('.error-label').remove();
+
+                        $.each(response.message, function(field, errorMessages) {
+                            var inputField = $('input[name="' + field + '"]');
+
+                            $.each(errorMessages, function(index, errorMessage) {
+                                var errorLabel = $('<label class="error-label text-danger">* ' + errorMessage + '</label>');
+                                inputField.addClass('error');
+                                inputField.after(errorLabel);
+                            });
+                        });
+
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.log(status);
+                    console.log(status);
+                    $('#spinner').addClass('d-none');
+                    $('#add_btn').removeClass('d-none').prop('disabled', false);
+                    showAlert("Warning", 'Sytem Error', 'Can not Procceed furhter');
+
+                }
+            });
+        });
+
         // Adding savetemplate data in through the api...
         $('#savetemplate').on('submit', function(e) {
 
