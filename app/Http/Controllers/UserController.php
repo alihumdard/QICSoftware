@@ -412,8 +412,10 @@ class UserController extends Controller
 
         $data['user']       = $user;
         $data['location']   = Location::select('id', 'name')->pluck('name', 'id')->toArray();
-        $data['transData']   = Transectional::with(['user:id,name'])->where(['user_id' => $user->id, 'status' => $this->userStatus['Active']])->latest('id')->first();  
+        $data['transData']  = Transectional::with(['user:id,name'])->where(['user_id' => $user->id, 'status' => $this->userStatus['Active']])->latest('id')->first();  
+        
         if (isset($user->role) && $user->role == user_roles('1')) {
+            $data['transAdmins'] = User::select('users.id','users.name')->join('transectionals as t', 't.user_id', '=','users.id')->where(['users.role' => user_roles('2'), 'users.sadmin_id' => $user->id, 'users.status' => $this->userStatus['Active']])->latest('id')->pluck('users.name', 'users.id')->toArray();
             $data['invoices'] = Invoice::with(['location:id,name,code', 'currency:id,code,name', 'service:id,title as service_title'])
                 ->join('users as u', 'u.id', '=', 'invoices.user_id')
                 ->join('users as admins', 'admins.id', '=', 'invoices.admin_id')

@@ -759,6 +759,7 @@ class APIController extends Controller
     {
 
         try {
+            dd($request->all());
             $invoices = Invoice::find($request->id);
             $invoices->send_email  = 'Resend';
             $invoices->created_by  = Auth::id();
@@ -815,7 +816,7 @@ class APIController extends Controller
         }
     }
 
-    // transetional emails ....
+    // transetional store ....
     public function transectional_store(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
@@ -837,7 +838,8 @@ class APIController extends Controller
         try {
             $transectional = ($request->id) ? Transectional::find($request->id) : new Transectional();
 
-            $isExistingUser = $transectional->exists;
+            $isExistingTrans = $transectional->exists;
+
             $transectional->user_id        = $request->user_id;
             $transectional->email           = $request->email;
             $transectional->password        = $request->password;
@@ -854,7 +856,6 @@ class APIController extends Controller
             $save = $transectional->save();
 
             // if ($save) {
-
             //             $emailData = [
             //                 'password' => '',
             //                 'name'  => $request->name,
@@ -864,10 +865,27 @@ class APIController extends Controller
             //             UserProfileEmail::dispatch($emailData)->onQueue('emails');
             //         }
 
-            $message = $isExistingUser ? 'User updated successfully' : 'User added successfully';
+            $message = $isExistingTrans ? 'Transection user updated successfully' : 'Transection user added successfully';
             return response()->json(['status' => 'success', 'message' => $message, 'data' => $save]);
         } catch (\Exception $e) {
-            return response()->json(['status' => 'error', 'message' => 'Error storing user', 'error' => $e->getMessage()], 500);
+            return response()->json(['status' => 'error', 'message' => 'Error storing Transection', 'error' => $e->getMessage()], 500);
+        }
+    }
+
+    // transetional retrived ....
+    public function transectionals(Request $request): JsonResponse
+    {
+        $validator = Validator::make($request->all(), ['user_id' => 'required']);
+
+        if ($validator->fails()) {
+            return response()->json(['status' => 'error', 'message' => $validator->errors()]);
+        }
+        try {
+            $transectional = Transectional::where(['user_id' => $request->user_id, 'status' => $this->userStatus['Active']])->latest('id')->first(); 
+            $message = 'Transection user retrived successfully';
+            return response()->json(['status' => 'success', 'message' => $message, 'data' => $transectional]);
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => 'Error storing Transection', 'error' => $e->getMessage()], 500);
         }
     }
 }

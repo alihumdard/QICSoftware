@@ -148,8 +148,8 @@ $notifications = NULL;
       border-radius: 10px;
     }
     body {
-zoom: 90%;
-}
+          zoom: 90%;
+          }
   </style>
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.5/css/jquery.dataTables.min.css">
   <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit" type="text/javascript"></script>
