@@ -28,8 +28,8 @@
 
         <div id="data-mailData" class="d-none">
 
-        <form action="sendMail"  class="apiform" method="post">
-            <div class="row mt-4 ">
+          <form action="sendMail" class="apiform" method="post">
+            <div class="row mt-4 mb-3">
               <div class="col-lg-6 mt-2 pr-0">
                 <div class="pl-lg-4 pr-lg-2 pl-sm-0 pr-sm-3 pl-0 pr-3">
                   <label for="reply_email" class="mb-0 "><span style="color: #184A45FF; ">@lang('Reply Email')</span></label>
@@ -72,7 +72,7 @@
                 </div>
               </div>
 
-              <div class="col-lg-6 mt-2 pr-0">
+              <div class="col-lg-4 mt-2 pr-0">
                 <div class="pl-lg-4 pr-lg-2 pl-sm-0 pr-sm-3 pl-0 pr-3">
                   <label for="inovice_desc" class="mb-1"><span style="color: #184A45FF;">@lang('Select Admin')</span></label>
                   <select id="user_id" name="user_id" class="form-select">
@@ -87,18 +87,55 @@
                 </div>
               </div>
 
-              <div class="col-lg-3 mt-2  ">
-                <div class=" pt-4 ">
-                  <input type="submit" name="draft" id="draft" class=" btn btn-primary float-right btn-block pb-2" value="Save as Draft" />
+              <div class="col-lg-8 mt-2 d-flex align-items-end ">
+                <div class="mt-2 ">
+                  <div class="form-check-inline">
+                    <label class="form-check-label">
+                      <input type="radio" class="form-check-input form-check-input-lg " name="process" checked value="mail">
+                      <span class="pb-5 mb-5"> Send Only Mail </span>
+                    </label>
+                  </div>
+                  <div class="form-check-inline">
+                    <label class="form-check-label">
+                      <input type="radio" class="form-check-input form-check-input-lg" name="process" value="draft">
+                      <span class="pb-5">Save As Daraft </span>
+                    </label>
+                  </div>
+                  <div class="form-check-inline ">
+                    <label class="form-check-label">
+                      <input type="radio" class="form-check-input form-check-input-lg" name="process" value="mail&draft">
+                      <span class="pb-5"> Draft & Send Mail</span>
+                    </label>
+                  </div>
+                  <!-- <input type="button" name="draft" id="draft" class="btn btn-primary float-right btn-block pb-2" value="Save as Draft" /> -->
                 </div>
               </div>
 
-              <div class="col-lg-3 mt-2  pl-0">
-                <div class="pr-lg-4 pl-lg-1 pl-sm-3 pr-sm-0 pl-3 pr-0 pt-4 ">
-                  <input type="submit" name="send" id="send" class=" btn btn-success float-right btn-block pb-2" value="Send Mail" />
+              <div class="col-lg-12 mb-lg-2  ">
+                <div class="row justify-content-end mt-3 pr-lg-4">
+                  <div class="col-lg-2">
+                    <button type="submit" id="btn_save_quotation" class="btn btn-block  text-white " style="background-color: #184A45FF; border-radius: 8px;">
+                      <div class="spinner-border spinner-border-sm text-white d-none" id="spinner"></div>
+
+                      <span id="text" class="d-flex justify-content-center align-items-center">
+                        <span class="pr-1">
+                          @lang(' GO ')
+                        </span>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width: 1.2em; height: 1.1em;">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" />
+                        </svg>
+
+                        <!-- <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-send" viewBox="0 0 16 16">
+                          <path d="M15.854.146a.5.5 0 0 1 .11.54l-5.819 14.547a.75.75 0 0 1-1.329.124l-3.178-4.995L.643 7.184a.75.75 0 0 1 .124-1.33L15.314.037a.5.5 0 0 1 .54.11ZM6.636 10.07l2.761 4.338L14.13 2.576 6.636 10.07Zm6.787-8.201L1.591 6.602l4.339 2.76 7.494-7.493Z" />
+                        </svg> -->
+
+
+                      </span>
+
+                    </button>
+                  </div>
                 </div>
               </div>
-
             </div>
           </form>
         </div>
