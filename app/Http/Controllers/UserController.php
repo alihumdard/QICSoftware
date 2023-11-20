@@ -932,4 +932,42 @@ class UserController extends Controller
         }
         return view('transactional', $data);
     }
+
+    public function demomail(REQUEST $request){
+
+        try{
+            $transport_factory = new \Symfony\Component\Mailer\Transport\Smtp\EsmtpTransportFactory;
+            $transport = $transport_factory->create(new \Symfony\Component\Mailer\Transport\Dsn(
+                'smtp',
+                'mail.tspsolution.com',
+                'support@tspsolution.com',
+                'wy)w]Qj,PfOH',
+                '465',
+            ));
+            $mailer = new \Symfony\Component\Mailer\Mailer($transport);
+            $email = (new \Symfony\Component\Mime\Email())
+                ->from('support@tspsolution.com')
+                ->to('alihumdard125@gmail.com')
+                ->subject('Test Email')
+                ->text("Email Test was Successful")
+                ->html("<h1> testing working </h1>");
+            $mailer->send($email);
+        } catch (\Symfony\Component\Mailer\Exception\TransportException $e) {
+            echo $e->getMessage();
+        } catch (\Exception $e) {
+            echo $e->getMessage();
+        }
+    }
+
+    // foreach ($emails as $email) {
+    //     $transport = new EsmtpTransport('mail.host', 465);
+    //     $transport->setUsername($email->email);
+    //     $transport->setPassword($email->password);
+
+    //     $mailer = new Mailer($transport);
+
+    //     $mailable = (new SymfonyEmail())->from($email->email)->bcc('test@test.com')->subject($request->subject)->html('email body');
+
+    //     $mailer->send($mailable);
+    // } 
 }

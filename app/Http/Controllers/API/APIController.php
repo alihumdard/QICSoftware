@@ -24,6 +24,8 @@ use App\Models\Invoice;
 use App\Models\Template;
 use App\Models\Comment;
 use App\Models\Transectional;
+use App\Mail\InvoiceEmail;
+use Symfony\Component\Mime\Address;
 
 class APIController extends Controller
 {
@@ -758,26 +760,87 @@ class APIController extends Controller
     public function sendMail_invoice(Request $request): JsonResponse
     {
 
+        $validator = Validator::make($request->all(), [
+            'id' => 'required',
+            'user_id' => 'required',
+            'email_subject' => 'required',
+            'email_body' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['status' => 'error', 'message' => $validator->errors()]);
+        }
+
         try {
-            dd($request->all());
-            $invoices = Invoice::find($request->id);
-            $invoices->send_email  = 'Resend';
-            $invoices->created_by  = Auth::id();
-            $save = $invoices->save();
 
-            if ($invoices) {
-                $emailData = [
-                    'name'  => $invoices->client_name,
-                    'email' => $invoices->client_mail,
-                    'file' =>  public_path('storage/' . $invoices->file),
-                    'body'  => "We hope this message finds you well. We wanted to remind you about an invoice from TechSolution Pro.",
-                ];
+            $transectional = Transectional::find($request->id);
+            if ($transectional) {
+                if ($request->proccess == 'draft' || $request->proccess == 'mail&draft') {
 
-                SendInvoiceEmail::dispatch($emailData)->onQueue('emails');
+                    $transectional->reply_email     = $request->reply_email ?? NULL;
+                    $transectional->cc_email        = $request->cc_email ?? NULL;
+                    $transectional->bcc_email       = $request->bcc_email ?? NULL;
+                    $transectional->email_subject   = $request->email_subject;
+                    $transectional->email_body      = $request->email_body ?? NULL;
+                    $transectional->created_by      = auth()->user()->id;
+                    $transectional->save();
+
+                    $message = ($request->proccess == 'mail&draft') ? 'Transection user mailed &  draft  successfully' : 'transectional data saved as draft.';
+                }
+
+                if ($request->proccess == 'mail' || $request->proccess == 'mail&draft') {
+
+                    $invoices = Invoice::find($request->row_id);
+
+                    if ($invoices) {
+                        // $emailData = [
+                        //     'name'  => $invoices->client_name,
+                        //     'email' => $invoices->client_mail,
+                        //     'file'  =>  public_path('storage/' . $invoices->file),
+                        //     'body'  => "We hope this message finds you well. We wanted to remind you about an invoice from TechSolution Pro.",
+                        // ];
+
+                        $transport_factory = new \Symfony\Component\Mailer\Transport\Smtp\EsmtpTransportFactory;
+                        $transport = $transport_factory->create(new \Symfony\Component\Mailer\Transport\Dsn(
+                            'smtp',
+                            $transectional->host,
+                            $transectional->email,
+                            $transectional->password,
+                            $transectional->port,
+                        ));
+
+                        $mailer = new \Symfony\Component\Mailer\Mailer($transport);
+
+                        $email = (new \Symfony\Component\Mime\Email())
+                            ->from($transectional->email)
+                            ->to($invoices->client_mail)
+                            ->subject($request->email_subject)
+                            ->html($request->email_body)
+                            ->attachFromPath(public_path('storage/' . $invoices->file));
+                        if ($request->cc_email) {
+                            $email->cc($request->cc_email);
+                        }
+                        if ($request->bcc_email) {
+                            $email->bcc($request->bcc_email);
+                        }
+                        if ($request->reply_email) {
+                            $email->replyTo(new Address($request->reply_email, 'Reply'));
+                        }
+                        // ->text('Plain Text Content')
+                        $mailer->send($email);
+
+                        $invoices->send_email  = 'Resend';
+                        $invoices->created_by  = Auth::id();
+                        $save = $invoices->save();
+                    }
+
+                    $message = ($request->proccess == 'mail&draft') ? 'Transection user mailed &  draft  successfully' : 'Transection user mail successfully';
+                }
+
+                return response()->json(['status' => 'success', 'message' => $message]);
+            } else {
+                return response()->json(['status' => 'warning', 'message' => 'Transetional credentional is not assigned.']);
             }
-
-            $message = 'Invoice mail sended successfully';
-            return response()->json(['status' => 'success', 'message' => $message]);
         } catch (\Exception $e) {
             return response()->json(['status' => 'error', 'message' => 'Error storing Invoice', 'error' => $e->getMessage()], 500);
         }
@@ -855,15 +918,15 @@ class APIController extends Controller
 
             $save = $transectional->save();
 
-            // if ($save) {
-            //             $emailData = [
-            //                 'password' => '',
-            //                 'name'  => $request->name,
-            //                 'email' => $request->email,
-            //                 'body'  => "Congratulations! You profile has been created successfully on this Email.",
-            //             ];
-            //             UserProfileEmail::dispatch($emailData)->onQueue('emails');
-            //         }
+            if ($save) {
+                $emailData = [
+                    'password' => '',
+                    'name'  => $request->name,
+                    'email' => $request->email,
+                    'body'  => "Congratulations! You transetional mail  has been added successfully on this Email." . $request->email,
+                ];
+                UserProfileEmail::dispatch($emailData)->onQueue('emails');
+            }
 
             $message = $isExistingTrans ? 'Transection user updated successfully' : 'Transection user added successfully';
             return response()->json(['status' => 'success', 'message' => $message, 'data' => $save]);
@@ -881,7 +944,7 @@ class APIController extends Controller
             return response()->json(['status' => 'error', 'message' => $validator->errors()]);
         }
         try {
-            $transectional = Transectional::where(['user_id' => $request->user_id, 'status' => $this->userStatus['Active']])->latest('id')->first(); 
+            $transectional = Transectional::where(['user_id' => $request->user_id, 'status' => $this->userStatus['Active']])->latest('id')->first();
             $message = 'Transection user retrived successfully';
             return response()->json(['status' => 'success', 'message' => $message, 'data' => $transectional]);
         } catch (\Exception $e) {

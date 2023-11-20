@@ -29,6 +29,8 @@
         <div id="data-mailData" class="d-none">
 
           <form action="sendMail" class="apiform" method="post">
+            <input type="hidden" name="id" value="{{ $transData['id'] ?? '' }}">
+            <input type="hidden" id="row_id" name="row_id" value="">
             <div class="row mt-4 mb-3">
               <div class="col-lg-6 mt-2 pr-0">
                 <div class="pl-lg-4 pr-lg-2 pl-sm-0 pr-sm-3 pl-0 pr-3">
@@ -91,19 +93,19 @@
                 <div class="mt-2 ">
                   <div class="form-check-inline">
                     <label class="form-check-label">
-                      <input type="radio" class="form-check-input form-check-input-lg " name="process" checked value="mail">
+                      <input type="radio" class="form-check-input form-check-input-lg " name="proccess" checked value="mail">
                       <span class="pb-5 mb-5"> Send Only Mail </span>
                     </label>
                   </div>
                   <div class="form-check-inline">
                     <label class="form-check-label">
-                      <input type="radio" class="form-check-input form-check-input-lg" name="process" value="draft">
+                      <input type="radio" class="form-check-input form-check-input-lg" name="proccess" value="draft">
                       <span class="pb-5">Save As Daraft </span>
                     </label>
                   </div>
                   <div class="form-check-inline ">
                     <label class="form-check-label">
-                      <input type="radio" class="form-check-input form-check-input-lg" name="process" value="mail&draft">
+                      <input type="radio" class="form-check-input form-check-input-lg" name="proccess" value="mail&draft">
                       <span class="pb-5"> Draft & Send Mail</span>
                     </label>
                   </div>
