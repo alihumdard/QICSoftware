@@ -4,7 +4,6 @@
     drawChart("canvas1", "procent1",{{ $compCT_percent }});
     drawChart("canvas2", "procent2",{{ $compINV_percent }});
 
-
     function drawChart(canvasId, spanId,percentage) {
         var can = document.getElementById(canvasId),
             spanProcent = document.getElementById(spanId),
@@ -89,5 +88,7 @@
         var user_id = "{{$user->id}}";
         updateCharts(selectedDate, user_id);
     });
+
+   
 </script>
 

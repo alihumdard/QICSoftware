@@ -358,11 +358,7 @@ $currentDate = time();
 @if(Session::has('subscription_active'))
 <script>
     alert();
-    showAlert('Congratulations!', {
-        {
-            session('subscription_active')
-        }
-    }, 'success');
+    showAlert('Congratulations!', {{session('subscription_active')}}, 'success');
 </script>
 @endif
 
