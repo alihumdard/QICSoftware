@@ -697,42 +697,8 @@ $user = auth()->user();
 
         // send mail invoice .....
         $(document).on('click', '.send_mail', function() {
-            var id = $(this).attr('data-id');
-            var apiname = 'sendMail';
-            var apiurl = "{{ end_url('') }}" + apiname;
-            var bearerToken = "{{session('user')}}";
-            $.ajax({
-                url: apiurl + '?id=' + id,
-                type: 'GET',
-                data: {
-                    'id': id
-                },
-                headers: {
-                    'Authorization': 'Bearer ' + bearerToken
-                },
-                contentType: false,
-                processData: false,
-                beforeSend: function() {
-                    $('#spinner_mail_' + id).removeClass('d-none');
-                    $('#mail_btn_' + id).addClass('d-none').prop('disabled', true);
-                },
-                success: function(response) {
-
-                    if (response.status === 'success') {
-                        $('#spinner_mail_' + id).addClass('d-none');
-                        $('#mail_btn_' + id).removeClass('d-none').prop('disabled', false).text('Resend');;
-                        toast_message(response.message, 'green');
-
-                    } else {
-                        showAlert("Warning", response.message, response.status);
-                    }
-                },
-                error: function(xhr, status, error) {
-                    $('#spinner_mail_' + id).addClass('d-none');
-                    $('#mail_btn_' + id).removeClass('d-none').prop('disabled', false);
-                    showAlert("Warning", status, error);
-                }
-            });
+            let row_id = $(this).attr('data-id');
+            $('#row_id').val(row_id);
         });
 
         // deleting users ... calling modals

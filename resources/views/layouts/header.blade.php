@@ -175,13 +175,7 @@ $notifications = NULL;
         <div class="nav-profile-text d-flex flex-column text-wrap">
           <span class="mb-1" style="font-size: small;">{{(isset($user->name)) ? $user->name : 'Guest'}}</span>
           <span class="text-secondary text-white text-small">
-            @if(isset($user->role) && $user->role == user_roles('1'))
-            {{'Super Admin'}}
-            @elseif((isset($user->role) && $user->role == user_roles('2')))
-            {{'Admin'}}
-            @else
-            {{'User'}}
-            @endif
+            {{ $user->role ?? 'Guest'}}
           </span>
         </div>
       </div>
