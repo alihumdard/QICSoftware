@@ -34,6 +34,16 @@ class Users extends Seeder
     {
         // Create an Super Admins
         User::factory()->create([
+            'name' => 'Software Manager',
+            'email' => 'manager@gmail.com',
+            'password' => Hash::make('12345'),
+            'role' => 'Manager',
+            'status' => '1',
+            'created_by' => '1',
+        ]);
+
+        // Create an Super Admins
+        User::factory()->create([
             'name' => 'Super Admin',
             'email' => 'superadmin@gmail.com',
             'password' => Hash::make('12345'),
@@ -48,11 +58,11 @@ class Users extends Seeder
             'email' => 'admin@gmail.com',
             'password' => Hash::make('12345'),
             'role' => 'Admin',
-            'added_user_id' => '1',
+            'added_user_id' => '2',
             'status' => '1',
             'sub_exp_date' => Carbon::now()->addDays(30),
-            'sadmin_id' => '1',
-            'created_by' => '1'
+            'sadmin_id' => '2',
+            'created_by' => '2'
         ]);
 
         // Create a Users
@@ -61,10 +71,10 @@ class Users extends Seeder
             'email' => 'user@gmail.com',
             'password' => Hash::make('12345'),
             'role' => 'User',
-            'added_user_id' => '1',
-            'client_id' => '2',
+            'added_user_id' => '2',
+            'client_id' => '3',
             'status' => '1',
-            'sadmin_id' => '1',
+            'sadmin_id' => '2',
             'created_by' => '1'
         ]);
     }

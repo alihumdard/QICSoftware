@@ -793,13 +793,6 @@ class APIController extends Controller
                     $invoices = Invoice::find($request->row_id);
 
                     if ($invoices) {
-                        // $emailData = [
-                        //     'name'  => $invoices->client_name,
-                        //     'email' => $invoices->client_mail,
-                        //     'file'  =>  public_path('storage/' . $invoices->file),
-                        //     'body'  => "We hope this message finds you well. We wanted to remind you about an invoice from TechSolution Pro.",
-                        // ];
-
                         $transport_factory = new \Symfony\Component\Mailer\Transport\Smtp\EsmtpTransportFactory;
                         $transport = $transport_factory->create(new \Symfony\Component\Mailer\Transport\Dsn(
                             'smtp',
