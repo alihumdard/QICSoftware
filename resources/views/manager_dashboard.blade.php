@@ -29,12 +29,12 @@
   .border-left-warning {
     border-left: 4px solid #ffc107 !important;
   }
+
+  .bg-theme {
+    background-color: #184A45FF !important;
+  }
 </style>
-@php
-$tripStatus = config('constants.TRIP_STATUS');
-$tripStatus_trans = config('constants.TRIP_STATUS_' . app()->getLocale());
-$quote_status = config('constants.QUOTE_STATUS_' . app()->getLocale());
-@endphp
+
 
 <!-- partial -->
 <div class="content-wrapper py-0 my-2">
@@ -55,32 +55,13 @@ $quote_status = config('constants.QUOTE_STATUS_' . app()->getLocale());
 
     <!-- Earnings (Monthly) Card Example -->
     <div class="col-xl-3 col-md-6 mb-4">
-      <div class="card  border-left-primary shadow h-100 py-1">
+      <div class="card  border-left-primary shadow h-100 ">
         <div class="card-body" style="border: none !important;">
           <div class="row no-gutters align-items-center">
             <div class="col mr-2">
               <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                Earnings </div>
+               Software Earning </div>
               <div class="h5 mb-0 font-weight-bold text-gray-800">$40,000</div>
-            </div>
-            <div class="col-auto">
-              <i class="fas fa-calendar fa-2x text-gray-300"></i>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-
-    <!-- Earnings (Monthly) Card Example -->
-    <div class="col-xl-3 col-md-6 mb-4">
-      <div class="card border-left-success shadow h-100 py-1">
-        <div class="card-body" style="border: none !important;">
-          <div class="row no-gutters align-items-center">
-            <div class="col mr-2">
-              <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                Earnings (Annual)</div>
-              <div class="h5 mb-0 font-weight-bold text-gray-800">$215,000</div>
             </div>
             <div class="col-auto">
               <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
@@ -90,21 +71,40 @@ $quote_status = config('constants.QUOTE_STATUS_' . app()->getLocale());
       </div>
     </div>
 
+
     <!-- Earnings (Monthly) Card Example -->
     <div class="col-xl-3 col-md-6 mb-4">
-      <div class="card border-left-info shadow h-100 py-1">
+      <div class="card border-left-success shadow h-100 ">
         <div class="card-body" style="border: none !important;">
           <div class="row no-gutters align-items-center">
             <div class="col mr-2">
-              <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Tasks
+              <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                Total Super Admins</div>
+              <div class="h5 mb-0 font-weight-bold text-gray-800">{{$sadminsCount ?? ''}}</div>
+            </div>
+            <div class="col-auto">
+              <i class="fas fa-user fa-2x text-gray-300"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Earnings (Monthly) Card Example -->
+    <div class="col-xl-3 col-md-6 mb-4">
+      <div class="card border-left-info shadow h-100 ">
+        <div class="card-body" style="border: none !important;">
+          <div class="row no-gutters align-items-center">
+            <div class="col mr-2">
+              <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Active Accounts.
               </div>
               <div class="row no-gutters align-items-center">
                 <div class="col-auto">
-                  <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">50%</div>
+                  <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">{{$sadminActivePer ?? 0}}%</div>
                 </div>
                 <div class="col">
                   <div class="progress progress-sm mr-2">
-                    <div class="progress-bar bg-info" role="progressbar" style="width: 50%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
+                    <div class="progress-bar bg-info" role="progressbar" style="width: {{$sadminActivePer ?? 0}}%" aria-valuenow="{{$sadminActivePer ?? 0}}" aria-valuemin="0" aria-valuemax="100"></div>
                   </div>
                 </div>
               </div>
@@ -119,13 +119,13 @@ $quote_status = config('constants.QUOTE_STATUS_' . app()->getLocale());
 
     <!-- Pending Requests Card Example -->
     <div class="col-xl-3 col-md-6 mb-4">
-      <div class="card border-left-warning shadow h-100 py-1">
+      <div class="card border-left-warning shadow h-100 ">
         <div class="card-body" style="border: none !important;">
           <div class="row no-gutters align-items-center">
             <div class="col mr-2">
               <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
                 Pending Requests</div>
-              <div class="h5 mb-0 font-weight-bold text-gray-800">18</div>
+              <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $sadminsPending ?? ''}}</div>
             </div>
             <div class="col-auto">
               <i class="fas fa-comments fa-2x text-gray-300"></i>
@@ -139,9 +139,9 @@ $quote_status = config('constants.QUOTE_STATUS_' . app()->getLocale());
 
   <!-- Content Row -->
 
-  <div class="row">
+  <div class="row ">
     <!-- Area Chart -->
-    <div class="col-sm-12 ">
+    <!-- <div class="col-sm-12 ">
       <div class="card shadow mb-4">
         <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
           <h6 class="m-0 font-weight-bold text-primary">Earnings Overview</h6>
@@ -164,41 +164,50 @@ $quote_status = config('constants.QUOTE_STATUS_' . app()->getLocale());
           </div>
         </div>
       </div>
-    </div>
-    <div class=" col-xl-6 col-lg-6  mb-4">
+    </div> -->
 
-      <!-- Project Card Example -->
-      <div class="card shadow mb-4">
+    <div class=" col-xl-6 col-lg-6 mb-4">
+      <div class="card shadow mb-4 h-100 ">
         <div class="card-header py-3">
-          <h6 class="m-0 font-weight-bold text-primary">Projects</h6>
+          <h6 class="m-0 font-weight-bold text-primary">Rolse Statistics</h6>
         </div>
         <div class="card-body">
-          <h4 class="small font-weight-bold">Server Migration <span class="float-right">20%</span></h4>
+
+          <h4 class="small font-weight-bold">Inactive Super Admin <span class="float-right">{{ $sadminInactivePer ?? 0}}%</span></h4>
           <div class="progress mb-4">
-            <div class="progress-bar bg-danger" role="progressbar" style="width: 20%" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100"></div>
+            <div class="progress-bar bg-danger" role="progressbar" style="width: {{ $sadminInactivePer ?? '0'}}% " aria-valuenow="{{ $sadminInactivePer ?? '0'}}" aria-valuemin="0" aria-valuemax="100"></div>
           </div>
-          <h4 class="small font-weight-bold">Sales Tracking <span class="float-right">40%</span></h4>
+
+          <h4 class="small font-weight-bold">Active Admins <span class="float-right">{{ $adminActivePer ?? 0}}%</span></h4>
+          <div class="progress mb-3">
+            <div class="progress-bar bg-success" role="progressbar" style="width: {{ $adminActivePer ?? 0}}%" aria-valuenow="{{ $adminActivePer ?? 0}}" aria-valuemin="0" aria-valuemax="100"></div>
+          </div>
+
+          <h4 class="small font-weight-bold">Inactive Admins <span class="float-right">{{ $adminInactivePer ?? 0}}%</span></h4>
           <div class="progress mb-4">
-            <div class="progress-bar bg-warning" role="progressbar" style="width: 40%" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100"></div>
+            <div class="progress-bar bg-danger" role="progressbar" style="width: {{ $adminInactivePer ?? 0}}%" aria-valuenow="{{ $adminInactivePer ?? 0}}" aria-valuemin="0" aria-valuemax="100"></div>
           </div>
-         
-          <h4 class="small font-weight-bold">Payout Details <span class="float-right">80%</span></h4>
-          <div class="progress mb-4">
-            <div class="progress-bar bg-info" role="progressbar" style="width: 80%" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100"></div>
+
+          <h4 class="small font-weight-bold">Active Users <span class="float-right">{{ $userActivePer ?? 0}}%</span></h4>
+          <div class="progress mb-3">
+            <div class="progress-bar bg-success" role="progressbar" style="width: {{ $userActivePer ?? 0}}%" aria-valuenow="{{ $userActivePer ?? 0}}" aria-valuemin="0" aria-valuemax="100"></div>
           </div>
-          <h4 class="small font-weight-bold">Account Setup <span class="float-right">Complete!</span></h4>
+
+          <h4 class="small font-weight-bold">Inactive Users <span class="float-right">{{ $userInactivePer ?? 0}}%</span></h4>
           <div class="progress">
-            <div class="progress-bar bg-success" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+            <div class="progress-bar bg-danger" role="progressbar" style="width: {{ $userInactivePer ?? 0}}%" aria-valuenow="{{ $userInactivePer ?? 0}}" aria-valuemin="0" aria-valuemax="100"></div>
           </div>
+
+
         </div>
       </div>
     </div>
     <!-- Pie Chart -->
-    <div class="col-xl-6 col-lg-6">
-      <div class="card shadow mb-4">
+    <div class="col-xl-6 col-lg-6 mb-4">
+      <div class="card shadow mb-4 h-100 ">
         <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-          <h6 class="m-0 font-weight-bold text-primary">Revenue Sources</h6>
-          <div class="dropdown no-arrow">
+          <h6 class="m-0 font-weight-bold text-primary">Software Sources</h6>
+          <!-- <div class="dropdown no-arrow">
             <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
               <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
             </a>
@@ -209,21 +218,21 @@ $quote_status = config('constants.QUOTE_STATUS_' . app()->getLocale());
               <div class="dropdown-divider"></div>
               <a class="dropdown-item" href="#">Something else here</a>
             </div>
-          </div>
+          </div> -->
         </div>
         <div class="card-body">
           <div class="chart-pie pt-4 pb-2">
-            <canvas id="myPieChart"></canvas>
+            <canvas id="qic_PieChart"></canvas>
           </div>
           <div class="mt-4 text-center small">
             <span class="mr-2">
-              <i class="fas fa-circle text-primary"></i> Direct
+              <i class="fas fa-circle text-primary"></i> Quotations
             </span>
             <span class="mr-2">
-              <i class="fas fa-circle text-success"></i> Social
+              <i class="fas fa-circle text-success"></i> Contracts
             </span>
             <span class="mr-2">
-              <i class="fas fa-circle text-info"></i> Referral
+              <i class="fas fa-circle text-info"></i> Invoices
             </span>
           </div>
         </div>
@@ -233,9 +242,52 @@ $quote_status = config('constants.QUOTE_STATUS_' . app()->getLocale());
 
 </div>
 <!-- Page level plugins -->
-<script src="vendor/chart.js/Chart.min.js"></script>
+<!-- <script src="vendor/chart.js/Chart.min.js"></script> -->
 
-    <!-- Page level custom scripts -->
-    <script src="js/demo/chart-area-demo.js"></script>
-    <script src="js/demo/chart-pie-demo.js"></script>
+<!-- Page level custom scripts -->
+
+<!-- <script src=" {{ asset('assets/js/demo/chart-area-demo.js')}}"></script> -->
+<script>
+  pieChart("qic_PieChart", ["Quotations", "Contracts", "Invoices"], [@json($totalQuotion), @json($totalContract), @json($totalInvoice)])
+
+  function pieChart(canvasId, lables, data) {
+
+    // Set new default font family and font color to mimic Bootstrap's default styling
+    Chart.defaults.global.defaultFontFamily = 'Nunito', '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
+    Chart.defaults.global.defaultFontColor = '#858796';
+
+    // Pie Chart Example
+    var ctx = document.getElementById(canvasId);
+    var myPieChart = new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels: lables,
+        datasets: [{
+          data: data,
+          backgroundColor: ['#4e73df', '#1cc88a', '#36b9cc'],
+          hoverBackgroundColor: ['#2e59d9', '#17a673', '#2c9faf'],
+          hoverBorderColor: "rgba(234, 236, 244, 1)",
+        }],
+      },
+      options: {
+        maintainAspectRatio: false,
+        tooltips: {
+          backgroundColor: "rgb(255,255,255)",
+          bodyFontColor: "#858796",
+          borderColor: '#dddfeb',
+          borderWidth: 1,
+          xPadding: 15,
+          yPadding: 15,
+          displayColors: false,
+          caretPadding: 10,
+        },
+        legend: {
+          display: false
+        },
+        cutoutPercentage: 80,
+      },
+    });
+  }
+</script>
+
 @endsection

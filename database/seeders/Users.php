@@ -32,50 +32,51 @@ class Users extends Seeder
 
     public function run()
     {
-        // Create an Super Admins
+        // Create an Software Manager
         User::factory()->create([
-            'name' => 'Software Manager',
-            'email' => 'manager@gmail.com',
-            'password' => Hash::make('12345'),
-            'role' => 'Manager',
-            'status' => '1',
+            'name'       => 'Software Manager',
+            'email'      => 'manager@gmail.com',
+            'password'   => Hash::make('12345'),
+            'role'       => 'Manager',
+            'status'     => '1',
             'created_by' => '1',
         ]);
 
         // Create an Super Admins
         User::factory()->create([
-            'name' => 'Super Admin',
-            'email' => 'superadmin@gmail.com',
-            'password' => Hash::make('12345'),
-            'role' => 'Super Admin',
-            'status' => '1',
+            'name'       => 'Super Admin',
+            'email'      => 'superadmin@gmail.com',
+            'password'   => Hash::make('12345'),
+            'role'       => 'Super Admin',
+            'status'     => '1',
+            'manager_id' =>  1,
             'created_by' => '1',
         ]);
 
         // Create a Admins 
         User::factory()->create([
-            'name' => 'Admin',
-            'email' => 'admin@gmail.com',
-            'password' => Hash::make('12345'),
-            'role' => 'Admin',
-            'added_user_id' => '2',
-            'status' => '1',
+            'name'         => 'Admin',
+            'email'        => 'admin@gmail.com',
+            'password'     => Hash::make('12345'),
+            'role'         => 'Admin',
+            'status'       => '1',
             'sub_exp_date' => Carbon::now()->addDays(30),
-            'sadmin_id' => '2',
-            'created_by' => '2'
+            'sadmin_id'    => '2',
+            'manager_id'   => '1',
+            'created_by'   => '2'
         ]);
 
         // Create a Users
         User::factory()->create([
-            'name' => 'User',
-            'email' => 'user@gmail.com',
-            'password' => Hash::make('12345'),
-            'role' => 'User',
-            'added_user_id' => '2',
-            'client_id' => '3',
-            'status' => '1',
+            'name'      => 'User',
+            'email'     => 'user@gmail.com',
+            'password'  => Hash::make('12345'),
+            'role'      => 'User',
+            'status'    => '1',
+            'admin_id'  => '3',
             'sadmin_id' => '2',
-            'created_by' => '1'
+            'manager_id'=> '1',
+            'created_by'=> '1'
         ]);
     }
 }
