@@ -69,22 +69,22 @@ function view_permission($page_name)
             switch ($page_name) {
                 case 'index':
                 case 'settings':
-                case 'quotations':
-                case 'invoices':
-                case 'admins':
-                case 'users':
-                case 'add_quotation':
-                case 'create_quotation':
-                case 'add_contract':
-                case 'add_invoice':
-                case 'contracts':
                 case 'super_admins':
                 case 'logout':
                 case 'currencies':
                 case 'locations':
                 case 'services':
-                case 'revenue':
                 case 'transactional':
+                // case 'revenue':
+                // case 'quotations':
+                // case 'invoices':
+                // case 'admins':
+                // case 'users':
+                // case 'add_quotation':
+                // case 'create_quotation':
+                // case 'add_contract':
+                // case 'add_invoice':
+                // case 'contracts':
                     return true;
                 default:
                     return false;
