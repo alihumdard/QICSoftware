@@ -98,8 +98,8 @@ class UserController extends Controller
 
             // User roles: 1 for Super Admin, 2 for Admin, 3 for User, 4 Manager
             if (isset($user->role) && $user->role == user_roles('1')) {
-                $data['sadminsCount']    = User::where('role', user_roles('1'))->count();
-                $data['adminsCount']   = User::where('role', user_roles('2'))->count();
+                $data['sadminsCount'] = User::where('role', user_roles('1'))->count();
+                $data['adminsCount']  = User::where('role', user_roles('2'))->count();
                 $data['usersCount']   = User::where('role', user_roles('3'))->count();
 
                 $data['revenue']  = Invoice::join('currencies as c', 'invoices.currency_code', '=', 'c.code')
@@ -110,9 +110,9 @@ class UserController extends Controller
                     ->get()
                     ->toArray();
 
-                $data['totalQuotion']         = Quotation::count();
-                $data['totalInvoice']         = Invoice::count();
-                $data['completedContract']    = Contract::where('status', $this->status['Completed'])->count();
+                $data['totalQuotion']      = Quotation::count();
+                $data['totalInvoice']      = Invoice::count();
+                $data['completedContract'] = Contract::where('status', $this->status['Completed'])->count();
 
                 $data['totalTodayQT']   = Quotation::whereDate('date', $this->curFormatDate)->whereIn('status', [$this->status['Pending'], $this->status['In Progress']])->count();
                 $data['TodayQTsent']    = Quotation::whereDate('date', $this->curFormatDate)->whereIn('status', [$this->status['In Progress']])->count();
@@ -125,8 +125,7 @@ class UserController extends Controller
                 $data['totalTodayINV']   = Invoice::whereDate('date', $this->curFormatDate)->whereIn('status', [$this->status['Pending'], $this->status['In Progress']])->count();
                 $data['TodayINVcomp']    = Invoice::whereDate('date', $this->curFormatDate)->whereIn('status', [$this->status['In Progress']])->count();
                 $data['compINV_percent'] = $data['totalTodayINV'] > 0 ? round(($data['TodayINVcomp'] / $data['totalTodayINV']) * 100, 1) : 0;
-
-                $data['activeQuotes']   = Quotation::with('admins:id,name')->whereDate('date', $this->curFormatDate)->where('status', $this->status['In Progress'])->get(['id', 'desc', 'client_name', 'date', 'user_id', 'admin_id', 'status'])->toArray();
+                $data['activeQuotes']    = Quotation::with('admins:id,name')->whereDate('date', $this->curFormatDate)->where('status', $this->status['In Progress'])->get(['id', 'desc', 'client_name', 'date', 'user_id', 'admin_id', 'status'])->toArray();
 
                 return view('superAdmin_dashboard', $data);
             } else if (isset($user->role) && $user->role == user_roles('2')) {
@@ -134,9 +133,9 @@ class UserController extends Controller
                 $data['usersCount'] = count($data['users'] ?? []);
                 $data['user_quote_percentage'] = 0;
 
-                $data['totalQuotion']     = Quotation::where('admin_id', $user->id)->count();
-                $data['totalInvoice']     = Invoice::where('admin_id', $user->id)->count();
-                $data['totalContract']    = Contract::where('admin_id', $user->id)->count();
+                $data['totalQuotion']   = Quotation::where('admin_id', $user->id)->count();
+                $data['totalInvoice']   = Invoice::where('admin_id', $user->id)->count();
+                $data['totalContract']  = Contract::where('admin_id', $user->id)->count();
 
                 $data['totalTodayQT']   = Quotation::whereDate('date', $this->curFormatDate)->whereIn('status', [$this->status['Pending'], $this->status['In Progress']])->where('admin_id', $user->id)->count();
                 $data['TodayQTsent']    = Quotation::whereDate('date', $this->curFormatDate)->whereIn('status', [$this->status['In Progress']])->where('admin_id', $user->id)->count();
@@ -180,20 +179,20 @@ class UserController extends Controller
                 $data['sadminsActive']   = User::where(['role' => user_roles('1'), 'status' => $this->userStatus['Active']])->count();
                 $data['sadminsPending']  = User::where(['role' => user_roles('1'), 'status' => $this->userStatus['Pending']])->count();
                 $data['sadminsInactive'] = User::where(['role' => user_roles('1')])->where('status', '!=', $this->userStatus['Active'])->where('status', '!=', $this->userStatus['Pending'])->count();
-                $data['sadminActivePer'] = $data['sadminsCount'] > 0 ? round(($data['sadminsActive']  / $data['sadminsCount']) * 100, 1) : 0; 
-                $data['sadminInactivePer'] = $data['sadminsCount'] > 0 ? round(($data['sadminsInactive']  / $data['sadminsCount']) * 100, 1) : 0; 
+                $data['sadminActivePer'] = $data['sadminsCount'] > 0 ? round(($data['sadminsActive']  / $data['sadminsCount']) * 100, 1) : 0;
+                $data['sadminInactivePer'] = $data['sadminsCount'] > 0 ? round(($data['sadminsInactive']  / $data['sadminsCount']) * 100, 1) : 0;
 
                 $data['adminsCount']     = User::where('role', user_roles('2'))->count();
                 $data['adminsActive']    = User::where('role', user_roles('2'))->where('status', '=', $this->userStatus['Active'])->count();
                 $data['adminsInactive']  = User::where('role', user_roles('2'))->where('status', '!=', $this->userStatus['Active'])->where('status', '!=', $this->userStatus['Pending'])->count();
-                $data['adminActivePer']  = $data['adminsCount'] > 0 ? round(($data['adminsActive']  / $data['adminsCount']) * 100, 1) : 0; 
-                $data['adminInactivePer']  = $data['adminsCount'] > 0 ? round(($data['adminsInactive']  / $data['adminsCount']) * 100, 1) : 0; 
+                $data['adminActivePer']  = $data['adminsCount'] > 0 ? round(($data['adminsActive']  / $data['adminsCount']) * 100, 1) : 0;
+                $data['adminInactivePer']  = $data['adminsCount'] > 0 ? round(($data['adminsInactive']  / $data['adminsCount']) * 100, 1) : 0;
 
                 $data['usersCount']      = User::where('role', user_roles('3'))->count();
                 $data['usersActive']     = User::where('role', user_roles('3'))->where('status', '=', $this->userStatus['Active'])->count();
                 $data['usersInactive']   = User::where('role', user_roles('3'))->where('status', '!=', $this->userStatus['Active'])->where('status', '!=', $this->userStatus['Pending'])->count();
                 $data['userActivePer']   = $data['usersCount'] > 0 ? round(($data['usersActive']  / $data['usersCount']) * 100, 1) : 0;
-                $data['userInactivePer'] = $data['usersCount'] > 0 ? round(($data['usersInactive']  / $data['usersCount']) * 100, 1) : 0; 
+                $data['userInactivePer'] = $data['usersCount'] > 0 ? round(($data['usersInactive']  / $data['usersCount']) * 100, 1) : 0;
 
                 $data['totalQuotion']    = Quotation::count() ?? 0;
                 $data['totalInvoice']    = Invoice::count() ?? 0;
