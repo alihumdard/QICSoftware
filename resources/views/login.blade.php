@@ -5,10 +5,11 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>TSP CRM</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700&display=swap" rel="stylesheet" />
+  <!-- <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700&display=swap" rel="stylesheet" /> -->
   <link rel="stylesheet" href="assets/dist/css/bootstrap.min.css" />
   <!-- <script src="https://kit.fontawesome.com/c35c4a5799.js" crossorigin="anonymous"></script> -->
   <link rel="stylesheet" href="assets/font-web/css/all.css" />
+
   <script>
     if (window.history.replaceState) {
       window.history.replaceState(null, null, window.location.href);
@@ -215,31 +216,188 @@
       <!-- Registeration Form -->
     </div>
   </div>
-  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.4/dist/jquery.slim.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
-  <script>
-    // For Demo Purpose [Changing input group text on focus]
-    $(document).ready(function() {
-      $("#eye").on("click", function() {
-        var passwordField = $("#password");
-        var passwordFieldType = passwordField.attr("type");
-        if (passwordFieldType == "password") {
-          passwordField.attr("type", "text");
-          $(this).find("i").removeClass("fa-eye").addClass("fa-eye-slash");
-        } else {
-          passwordField.attr("type", "password");
-          $(this).find("i").removeClass("fa-eye-slash").addClass("fa-eye");
+
+</html>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.4/dist/jquery.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+<script>
+  // For Demo Purpose [Changing input group text on focus]
+  $(document).ready(function() {
+    $("#eye").on("click", function() {
+      var passwordField = $("#password");
+      var passwordFieldType = passwordField.attr("type");
+      if (passwordFieldType == "password") {
+        passwordField.attr("type", "text");
+        $(this).find("i").removeClass("fa-eye").addClass("fa-eye-slash");
+      } else {
+        passwordField.attr("type", "password");
+        $(this).find("i").removeClass("fa-eye-slash").addClass("fa-eye");
+      }
+    });
+
+    //login user through API .... 
+    $('#login-form').on('submit', function(e) {
+      e.preventDefault();
+
+      var email = $('#email').val();
+      var password = $('#password').val();
+
+      if (email === '' || password === '') {
+        (email === '') ? $('.validation-error-email').empty().append('<label class="text-danger">* email is required</label>'): $('.validation-error-email').empty();
+        (password === '') ? $('.validation-error-password').empty().append('<label class="text-danger">* password  is required</label>'): $('.validation-error-password').empty();
+      } else {
+        $('.validation-error-email').empty();
+        $('.validation-error-password').empty();
+        $('#btn_user_login').prop('disabled', true);
+
+        var apiurl = $(this).attr('action');
+        var csrfToken = '{{ csrf_token() }}';
+        var formData = {
+          email: $('#email').val(),
+          password: $('#password').val(),
+          _token: csrfToken
+        };
+
+        $.ajax({
+
+          url: "/" + apiurl,
+          type: 'POST',
+          data: formData,
+          beforeSend: function() {
+            $('#spinner').removeClass('d-none');
+            $('#text').addClass('d-none');
+            showlogin('Wait', 'User Login...');
+          },
+          success: function(response) {
+
+            $('#btn_user_login').prop('disabled', false);;
+            var responseArray = JSON.parse(response);
+            console.log(responseArray);
+            $('#text').removeClass('d-none');
+            $('#spinner').addClass('d-none');
+            if (responseArray.status === 'success') {
+              showAlert("Success", "Login Successfully", "success");
+
+              setTimeout(function() {
+                window.location.replace('/');
+              }, 1200);
+            } else if (responseArray.status === 'error') {
+              // console.log(response.message);
+              $('.error-label').remove();
+              $.each(responseArray.message, function(field, errorMessages) {
+                $.each(errorMessages, function(index, errorMessage) {
+                  (field == 'email') ? $('.validation-error-email').empty().append('<label class="text-danger">*' + errorMessage + '</label>'): $('.validation-error-email').empty();
+                  (field == 'password') ? $('.validation-error-password').empty().append('<label class="text-danger">*' + errorMessage + '</label>'): $('.validation-error-password').empty();
+                });
+              });
+
+            } else {
+              showAlert(responseArray.status, responseArray.message, "warning");
+            }
+          },
+
+          error: function(xhr, status, error) {
+            $('#btn_user_login').prop('disabled', false);
+            $('#spinner').addClass('d-none');
+            $('#text').removeClass('d-none');
+            // console.error(xhr.responseText);
+            showAlert("Error", "Please contact your admin", "warning");
+          }
+
+        });
+      }
+    });
+
+    function showlogin(title, message) {
+      login_alert = swal({
+        title: title,
+        content: {
+          element: "div",
+          attributes: {
+            class: "custom-spinner"
+          }
+        },
+        text: message,
+        buttons: false,
+        closeOnClickOutside: false,
+        closeOnEsc: false,
+        onOpen: function() {
+          $('.custom-spinner').addClass('spinner-border spinner-border-sm text-primary');
+        },
+        onClose: function() {
+          $('.custom-spinner').removeClass('spinner-border spinner-border-sm text-primary');
         }
       });
 
+      return login_alert;
+    }
 
+    function showAlert(title, message, type) {
+      swal({
+        title: title,
+        text: message,
+        icon: type,
+        showClass: {
+          popup: 'swal2-show',
+          backdrop: 'swal2-backdrop-show',
+          icon: 'swal2-icon-show'
+        },
+        hideClass: {
+          popup: 'swal2-hide',
+          backdrop: 'swal2-backdrop-hide',
+          icon: 'swal2-icon-hide'
+        },
+        onOpen: function() {
+          $('.swal2-popup').css('animation', 'swal2-show 0.5s');
+        },
+        onClose: function() {
+          $('.swal2-popup').css('animation', 'swal2-hide 0.5s');
+        }
+      });
 
-
+    }
+    $('input').on('input', function() {
+      $(this).removeClass('error');
+      $(this).next('.error-label').remove();
     });
-  </script>
 
-</html>
 
-@include('apicall')
+    var passwordInputs = $("input[type='password']");
+    passwordInputs.each(function() {
+      var passwordInput = $(this);
+      var eyeButton = passwordInput.next(".input-group-append").find("#eye");
+
+      eyeButton.on("keydown", function(event) {
+        if (event.key === "Tab" && !event.shiftKey) {
+          event.preventDefault();
+          passwordInput.focus();
+        }
+      });
+
+      passwordInput.on("keydown", function(event) {
+        if (event.key === "Tab" && !event.shiftKey) {
+          event.preventDefault();
+          var formInputs = $("input");
+          var currentIndex = formInputs.index(this);
+
+          var nextInput = formInputs.eq(currentIndex + 1);
+          while (nextInput.length && !nextInput.is(":visible")) {
+            nextInput = formInputs.eq(currentIndex + 2);
+            currentIndex++;
+          }
+
+          if (nextInput.length) {
+            nextInput.focus();
+          } else {
+            formInputs.eq(0).focus();
+          }
+        }
+      });
+    });
+
+  });
+</script>

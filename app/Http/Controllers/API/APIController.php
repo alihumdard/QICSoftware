@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use App\Models\User;
@@ -26,6 +25,9 @@ use App\Models\Comment;
 use App\Models\Transectional;
 use App\Mail\InvoiceEmail;
 use Symfony\Component\Mime\Address;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\File;
+
 
 class APIController extends Controller
 {
@@ -434,6 +436,7 @@ class APIController extends Controller
             }
 
             $quotation->date          = $request->date;
+            $quotation->sadmin_id     = $request->sadmin_id;
             $quotation->admin_id      = $request->admin_id;
             $quotation->user_id       = $request->user_id;
             $quotation->currency_id   = $request->currency_id;
@@ -444,14 +447,22 @@ class APIController extends Controller
             $quotation->amount        = $request->amount;
 
             if ($request->hasFile('file')) {
-                if ($request->id) {
-                    Storage::disk('public')->delete($quotation->file);
+                $storageDirectory = public_path('storage/q_files');
+                if (!File::exists($storageDirectory)) {
+                    File::makeDirectory($storageDirectory, 0777, true, true);
                 }
-
-                $qfile = $request->file('file');
-                $qfilePath = $qfile->store('q_files', 'public');
-                $quotation->file = $qfilePath;
+                if ($request->id) {
+                    $fileToDelete = public_path($quotation->file);
+                    if (file_exists($fileToDelete)) {
+                        unlink($fileToDelete);
+                    }
+                }
+                $ifile = $request->file('file');
+                $filename = uniqid() . '_' . $ifile->getClientOriginalName();
+                $ifile->move(public_path('storage/q_files'), $filename);
+                $quotation->file = 'storage/q_files/' . $filename;
             }
+
 
             $quotation->created_by  = Auth::id();
             $save = $quotation->save();
@@ -520,6 +531,7 @@ class APIController extends Controller
 
             $contract->start_date    = $request->start_date;
             $contract->end_date      = $request->end_date;
+            $contract->sadmin_id     = $request->sadmin_id;
             $contract->admin_id      = $request->admin_id;
             $contract->user_id       = $request->user_id;
             $contract->currency_id   = $request->currency_id;
@@ -530,13 +542,20 @@ class APIController extends Controller
             $contract->amount        = $request->amount;
 
             if ($request->hasFile('file')) {
-                if ($request->id) {
-                    Storage::disk('public')->delete($contract->file);
+                $storageDirectory = public_path('storage/c_files');
+                if (!File::exists($storageDirectory)) {
+                    File::makeDirectory($storageDirectory, 0777, true, true);
                 }
-
-                $cfile = $request->file('file');
-                $cfilePath = $cfile->store('c_files', 'public');
-                $contract->file = $cfilePath;
+                if ($request->id) {
+                    $fileToDelete = public_path($contract->file);
+                    if (file_exists($fileToDelete)) {
+                        unlink($fileToDelete);
+                    }
+                }
+                $ifile = $request->file('file');
+                $filename = uniqid() . '_' . $ifile->getClientOriginalName();
+                $ifile->move(public_path('storage/c_files'), $filename);
+                $contract->file = 'storage/c_files/' . $filename;
             }
 
             $contract->created_by  = Auth::id();
@@ -606,6 +625,7 @@ class APIController extends Controller
             $isExistInvoice = $invoices->exists;
 
             $invoices->date          = $request->date;
+            $invoices->sadmin_id     = $request->sadmin_id;
             $invoices->admin_id      = $request->admin_id;
             $invoices->user_id       = $request->user_id;
             $invoices->currency_id   = $request->currency_id;
@@ -617,13 +637,22 @@ class APIController extends Controller
             $invoices->amount        = $request->amount;
 
             if ($request->hasFile('file')) {
+                $storageDirectory = public_path('storage/in_files');
+                if (!File::exists($storageDirectory)) {
+                    File::makeDirectory($storageDirectory, 0777, true, true);
+                }
+
                 if ($request->id) {
-                    Storage::disk('public')->delete($invoices->file);
+                    $fileToDelete = public_path($invoices->file);
+                    if (file_exists($fileToDelete)) {
+                        unlink($fileToDelete);
+                    }
                 }
 
                 $ifile = $request->file('file');
-                $infilePath = $ifile->store('in_files', 'public');
-                $invoices->file = $infilePath;
+                $filename = uniqid() . '_' . $ifile->getClientOriginalName();
+                $ifile->move(public_path('storage/in_files'), $filename);
+                $invoices->file = 'storage/in_files/' . $filename;
             }
 
             $invoices->created_by  = Auth::id();

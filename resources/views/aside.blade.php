@@ -80,7 +80,7 @@
     </div>
     <div class="col-lg-4 pt-2">
         <span>
-            <a class="show-more" style="font-size: small; color: #ACADAE;" href="/quotations">@lang('lang.show_more')..</a>
+            <a class="show-more btn btn-link" style="font-size: medium; ;" href="/quotations">@lang('Show All')..</a>
         </span>
     </div>
     <div class="col-lg-12">
@@ -90,51 +90,51 @@
 @endif
 @if(isset($activeQuotes) && count($activeQuotes) > 0)
 <div style="height: 700px; overflow: auto;">
-@foreach($activeQuotes as $key => $value)
-<div class="mb-2 trip-card" role="tablist">
-    <div class="card" style="background: #FFFFFF; box-shadow: 0px 20px 50px rgba(220, 224, 249, 0.5); border-radius: 12px;">
-        <div class="card-header aside_top" role="tab" id="heading{{$key}}">
-            <h5 class="mb-0">
-                <a data-toggle="collapse" href="#collapse{{$key}}" aria-expanded="true" aria-controls="collapse{{$key}}">
-                    <div class="d-flex flex-column">
-                        <span class="mb-1" style="font-style: normal; font-weight: 700; font-size: 14px; line-height: 17px; letter-spacing: 0.01em; color: #323C47;">{{'Client: '.$value['client_name'] ?? ''}}</span>
-                        <span class="text-secondary text-small" style="font-style: normal; font-weight: 400; font-size: 14px; line-height: 17px; letter-spacing: 0.01em; color: #9FA2B4;">
-                            {{ date('d F, Y', strtotime($value['date'])) ?? '' }}
-                        </span>
-                    </div>
-                </a>
-            </h5>
-        </div>
-        <div id="collapse{{$key}}" class="collapse{{ $key == 0 ? ' show' : '' }}" role="tabpanel" aria-labelledby="heading{{$key}}" data-parent="#accordion">
-            <div class="card-body p-2 aside_body">
-                {{$value['desc'] ?? ''}}
+    @foreach($activeQuotes as $key => $value)
+    <div class="mb-2 trip-card" role="tablist">
+        <div class="card" style="background: #FFFFFF; box-shadow: 0px 20px 50px rgba(220, 224, 249, 0.5); border-radius: 12px;">
+            <div class="card-header aside_top" role="tab" id="heading{{$key}}">
+                <h5 class="mb-0">
+                    <a data-toggle="collapse" href="#collapse{{$key}}" aria-expanded="true" aria-controls="collapse{{$key}}">
+                        <div class="d-flex flex-column">
+                            <span class="mb-1" style="font-style: normal; font-weight: 700; font-size: 14px; line-height: 17px; letter-spacing: 0.01em; color: #323C47;">{{'Client: '.$value['client_name'] ?? ''}}</span>
+                            <span class="text-secondary text-small" style="font-style: normal; font-weight: 400; font-size: 14px; line-height: 17px; letter-spacing: 0.01em; color: #9FA2B4;">
+                                {{ date('d F, Y', strtotime($value['date'])) ?? '' }}
+                            </span>
+                        </div>
+                    </a>
+                </h5>
             </div>
-        </div>
-        <div class="card-header aside_bottom" role="tab" id="headingBottom{{$key}}">
-            <h5 class="mb-0">
-                <a data-toggle="collapse" href="#collapse{{$key}}" aria-expanded="true" aria-controls="collapse{{$key}}">
-                    <div class="row">
-                        <div class="col-8 col-sm-8 col-lg-8 col-xl-10">
-                            <div class="d-flex flex-column">
-                                <span class="mb-1 user-name" style="font-style: normal; font-weight: 700; font-size: 14px; line-height: 17px; letter-spacing: 0.01em; color: #323C47;">{{ $value['admins']['name'] ?? $value['users']['name'] }}</span>
-                                <span class="text-secondary text-small" style="font-style: normal; font-weight: 400; font-size: 14px; line-height: 17px; letter-spacing: 0.01em; color: #9FA2B4;">{{$quote_status[$value['status']] ?? ''}}</span>
+            <div id="collapse{{$key}}" class="collapse{{ $key == 0 ? ' show' : '' }}" role="tabpanel" aria-labelledby="heading{{$key}}" data-parent="#accordion">
+                <div class="card-body p-2 aside_body">
+                    {{$value['desc'] ?? ''}}
+                </div>
+            </div>
+            <div class="card-header aside_bottom" role="tab" id="headingBottom{{$key}}">
+                <h5 class="mb-0">
+                    <a data-toggle="collapse" href="#collapse{{$key}}" aria-expanded="true" aria-controls="collapse{{$key}}">
+                        <div class="row">
+                            <div class="col-8 col-sm-8 col-lg-8 col-xl-10">
+                                <div class="d-flex flex-column">
+                                    <span class="mb-1 user-name" style="font-style: normal; font-weight: 700; font-size: 14px; line-height: 17px; letter-spacing: 0.01em; color: #323C47;">{{ $value['admins']['name'] ?? $value['users']['name'] }}</span>
+                                    <span class="text-secondary text-small" style="font-style: normal; font-weight: 400; font-size: 14px; line-height: 17px; letter-spacing: 0.01em; color: #9FA2B4;">{{$quote_status[$value['status']] ?? ''}}</span>
+                                </div>
+                            </div>
+                            <div class="col-4 col-sm-4 col-lg-4 col-xl-2 text-right">
+                                <button data-id="{{ $value['id'] }}" data-role="{{ $user->role }}" id="quoteDetail_btn{{$key}}" class="btn p-0 quoteDetail_view" data-toggle="modal" data-target="#qoutedetail">
+                                    <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <circle opacity="0.1" cx="18" cy="18" r="18" fill="#ACADAE" />
+                                        <path d="M17.7167 13C13.5 13 11 18 11 18C11 18 13.5 23 17.7167 23C21.8333 23 24.3333 18 24.3333 18C24.3333 18 21.8333 13 17.7167 13ZM17.6667 14.6667C19.5167 14.6667 21 16.1667 21 18C21 19.85 19.5167 21.3333 17.6667 21.3333C15.8333 21.3333 14.3333 19.85 14.3333 18C14.3333 16.1667 15.8333 14.6667 17.6667 14.6667ZM17.6667 16.3333C16.75 16.3333 16 17.0833 16 18C16 18.9167 16.75 19.6667 17.6667 19.6667C18.5833 19.6667 19.3333 18.9167 19.3333 18C19.3333 17.8333 19.2667 17.6833 19.2333 17.5333C19.1 17.8 18.8333 18 18.5 18C18.0333 18 17.6667 17.6333 17.6667 17.1667C17.6667 16.8333 17.8667 16.5667 18.1333 16.4333C17.9833 16.3833 17.8333 16.3333 17.6667 16.3333Z" fill="black" />
+                                    </svg>
+                                </button>
                             </div>
                         </div>
-                        <div class="col-4 col-sm-4 col-lg-4 col-xl-2 text-right">
-                            <button data-id="{{ $value['id'] }}" data-role="{{ $user->role }}" id="quoteDetail_btn{{$key}}" class="btn p-0 quoteDetail_view" data-toggle="modal" data-target="#qoutedetail">
-                                <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <circle opacity="0.1" cx="18" cy="18" r="18" fill="#ACADAE" />
-                                    <path d="M17.7167 13C13.5 13 11 18 11 18C11 18 13.5 23 17.7167 23C21.8333 23 24.3333 18 24.3333 18C24.3333 18 21.8333 13 17.7167 13ZM17.6667 14.6667C19.5167 14.6667 21 16.1667 21 18C21 19.85 19.5167 21.3333 17.6667 21.3333C15.8333 21.3333 14.3333 19.85 14.3333 18C14.3333 16.1667 15.8333 14.6667 17.6667 14.6667ZM17.6667 16.3333C16.75 16.3333 16 17.0833 16 18C16 18.9167 16.75 19.6667 17.6667 19.6667C18.5833 19.6667 19.3333 18.9167 19.3333 18C19.3333 17.8333 19.2667 17.6833 19.2333 17.5333C19.1 17.8 18.8333 18 18.5 18C18.0333 18 17.6667 17.6333 17.6667 17.1667C17.6667 16.8333 17.8667 16.5667 18.1333 16.4333C17.9833 16.3833 17.8333 16.3333 17.6667 16.3333Z" fill="black" />
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-                </a>
-            </h5>
+                    </a>
+                </h5>
+            </div>
         </div>
     </div>
-</div>
-@endforeach
+    @endforeach
 
 
 

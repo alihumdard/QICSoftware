@@ -1,11 +1,3 @@
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://code.jquery.com/ui/1.13.0/jquery-ui.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.0.2/js/bootstrap.min.js"></script>
-<script src="https://cdn.rawgit.com/SheetJS/js-xlsx/master/dist/xlsx.full.min.js"></script>
-<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
-<link href="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.9/summernote-bs4.css" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.9/summernote-bs4.js"></script>
 @php
 $user = auth()->user();
 @endphp
@@ -55,80 +47,6 @@ $user = auth()->user();
                 x.className = x.className.replace("show", "");
             }, 3000);
         }
-
-        //login user through API .... 
-        $('#login-form').on('submit', function(e) {
-
-            e.preventDefault();
-
-            var email = $('#email').val();
-            var password = $('#password').val();
-
-            if (email === '' || password === '') {
-                (email === '') ? $('.validation-error-email').empty().append('<label class="text-danger">* email is required</label>'): $('.validation-error-email').empty();
-                (password === '') ? $('.validation-error-password').empty().append('<label class="text-danger">* password  is required</label>'): $('.validation-error-password').empty();
-            } else {
-                $('.validation-error-email').empty();
-                $('.validation-error-password').empty();
-                $('#btn_user_login').prop('disabled', true);
-
-                var apiurl = $(this).attr('action');
-                var csrfToken = '{{ csrf_token() }}';
-                var formData = {
-                    email: $('#email').val(),
-                    password: $('#password').val(),
-                    _token: csrfToken
-                };
-
-                $.ajax({
-
-                    url: "/" + apiurl,
-                    type: 'POST',
-                    data: formData,
-                    beforeSend: function() {
-                        $('#spinner').removeClass('d-none');
-                        $('#text').addClass('d-none');
-                        showlogin('Wait', 'User Login...');
-                    },
-                    success: function(response) {
-
-                        $('#btn_user_login').prop('disabled', false);;
-                        var responseArray = JSON.parse(response);
-                        console.log(responseArray);
-                        $('#text').removeClass('d-none');
-                        $('#spinner').addClass('d-none');
-                        if (responseArray.status === 'success') {
-                            showAlert("Success", "Login Successfully", "success");
-
-                            setTimeout(function() {
-                                window.location.replace('/');
-                            }, 1200);
-                        } else if (responseArray.status === 'error') {
-                            // console.log(response.message);
-                            $('.error-label').remove();
-                            $.each(responseArray.message, function(field, errorMessages) {
-                                $.each(errorMessages, function(index, errorMessage) {
-                                    (field == 'email') ? $('.validation-error-email').empty().append('<label class="text-danger">*' + errorMessage + '</label>'): $('.validation-error-email').empty();
-                                    (field == 'password') ? $('.validation-error-password').empty().append('<label class="text-danger">*' + errorMessage + '</label>'): $('.validation-error-password').empty();
-                                });
-                            });
-
-                        } else {
-                            showAlert(responseArray.status, responseArray.message, "warning");
-                        }
-                    },
-
-                    error: function(xhr, status, error) {
-                        $('#btn_user_login').prop('disabled', false);
-                        $('#spinner').addClass('d-none');
-                        $('#text').removeClass('d-none');
-                        // console.error(xhr.responseText);
-                        showAlert("Error", "Please contact your admin", "warning");
-                    }
-
-                });
-            }
-        });
 
         // get comments  data in through the api...
         $(document).on('click', '.invComment', function(e) {
@@ -305,7 +223,7 @@ $user = auth()->user();
                 beforeSend: function() {
                     $('#spinner').removeClass('d-none');
                     $('#add_btn').addClass('d-none');
-                    showlogin('Wait', 'saving......');
+                    showloading('Wait', 'saving......');
                 },
                 success: function(response) {
 
@@ -397,7 +315,7 @@ $user = auth()->user();
                 beforeSend: function() {
                     $('#spinner').removeClass('d-none');
                     $('#add_btn').addClass('d-none');
-                    showlogin('Wait', 'saving......');
+                    showloading('Wait', 'saving......');
                 },
                 success: function(response) {
 
@@ -486,7 +404,7 @@ $user = auth()->user();
                 contentType: false,
                 processData: false,
                 beforeSend: function() {
-                    showlogin('Wait', 'saving......');
+                    showloading('Wait', 'saving......');
                 },
                 success: function(response) {
                     button.prop('disabled', false);
@@ -551,7 +469,7 @@ $user = auth()->user();
                     button.prop('disabled', true);
                     spinner.removeClass('d-none');
                     buttonText.addClass('d-none');
-                    // showlogin('Wait', 'saving......');
+                    // showloading('Wait', 'saving......');
                 },
                 success: function(response) {
 
@@ -652,7 +570,7 @@ $user = auth()->user();
                     $('#addclient').modal('show');
                     $('#btn_save #spinner').removeClass('d-none');
                     $('#btn_save #add_btn').addClass('d-none');
-                    // showlogin('Wait', 'loading......');
+                    // showloading('Wait', 'loading......');
                 },
                 success: function(response) {
 
@@ -739,7 +657,7 @@ $user = auth()->user();
 
         }
 
-        function showlogin(title, message) {
+        function showloading(title, message) {
             login_alert = swal({
                 title: title,
                 content: {
@@ -781,39 +699,6 @@ $user = auth()->user();
         $('input').on('input', function() {
             $(this).removeClass('error');
             $(this).next('.error-label').remove();
-        });
-
-        var passwordInputs = $("input[type='password']");
-        passwordInputs.each(function() {
-            var passwordInput = $(this);
-            var eyeButton = passwordInput.next(".input-group-append").find("#eye");
-
-            eyeButton.on("keydown", function(event) {
-                if (event.key === "Tab" && !event.shiftKey) {
-                    event.preventDefault();
-                    passwordInput.focus();
-                }
-            });
-
-            passwordInput.on("keydown", function(event) {
-                if (event.key === "Tab" && !event.shiftKey) {
-                    event.preventDefault();
-                    var formInputs = $("input");
-                    var currentIndex = formInputs.index(this);
-
-                    var nextInput = formInputs.eq(currentIndex + 1);
-                    while (nextInput.length && !nextInput.is(":visible")) {
-                        nextInput = formInputs.eq(currentIndex + 2);
-                        currentIndex++;
-                    }
-
-                    if (nextInput.length) {
-                        nextInput.focus();
-                    } else {
-                        formInputs.eq(0).focus();
-                    }
-                }
-            });
         });
 
         //user status

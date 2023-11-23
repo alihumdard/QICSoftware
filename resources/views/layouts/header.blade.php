@@ -14,7 +14,7 @@ $notifications = NULL;
   <!-- Required meta tags -->
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+  <!-- <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'> -->
   <title>TSP CRM</title>
   @include('layouts.scripts')
   <style>
@@ -34,6 +34,8 @@ $notifications = NULL;
       display: flex;
       align-items: center;
       justify-content: center;
+      opacity: 1;
+      transition: opacity 0.5s ease;
     }
 
     .preloader .spinner {
@@ -60,47 +62,31 @@ $notifications = NULL;
       }
     }
 
-    /* 
-   .preloader {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(to bottom, #452C88, #ff4f1a);
-      z-index: 9999;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      opacity: 1;
-      transition: opacity 0.5s ease;
-    }
-
-    .preloader .logo {
-      max-width: 150px;
-      animation: pulse 1.2s infinite ease-in-out;
-    }
 
     @keyframes pulse {
       0% {
         transform: scale(1);
       }
+
       50% {
         transform: scale(1.2);
       }
+
       100% {
         transform: scale(1);
       }
     }
 
+
     @keyframes fadeOut {
       0% {
         opacity: 1;
       }
+
       100% {
         opacity: 0;
       }
-    } */
+    }
 
     ::-webkit-scrollbar {
       width: 5px;
@@ -116,7 +102,7 @@ $notifications = NULL;
     }
 
     ::-webkit-scrollbar-track {
-      background-color: #F5F5F5;
+      background-color: #FFFFF5;
     }
 
     ::-webkit-scrollbar-track:horizontal {
@@ -147,12 +133,13 @@ $notifications = NULL;
       color: #FFFFFF;
       border-radius: 10px;
     }
+
     body {
-          zoom: 90%;
-          }
+      zoom: 90%;
+    }
   </style>
-  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.5/css/jquery.dataTables.min.css">
-  <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit" type="text/javascript"></script>
+  <!-- <link rel="stylesheet" href="https://cdn.datatables.net/1.13.5/css/jquery.dataTables.min.css"> -->
+  <!-- <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit" type="text/javascript"></script> -->
 </head>
 
 <body style="background-color: #F5F5F5;">

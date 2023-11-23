@@ -85,7 +85,7 @@
                             <path d="M13.3333 8.88888H11.1111V6.66665C11.1111 6.37197 10.994 6.08935 10.7857 5.88098C10.5773 5.67261 10.2947 5.55554 9.99999 5.55554C9.7053 5.55554 9.42269 5.67261 9.21431 5.88098C9.00594 6.08935 8.88888 6.37197 8.88888 6.66665V8.88888H6.66665C6.37197 8.88888 6.08935 9.00594 5.88098 9.21431C5.67261 9.42269 5.55554 9.7053 5.55554 9.99999C5.55554 10.2947 5.67261 10.5773 5.88098 10.7857C6.08935 10.994 6.37197 11.1111 6.66665 11.1111H8.88888V13.3333C8.88888 13.628 9.00594 13.9106 9.21431 14.119C9.42269 14.3274 9.7053 14.4444 9.99999 14.4444C10.2947 14.4444 10.5773 14.3274 10.7857 14.119C10.994 13.9106 11.1111 13.628 11.1111 13.3333V11.1111H13.3333C13.628 11.1111 13.9106 10.994 14.119 10.7857C14.3274 10.5773 14.4444 10.2947 14.4444 9.99999C14.4444 9.7053 14.3274 9.42269 14.119 9.21431C13.9106 9.00594 13.628 8.88888 13.3333 8.88888Z" fill="white" />
                         </svg>
                     </span>
-                    <span>{{ ($duplicate_trip ?? '' == 1) ? 'Duplicate Quotation' : ((isset($data['id'])) ? 'Update Quotation' : 'Add Quotation') }}</span>
+                    <span>{{ ($duplicate_qoute ?? '' == 1) ? 'Duplicate Quotation' : ((isset($data['id'])) ? 'Update Quotation' : 'Add Quotation') }}</span>
                 </h3>
             </div>
             <div class="container" id="home">
@@ -94,9 +94,10 @@
                         @csrf
                         <div class="col-lg-{{ ($user->role == user_roles('3')) ? (($user->role == user_roles('2')) ? '4' : '6') : '3' }} col-md-6 col-sm-12  my-2">
                             <label for="q_date">@lang('lang.date')</label>
-                            <input required type="date" name="date" id="q_date" value="{{ ($duplicate_trip ?? '' == 1) ? date('Y-m-d') : ((isset($data['id'])) ? $data['date'] : date('Y-m-d') ) }}" min="{{ ($duplicate_trip ?? '' == 1) ? date('Y-m-d') : ((isset($data['id'])) ? $data['date'] : date('Y-m-d') ) }}" class="form-control">
+                            <input required type="date" name="date" id="q_date" value="{{ ($duplicate_qoute ?? '' == 1) ? date('Y-m-d') : ((isset($data['id'])) ? $data['date'] : date('Y-m-d') ) }}" min="{{ ($duplicate_qoute ?? '' == 1) ? date('Y-m-d') : ((isset($data['id'])) ? $data['date'] : date('Y-m-d') ) }}" class="form-control">
                             <span id="q_date_error" class="error-message text-danger"></span>
-                            <input type="hidden" name="id" id="q_id" value="{{ ($duplicate_trip == 1) ? '' : ((isset($data['id'])) ? $data['id'] : '') }}" />
+                            <input type="hidden" name="id" id="q_id" value="{{ ($duplicate_qoute == 1) ? '' : ((isset($data['id'])) ? $data['id'] : '') }}" />
+                            <input type="hidden" name="sadmin_id" id="sadmin_id" value="{{ $sadmin_id ?? ''}}" />
                         </div>
 
                         @if(isset($user->role) && ($user->role == user_roles('1')))
