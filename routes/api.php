@@ -56,7 +56,9 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::match(['post','get'],'/transectionStore', [APIController::class, 'transectional_store']); 
      
-    Route::match(['post','get'],'/transectionals', [APIController::class, 'transectionals']);  
+    Route::match(['post','get'],'/transectionals', [APIController::class, 'transectionals']);
+
+    Route::match(['post','get'],'/basicSettings', [APIController::class, 'basic_settings']);  
 
 });
 

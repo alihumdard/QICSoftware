@@ -27,6 +27,9 @@ use App\Mail\InvoiceEmail;
 use Symfony\Component\Mime\Address;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\File;
+use App\Models\Location;
+use App\Models\Service;
+use App\Models\Currency;
 
 
 class APIController extends Controller
@@ -971,6 +974,57 @@ class APIController extends Controller
             return response()->json(['status' => 'success', 'message' => $message, 'data' => $transectional]);
         } catch (\Exception $e) {
             return response()->json(['status' => 'error', 'message' => 'Error storing Transection', 'error' => $e->getMessage()], 500);
+        }
+    }
+
+    // saving basic settings...
+    public function basic_settings(Request $request): JsonResponse
+    {
+        try {
+            $user_id = Auth::id();
+            if ($request->services) {
+                $selectedServices = Service::whereIn('id', $request->services)->get();
+
+                foreach ($selectedServices as $service) {
+                    Service::create([
+                        'title' => $service->title,
+                        'type'  => $service->type,
+                        'sadmin_id'  => $user_id,
+                        'created_by' => $user_id,
+                    ]);
+                }
+            }
+
+            if ($request->currencies) {
+                $selectedCurrencies = Currency::whereIn('id', $request->currencies)->get();
+                foreach ($selectedCurrencies as $currencies) {
+                    Currency::create(                [
+                        'name' => ucwords($currencies->name),
+                        'code' => strtoupper($currencies->code),
+                        'type' => $currencies->type,
+                        'sadmin_id' => $user_id,
+                        'created_by' => $user_id,
+                    ]);
+                }
+            }
+
+            if ($request->loactions) {
+                $selectedLoactions = Location::whereIn('id', $request->loactions)->get();
+                foreach ($selectedLoactions as $loactions) {
+                    Location::create([
+                        'name' => ucwords($loactions->name),
+                        'code' => strtoupper($loactions->code),
+                        'type' => $loactions->type,
+                        'sadmin_id' => $user_id,
+                        'created_by' => $user_id,
+                    ]);
+                }
+            }
+
+            $message = "Setting's Updated successfully";
+            return response()->json(['status' => 'success', 'message' => $message, 'data' => NULL]);
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => 'Error storing Setting', 'error' => $e->getMessage()], 500);
         }
     }
 }

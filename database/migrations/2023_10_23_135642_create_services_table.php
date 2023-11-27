@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('title');
             $table->string('type');
             $table->string('status')->default(1);
+            $table->unsignedBigInteger('sadmin_id')->nullable();
             $table->string('created_by');
             $table->timestamps();
         });

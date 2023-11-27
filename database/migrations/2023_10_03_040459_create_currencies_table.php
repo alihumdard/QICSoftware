@@ -16,10 +16,11 @@ return new class extends Migration
         Schema::create('currencies', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('code')->unique();
+            $table->string('code');
             $table->string('type');
             $table->integer('status')->default(1);
-            $table->integer('created_by')->nullable();
+            $table->unsignedBigInteger('sadmin_id')->nullable();
+            $table->string('created_by')->nullable();
             $table->timestamps();
         });
     }

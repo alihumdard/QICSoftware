@@ -39,7 +39,7 @@ class Currencies extends Seeder
                 'code' => strtoupper($key),
                 'name' => ucwords($val),
                 'type' => $type,
-                'created_by' => 1
+                'created_by' => 'Default'
             ]);
         }
     }
