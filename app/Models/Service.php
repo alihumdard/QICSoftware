@@ -9,7 +9,7 @@ class Service extends Model
 {
     use HasFactory;
     protected $table = 'services';
-    protected $fillable = ['title', 'type', 'status', 'created_by'];
+    protected $fillable = ['title', 'type', 'status', 'sadmin_id','created_by'];
     public static $rules = [
         'title'  => 'required',
         'status' => 'required',

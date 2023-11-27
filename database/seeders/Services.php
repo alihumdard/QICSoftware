@@ -40,7 +40,7 @@ class Services extends Seeder
             Service::create([
                 'title' => ucwords($val),
                 'type' => $this->serviceTypes[1],
-                'created_by' => 'Admin'
+                'created_by' => 'Default'
             ]);
         }
 
@@ -50,7 +50,7 @@ class Services extends Seeder
             Service::create([
                 'title' => ucwords($val),
                 'type' => $this->serviceTypes[2],
-                'created_by' => 'Admin'
+                'created_by' => 'Default'
             ]);
         }
 
@@ -59,7 +59,7 @@ class Services extends Seeder
             Service::create([
                 'title' => ucwords($val),
                 'type' => $this->serviceTypes[3],
-                'created_by' => 'Admin'
+                'created_by' => 'Default'
             ]);
         }
     }

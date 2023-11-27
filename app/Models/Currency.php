@@ -10,7 +10,7 @@ class Currency extends Model
     use HasFactory;
     protected $table = 'currencies';
 
-    protected $fillable = ['name', 'code', 'type', 'created_by'];
+    protected $fillable = ['name', 'code', 'type', 'sadmin_id', 'created_by'];
 
     public function setNameAttribute($value)
     {

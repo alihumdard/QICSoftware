@@ -98,6 +98,18 @@ class UserController extends Controller
 
             // User roles: 1 for Super Admin, 2 for Admin, 3 for User, 4 Manager
             if (isset($user->role) && $user->role == user_roles('1')) {
+                $data['services']   = Service::where('sadmin_id',$user->id)->latest('id')->get()->toArray();
+                $data['locations']  = Location::where('sadmin_id',$user->id)->latest('id')->get()->toArray();
+                $data['currencies'] = Currency::where('sadmin_id',$user->id)->latest('id')->get()->toArray();
+                if($data['services'] == Null && $data['locations'] == Null && $data['currencies'] == Null){
+                    $data['def_serv_q'] = Service::where(['created_by' => 'Default','sadmin_id' => NULL, 'type' => $this->sev_type[1]])->get()->toArray();
+                    $data['def_serv_c'] = Service::where(['created_by' => 'Default','sadmin_id' => NULL, 'type' => $this->sev_type[2]])->get()->toArray();
+                    $data['def_serv_i'] = Service::where(['created_by' => 'Default','sadmin_id' => NULL, 'type' => $this->sev_type[3]])->get()->toArray();
+                    $data['def_loca']   = Location::where(['created_by' => 'Default','sadmin_id' => NULL])->latest('id')->get()->toArray();
+                    $data['def_curn']   = Currency::where(['created_by' => 'Default','sadmin_id' => NULL])->latest('id')->get()->toArray();
+                    // dd($data['def_curn']);
+                }
+
                 $data['adminsCount']  = User::where(['role' => user_roles('2'), 'sadmin_id' => $user->id])->count();
                 $data['usersCount']   = User::where(['role' => user_roles('3'), 'sadmin_id' => $user->id])->count();
 
@@ -842,6 +854,7 @@ class UserController extends Controller
                     'code' => strtoupper($request->code),
                     'type' => $request->type,
                     'created_by' => $user->id,
+                    'sadmin_id' => $user->id,
                 ]
             );
             $message = "Currency " . ($request->id ? "Updated" : "Saved") . " Successfully";
@@ -852,7 +865,7 @@ class UserController extends Controller
             Session::flash('msg', $message);
         }
 
-        $currencies = Currency::all()->toArray();
+        $currencies = Currency::where(['sadmin_id' => $user->id, 'status' => '1' ])->latest('id')->get()->toArray();
         return view('currencies', ['user' => $user, 'currency' => $currency, 'data' => $currencies, 'types' => $this->currencyTypes]);
     }
 
@@ -877,6 +890,7 @@ class UserController extends Controller
                     'name' => ucwords($request->name),
                     'code' => strtoupper($request->code),
                     'type' => $request->type,
+                    'sadmin_id' => $user->id,
                     'created_by' => $user->id,
                 ]
             );
@@ -888,7 +902,7 @@ class UserController extends Controller
             Session::flash('msg', $message);
         }
 
-        $locations = Location::latest('id')->get()->toArray();
+        $locations = Location::where(['sadmin_id' => $user->id, 'status' => '1' ])->latest('id')->get()->toArray();
         $data = ['user' => $user, 'location' => $location, 'data' => $locations, 'types' => $this->locationType];
         return view('locations', $data);
     }
@@ -912,6 +926,7 @@ class UserController extends Controller
                 [
                     'title' => ucwords($request->title),
                     'type' => $request->type,
+                    'sadmin_id' => $user->id,
                     'created_by' => $user->id,
                 ]
             );
@@ -923,7 +938,7 @@ class UserController extends Controller
             Session::flash('msg', $message);
         }
 
-        $services = Service::latest('id')->get()->toArray();
+        $services = Service::where(['sadmin_id' => $user->id, 'status' => '1' ])->latest('id')->get()->toArray();
         $data = ['user' => $user, 'service' => $service, 'data' => $services, 'types' => $this->sev_type];
         return view('services', $data);
     }

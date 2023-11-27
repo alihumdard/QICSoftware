@@ -11,7 +11,7 @@ class Location extends Model
     use HasFactory;
     protected $table = 'locations';
 
-    protected $fillable = ['name', 'code', 'type', 'created_by'];
+    protected $fillable = ['name', 'code', 'type', 'sadmin_id', 'created_by'];
 
     public function location()
     {

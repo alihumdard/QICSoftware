@@ -71,25 +71,22 @@ return [
         3 => 'Website Development',
         4 => 'Search Engine Optimization',
         5 => 'App Development',
-        6 => 'Other'
     ],
 
     'CONTRACTS' => [
-        1 => 'Monthly',
-        2 => 'One-time',
+        1 => 'One-time',
+        2 => 'Monthly',
         3 => '3 Months',
         4 => '6 months',
         5 => 'Yearly',
-        6 => 'Other'
     ],
 
     'INVOICES' => [
-        1 => 'Weekly',
-        2 => 'Monthly',
-        3 => 'On-time',
+        1 => 'Daily Wages',
+        2 => 'Weekly',
+        3 => 'Monthly',
         4 => '6 months',
         5 => 'Yearly',
-        6 => 'Other'
     ],
 
     'SERVICE_TYPES' => [
@@ -101,7 +98,6 @@ return [
     'LOCATIONS' => [
         'PK' => 'Pakistan',
         'ISB' => 'Islamabad',
-        'LHR' => 'Lahore',
         'UAE' => 'United Arab Emirates',
         'USA' => 'United States',
         'UK' => 'United Kingdom',
