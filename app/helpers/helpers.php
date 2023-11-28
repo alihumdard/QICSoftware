@@ -103,7 +103,6 @@ function view_permission($page_name)
                 case 'add_contract':
                 case 'add_invoice':
                 case 'contracts':
-                case 'super_admins':
                 case 'logout':
                 case 'currencies':
                 case 'locations':

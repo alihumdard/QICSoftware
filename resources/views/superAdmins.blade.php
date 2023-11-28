@@ -21,7 +21,7 @@
             <div class="col-lg-12">
               <div class="row mx-1">
                 <div class="col-lg-9 col-sm-6 mb-1 pr-0" style="text-align: right;">
-                  <button class="btn content-background add-btn text-white" data-toggle="modal" data-target="#addclient" ><span><i class="fa fa-plus"></i> @lang('lang.add_sadmin')</span></button>
+                  <button class="btn content-background add-btn text-white" data-toggle="modal" data-target="#addUsers" ><span><i class="fa fa-plus"></i> @lang('lang.add_sadmin')</span></button>
                 </div>
                 <div class="col-lg-3 col-sm-6 pr-0">
                   <div class="input-group">
@@ -193,7 +193,6 @@
   </div>
   <!-- Add User Modal End -->
   @php
-  $modal_title = "Super Admin";
   $login_userId = $user->id;
   $user_role_static = user_roles('1');
   @endphp
