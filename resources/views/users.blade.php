@@ -100,9 +100,9 @@
                   <td>{{ $value['email'] }}</td>
 
                   @if($user->role == user_roles('1'))
-                  <td><img src="{{(isset($value['client_pic'])) ? asset('storage/' . $value['client_pic']) : 'assets/images/user.png'}}" style="width: 45px; height: 45px; border-radius: 38px; object-fit: cover;" alt="text"></td>
-                  <td> {{(isset($value['client_name'])) ? $value['client_name'] : $user->name}}</td>
-                  <td>{{$value['client_email']}}</td>
+                  <td><img src="{{(isset($value['admin_pic'])) ? asset('storage/' . $value['admin_pic']) : 'assets/images/user.png'}}" style="width: 45px; height: 45px; border-radius: 38px; object-fit: cover;" alt="text"></td>
+                  <td> {{(isset($value['admin_name'])) ? $value['admin_name'] : $user->name}}</td>
+                  <td>{{$value['admin_email']}}</td>
                   @endif
 
                   @if($value['status'] == 1)
