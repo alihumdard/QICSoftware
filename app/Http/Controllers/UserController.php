@@ -219,14 +219,19 @@ class UserController extends Controller
     public function admins()
     {
         $user = auth()->user();
-        $page_name = 'admins';
-
+        $page_name = 'admins';  
         if (!view_permission($page_name)) {
             return redirect()->back();
         }
 
-        $clients = User::where(['role' => user_roles('2')])->orderBy('id', 'desc')->get()->toArray();
-        return view('admins', ['data' => $clients, 'user' => $user, 'add_as_user' => user_roles('2')]);
+        $data['user'] = auth()->user();
+        $data['add_as_user'] = user_roles('2');
+
+        if (isset($user->role) && $user->role == user_roles('1')) {
+            $data['admins'] = User::where(['role' => user_roles('2'), 'sadmin_id' => $user->id])->latest('id')->get()->toArray();
+        }
+
+        return view('admins', $data);
     }
 
     public function users()
@@ -246,12 +251,12 @@ class UserController extends Controller
                 ->orderBy('users.id', 'desc')
                 ->get()
                 ->toArray();
-            $admins_list = User::where(['role' => user_roles('2')])->orderBy('id', 'desc')->select('id', 'name')->get()->toArray();
+            $admins_list = User::where(['role' => user_roles('2'), 'sadmin_id' => $user->id ])->orderBy('id', 'desc')->select('id', 'name')->get()->toArray();
 
             return view('users', ['data' => $users, 'user' => $user, 'add_as_user' => user_roles('3'), 'admins_list' => $admins_list]);
         } else {
 
-            $users = User::where(['role' => user_roles('3'), 'client_id' => $user->id])->orderBy('id', 'desc')->get()->toArray();
+            $users = User::where(['role' => user_roles('3'), 'admin_id' => $user->id])->orderBy('id', 'desc')->get()->toArray();
             return view('users', ['data' => $users, 'user' => $user, 'add_as_user' => user_roles('3')]);
         }
     }

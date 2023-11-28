@@ -549,8 +549,8 @@ $user = auth()->user();
         });
 
         // get api .....
-        $(document).on('click', '#btn_edit_client', function() {
-            var id = $(this).data('client_id');
+        $(document).on('click', '#btn_edit_user', function() {
+            var id = $(this).data('admin_id');
             var apiname = $(this).data('api_name');
             var apiurl = "{{ end_url('') }}" + apiname;
             var bearerToken = "{{session('user')}}";
@@ -566,8 +566,8 @@ $user = auth()->user();
                 contentType: false,
                 processData: false,
                 beforeSend: function() {
-                    $('#addclient #btn_save').css('background-color', '#233A85');
-                    $('#addclient').modal('show');
+                    $('#addUsers #btn_save').css('background-color', '#233A85');
+                    $('#addUsers').modal('show');
                     $('#btn_save #spinner').removeClass('d-none');
                     $('#btn_save #add_btn').addClass('d-none');
                     // showloading('Wait', 'loading......');
@@ -578,26 +578,26 @@ $user = auth()->user();
 
                         let responseData = response.data[0];
                         let formattedDateTime = moment(responseData.created_at).format("YYYY-MM-DDTHH:mm");
-                        $('#addclient #btn_save').html('<div class="spinner-border spinner-border-sm text-white d-none" id="spinner"></div><span id="add_btn">' + "{{ trans('lang.save') }}" + '</span>').css('background-color', '#233A85');
+                        $('#addUsers #btn_save').html('<div class="spinner-border spinner-border-sm text-white d-none" id="spinner"></div><span id="add_btn">' + "{{ trans('lang.update') }}" + '</span>').css('background-color', '#233A85');
                         if (responseData.user_pic) {
-                            $('#addclient #user_pic').attr('src', "{{ asset('storage') }}/" + responseData.user_pic).removeClass('d-none');
+                            $('#addUsers #user_pic').attr('src', "{{ asset('storage') }}/" + responseData.user_pic).removeClass('d-none');
                         } else {
-                            $('#addclient #user_pic').attr('src', "assets/images/user.png").removeClass('d-none');
+                            $('#addUsers #user_pic').attr('src', "assets/images/user.png").removeClass('d-none');
                         }
                         if (responseData.com_pic) {
-                            $('#addclient #com_pic').attr('src', "{{ asset('storage') }}/" + responseData.com_pic).removeClass('d-none');
+                            $('#addUsers #com_pic').attr('src', "{{ asset('storage') }}/" + responseData.com_pic).removeClass('d-none');
                         } else {
-                            $('#addclient #com_pic').attr('src', "assets/images/user.png").removeClass('d-none');
+                            $('#addUsers #com_pic').attr('src', "assets/images/user.png").removeClass('d-none');
                         }
-                        $('#addclient #id').val(responseData.id);
-                        $('#addclient #client_id').val(responseData.client_id);
-                        $('#addclient #role').val(responseData.role);
-                        $('#addclient #name').val(responseData.name);
-                        $('#addclient #phone').val(responseData.phone);
-                        $('#addclient #email').val(responseData.email);
-                        $('#addclient #com_name').val(responseData.com_name);
-                        $('#addclient #address').val(responseData.address);
-                        $('#addclient #joining_date').val(formattedDateTime);
+                        $('#addUsers #id').val(responseData.id);
+                        $('#addUsers #client_id').val(responseData.client_id);
+                        $('#addUsers #role').val(responseData.role);
+                        $('#addUsers #name').val(responseData.name);
+                        $('#addUsers #phone').val(responseData.phone);
+                        $('#addUsers #email').val(responseData.email);
+                        $('#addUsers #com_name').val(responseData.com_name);
+                        $('#addUsers #address').val(responseData.address);
+                        $('#addUsers #joining_date').val(formattedDateTime);
 
                         $('#spinner').addClass('d-none');
                         $('#add_btn').removeClass('d-none');
