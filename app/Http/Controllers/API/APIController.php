@@ -144,7 +144,7 @@ class APIController extends Controller
 
                     if (isset($user->role) && $user->role == user_roles('3')) {
 
-                        $admin = User::where(['role' => user_roles('2'), 'id' => $user->client_id])->first();
+                        $admin = User::where(['role' => user_roles('2'), 'id' => $user->admin_id])->first();
                         if ($admin) {
                             if (!in_array($admin->status, auth_users())) {
                                 return response()->json(['status' => 'Deactive', 'message' => 'You are Unauthorized to Login, Contact to the admin']);

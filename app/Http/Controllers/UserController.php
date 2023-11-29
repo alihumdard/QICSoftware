@@ -140,7 +140,7 @@ class UserController extends Controller
 
                 return view('superAdmin_dashboard', $data);
             } else if (isset($user->role) && $user->role == user_roles('2')) {
-                $data['users']      = User::where(['role' => user_roles('3'), 'client_id' => $user->id, 'status' => $this->userStatus['Active']])->select('id', 'name', 'user_pic')->get()->toArray();
+                $data['users']      = User::where(['role' => user_roles('3'), 'admin_id' => $user->id, 'status' => $this->userStatus['Active']])->select('id', 'name', 'user_pic')->get()->toArray();
                 $data['usersCount'] = count($data['users'] ?? []);
                 $data['user_quote_percentage'] = 0;
 
@@ -168,7 +168,7 @@ class UserController extends Controller
 
                 return view('admin_dashboard', $data);
             } else if (isset($user->role) && $user->role == user_roles('3')) {
-                $admin = User::where(['role' => user_roles('2'), 'id' => $user->client_id])->first();
+                $admin = User::where(['role' => user_roles('2'), 'id' => $user->admin_id])->first();
                 if ($admin) {
                     $data['totalQuotion']   = Quotation::where('user_id', $user->id)->count();
                     $data['totalInvoice']   = Invoice::where('user_id', $user->id)->count();
