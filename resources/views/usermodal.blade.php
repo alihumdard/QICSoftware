@@ -167,14 +167,15 @@
               <rect x="4" y="4" width="48" height="48" rx="24" fill="#D1FADF" />
               <path d="M23.5 28L26.5 31L32.5 25M38 28C38 33.5228 33.5228 38 28 38C22.4772 38 18 33.5228 18 28C18 22.4772 22.4772 18 28 18C33.5228 18 38 22.4772 38 28Z" stroke="#039855" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
               <rect x="4" y="4" width="48" height="48" rx="24" stroke="#ECFDF3" stroke-width="8" />
-            </svg>
+            </svg> 
+            <label class="font-weight-semibold pl-1 mt-4"> Sure to change the user's status? </label>
             <select name="status" id="status" class="form-select mt-3">
               <option value="1">@lang('lang.activate')</option>
               <option value="3">@lang('lang.suspend')</option>
             </select>
           </div>
           <div class="modal-footer">
-            <button class="btn btn-sm text-white px-5" id="change_sts" name="change_sts" type="submit" style="background-color: #233A85; border-radius: 8px;">
+            <button class="btn btn-sm text-white px-5" id="change_sts" name="change_sts" type="submit" style="background-color: #184A45; border-radius: 8px;">
               <div class="spinner-border spinner-border-sm text-white d-none" id="spinner"></div>
               <span id="add_btn">@lang('lang.ok')</span>
             </button>

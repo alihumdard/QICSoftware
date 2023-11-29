@@ -46,7 +46,7 @@
         width: 100%;
         height: 36px;
         display: inline-block;
-        background-color: #233A85;
+        background-color: #00a962;
         color: white;
         cursor: pointer;
         border: none;
@@ -57,11 +57,11 @@
     }
 
     .custom-button:hover {
-        background-color: #233A85;
+        background-color: #00824b;
     }
 
     .custom-button:active {
-        background-color: #233A85;
+        background-color: #00a962;
     }
 
     #addAddressModal .modal-header {
@@ -212,8 +212,9 @@
                                 </svg>
                                 <span>@lang('Upload')</span>
                             </label>
-                            <input type="file" id="q_file" name="file" multiple size="50" style="display: none;">
-                            <p class="float-right mr-3" style="font-size: smaller;"><a href="{{ asset('storage/excel_files/template_for_scooble.xlsx') }}" download="template_for_scooble.xlsx">@lang('lang.download_sample')!</a></p>
+
+                            <input type="file" id="q_file" name="file" style="display: none;">
+                            <p class="float-right mr-3 file-uploaded d-none text-success" style="font-size: smaller; margin-top:-5px;">@lang('File Uploaded') <i class="fas fa-check-circle fa-lg"></i></p>
                         </div>
                     </div>
 
@@ -244,6 +245,14 @@
 <!-- viewlocation Modal End -->
 <script>
     $(document).ready(function() {
+        $('#q_file').change(function() {
+            var fileUploadedParagraph = $('.file-uploaded');
+            if ($(this).prop('files').length > 0) {
+                fileUploadedParagraph.removeClass('d-none');
+            } else {
+                fileUploadedParagraph.addClass('d-none');
+            }
+        });
 
         const maxLength = 250;
         const textarea = $('#q_desc');
