@@ -550,7 +550,7 @@ $user = auth()->user();
 
         // get api .....
         $(document).on('click', '#btn_edit_user', function() {
-            var id = $(this).data('admin_id');
+            var id = $(this).data('user_id');
             var apiname = $(this).data('api_name');
             var apiurl = "{{ end_url('') }}" + apiname;
             var bearerToken = "{{session('user')}}";

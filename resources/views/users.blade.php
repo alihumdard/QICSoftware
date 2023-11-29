@@ -25,7 +25,7 @@
           <div class="col-lg-12">
             <div class="row mx-1">
               <div class="col-lg-9 col-sm-6 mb-1 pr-0" style="text-align: right;">
-                <button class="btn content-background add-btn text-white" data-toggle="modal" data-target="#addclient"><span><i class="fa fa-plus"></i> @lang('lang.add_user')</span></button>
+                <button class="btn content-background add-btn text-white" data-toggle="modal" data-target="#addUsers"><span><i class="fa fa-plus"></i> @lang('lang.add_user')</span></button>
               </div>
               <div class="col-lg-3 col-sm-6 pr-0">
                 <div class="input-group">
@@ -149,7 +149,7 @@
                   @endif
                   <td style="min-width: 80px; max-width: fit-content;">
                     @if($value['status'] != 5)
-                    <button id="btn_edit_client" class="btn p-0" data-client_id="{{$value['id']}}" data-api_name="{{'users'}}">
+                    <button id="btn_edit_user" class="btn p-0" data-user_id="{{$value['id']}}" data-api_name="{{'users'}}">
                       <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <circle opacity="0.1" cx="18" cy="18" r="18" fill="#233A85" />
                         <path fill-rule="evenodd" clip-rule="evenodd" d="M16.1634 23.6195L22.3139 15.6658C22.6482 15.2368 22.767 14.741 22.6556 14.236C22.559 13.777 22.2768 13.3406 21.8534 13.0095L20.8208 12.1893C19.922 11.4744 18.8078 11.5497 18.169 12.3699L17.4782 13.2661C17.3891 13.3782 17.4114 13.5438 17.5228 13.6341C17.5228 13.6341 19.2684 15.0337 19.3055 15.0638C19.4244 15.1766 19.5135 15.3271 19.5358 15.5077C19.5729 15.8614 19.3278 16.1925 18.9638 16.2376C18.793 16.2602 18.6296 16.2075 18.5107 16.1097L16.676 14.6499C16.5868 14.5829 16.4531 14.5972 16.3788 14.6875L12.0185 20.3311C11.7363 20.6848 11.6397 21.1438 11.7363 21.5878L12.2934 24.0032C12.3231 24.1312 12.4345 24.2215 12.5682 24.2215L15.0195 24.1914C15.4652 24.1838 15.8812 23.9807 16.1634 23.6195ZM19.5955 22.8673H23.5925C23.9825 22.8673 24.2997 23.1886 24.2997 23.5837C24.2997 23.9795 23.9825 24.3 23.5925 24.3H19.5955C19.2055 24.3 18.8883 23.9795 18.8883 23.5837C18.8883 23.1886 19.2055 22.8673 19.5955 22.8673Z" fill="#233A85" />

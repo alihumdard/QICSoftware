@@ -140,7 +140,7 @@ class UserController extends Controller
 
                 return view('superAdmin_dashboard', $data);
             } else if (isset($user->role) && $user->role == user_roles('2')) {
-                $data['users']      = User::where(['role' => user_roles('3'), 'client_id' => $user->id, 'status' => $this->userStatus['Active']])->select('id', 'name', 'user_pic')->get()->toArray();
+                $data['users']      = User::where(['role' => user_roles('3'), 'admin_id' => $user->id, 'status' => $this->userStatus['Active']])->select('id', 'name', 'user_pic')->get()->toArray();
                 $data['usersCount'] = count($data['users'] ?? []);
                 $data['user_quote_percentage'] = 0;
 
@@ -215,6 +215,25 @@ class UserController extends Controller
             return view('login');
         }
     }
+
+    public function superAdmins()
+    {
+        $user = auth()->user();
+        $page_name = 'super_admins';
+
+        if (!view_permission($page_name)) {
+            return redirect()->back();
+        }
+
+        $data['user'] = auth()->user();
+        $data['add_as_user'] = user_roles('1');
+
+        if (isset($user->role) && $user->role == user_roles('4')) {
+            $data['superAdmins'] = User::where(['role' => user_roles('1'), 'manager_id' => $user->id])->latest('id')->get()->toArray();
+        }
+        return view('superAdmins',$data);
+    }
+
 
     public function admins()
     {
@@ -541,19 +560,6 @@ class UserController extends Controller
             ->toArray();
 
         return response()->json($users_list);
-    }
-
-    public function superAdmins()
-    {
-        $user = auth()->user();
-        $page_name = 'super_admins';
-
-        if (!view_permission($page_name)) {
-            return redirect()->back();
-        }
-
-        $users = User::where(['role' => user_roles(1)])->orderBy('id', 'desc')->get()->toArray();
-        return view('superAdmins', ['data' => $users, 'user' => $user, 'add_as_user' => user_roles('1')]);
     }
 
     public function settings()
