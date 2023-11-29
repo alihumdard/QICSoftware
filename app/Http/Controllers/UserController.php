@@ -216,6 +216,25 @@ class UserController extends Controller
         }
     }
 
+    public function superAdmins()
+    {
+        $user = auth()->user();
+        $page_name = 'super_admins';
+
+        if (!view_permission($page_name)) {
+            return redirect()->back();
+        }
+
+        $data['user'] = auth()->user();
+        $data['add_as_user'] = user_roles('1');
+
+        if (isset($user->role) && $user->role == user_roles('4')) {
+            $data['superAdmins'] = User::where(['role' => user_roles('1'), 'manager_id' => $user->id])->latest('id')->get()->toArray();
+        }
+        return view('superAdmins',$data);
+    }
+
+
     public function admins()
     {
         $user = auth()->user();
@@ -541,19 +560,6 @@ class UserController extends Controller
             ->toArray();
 
         return response()->json($users_list);
-    }
-
-    public function superAdmins()
-    {
-        $user = auth()->user();
-        $page_name = 'super_admins';
-
-        if (!view_permission($page_name)) {
-            return redirect()->back();
-        }
-
-        $users = User::where(['role' => user_roles(1)])->orderBy('id', 'desc')->get()->toArray();
-        return view('superAdmins', ['data' => $users, 'user' => $user, 'add_as_user' => user_roles('1')]);
     }
 
     public function settings()

@@ -68,7 +68,7 @@
                 </div>
               </div>
 
-              @if($add_as_user == user_roles('3'))
+              @if($add_as_user == user_roles('3') && $user->role == user_roles('1')) 
               <div class="col-lg-6 mb-2">
                 <label for="com_pic">@lang('lang.admin')</label>
                 <select name="admin_id" id="admin_id" class="form-select">
@@ -113,11 +113,12 @@
                 <label for="phone">@lang('lang.phone')</label>
                 <input type="tel" name="phone" id="phone" class="form-control" maxlength="15">
               </div>
-
+              @if($add_as_user == user_roles('1'))
               <div class="col-lg-6 mt-2">
                 <label for="com_name">@lang('lang.company_name')</label>
                 <input type="text" name="com_name" id="com_name" class="form-control">
               </div>
+              @endif
 
               <div class="col-lg-6 mt-2">
                 <label for="address">@lang('lang.address')</label>
