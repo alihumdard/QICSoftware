@@ -86,47 +86,48 @@ $tripStatus_trans = config('constants.TRIP_STATUS_' . app()->getLocale());
             </div>
         </div>
     </div>
-
-    <div class="row bg-white rounded-2">
-        <div class="col-lg-12 col-md-12 col-xl-8 pt-4 pb-4 mb-4">
-            <div class="row">
-                <div class="col-lg-5 col-md-5">
-                    <div>
-                        <b>@lang('Closed Contracts')</b>
+    <div class="container-fluid">
+        <div class="row bg-white" style="border-radius: 20px;">
+            <div class="col-lg-12 col-md-12 col-xl-8 pt-4 pb-4 mb-4">
+                <div class="row">
+                    <div class="col-lg-5 col-md-5">
+                        <div>
+                            <b>@lang('Closed Contracts')</b>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="table-responsive table-scroll bg-white mt-2" style="height: 350px; overflow: auto; border-radius: 15px; box-shadow: 0px 0px 3px 0.75px rgba(0,0,0,0.25); 
+                <div class="table-responsive table-scroll bg-white mt-2" style="height: 350px; overflow: auto; border-radius: 15px; box-shadow: 0px 0px 3px 0.75px rgba(0,0,0,0.25); 
                             -webkit-box-shadow: 0px 0px 3px 0.75px rgba(0,0,0,0.25);
                             -moz-box-shadow: 0px 0px 3px 0.75px rgba(0,0,0,0.25);">
-                <table class="table">
-                    <thead style="background-color: #E9EAEF;">
-                        <tr>
-                            <th>@lang('Start date')</th>
-                            <th>@lang('End date')</th>
-                            <th>@lang('Client name')</th>
-                            <th>@lang('Ammount')</th>
-                            <th>@lang('Location')</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($completedCOT_detail as $key => $value)
-                        <tr>
-                            <td>{{ $value['start_date'] ?? ''}}</td>
-                            <td>{{ $value['end_date'] ?? ''}}</td>
-                            <td class="text-wrap">{{ $value['client_name'] ?? ''}}</td>
-                            <td class="text-wrap">{{ $value['amount'] ?? ''}}</td>
-                            <td class="text-wrap">{{ $value['location'] ?? ''}}</td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+                    <table class="table">
+                        <thead style="background-color: #E9EAEF;">
+                            <tr>
+                                <th>@lang('Start date')</th>
+                                <th>@lang('End date')</th>
+                                <th>@lang('Client name')</th>
+                                <th>@lang('Ammount')</th>
+                                <th>@lang('Location')</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($completedCOT_detail as $key => $value)
+                            <tr>
+                                <td>{{ $value['start_date'] ?? ''}}</td>
+                                <td>{{ $value['end_date'] ?? ''}}</td>
+                                <td class="text-wrap">{{ $value['client_name'] ?? ''}}</td>
+                                <td class="text-wrap">{{ $value['amount'] ?? ''}}</td>
+                                <td class="text-wrap">{{ $value['location'] ?? ''}}</td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
             </div>
-        </div>
-        <div class="col-lg-12 col-md-12 col-xl-4 mt-4">
-            <h5>@lang('Today Quotations')</h5>
-            @include('aside')
+            <div class="col-lg-12 col-md-12 col-xl-4 mt-4">
+                <h5>@lang('Today Quotations')</h5>
+                @include('aside')
+            </div>
         </div>
     </div>
 </div>
