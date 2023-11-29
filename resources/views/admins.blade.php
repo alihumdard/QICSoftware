@@ -79,18 +79,19 @@
           <div class="px-2">
               <div class="table-responsive">
                 <table id="users-table" class="display" style="width:100%">
-                  <thead class="text-secondary" style="background-color: #E9EAEF;">
+                  <thead class="table-dark" style="background-color: #184A45;" >
                     <tr style="font-size: small;">
                       <th>#</th>
-                      <th> @lang('lang.joining_date') </th>
+                      <th class="text-center"> @lang('Account Created') </th>
                       <th></th>
-                      <th> @lang('lang.name') </th>
-                      <th> @lang('lang.email') </th>
-                      <th></th>
-                      <th> @lang('lang.company_name') </th>
+                      <th class="text-center" > @lang('lang.name') </th>
+                      <th class="text-center" > @lang('lang.email') </th>
+                      <th class="text-center" > @lang('lang.phone') </th>
+                      <!-- <th></th>
+                      <th> @lang('lang.company_name') </th> -->
                       <!-- <th> @lang('lang.expiry_date') </th> -->
-                      <th> @lang('lang.status') </th>
-                      <th>@lang('lang.actions')</th>
+                      <th class="text-center" > @lang('lang.status') </th>
+                      <th class="text-center" >@lang('lang.actions')</th>
                     </tr>
                   </thead>
                   <tbody id="tableData">
@@ -98,12 +99,13 @@
                     @foreach($admins as $key => $value)
                     <tr style="font-size: small;">
                       <td>{{++$key}}</td>
-                      <td>{{table_date($value['created_at'])}}</td>
+                      <td class="text-center">{{table_date($value['created_at'])}}</td>
                       <td><img src="{{ (isset($value['user_pic'])) ? asset('storage/' . $value['user_pic']) : 'assets/images/user.png'}}" style="width: 45px; height: 45px; border-radius: 38px; object-fit: cover;" alt="text"></td>
-                      <td> {{ $value['name'] }} </td>
-                      <td>{{ $value['email'] }}</td>
-                      <td><img src="{{ (isset($value['com_pic'])) ? asset('storage/' . $value['com_pic']) : 'assets/images/user.png'}}" style="width: 45px; height: 45px; border-radius: 38px; object-fit: cover;" alt="text"></td>
-                      <td> {{ $value['com_name'] }}</td>
+                      <td class="text-center"> {{ $value['name'] }} </td>
+                      <td class="text-center">{{ $value['email'] }}</td>
+                      <td class="text-center">{{ $value['phone'] }}</td>
+                      <!-- <td><img src="{{ (isset($value['com_pic'])) ? asset('storage/' . $value['com_pic']) : 'assets/images/user.png'}}" style="width: 45px; height: 45px; border-radius: 38px; object-fit: cover;" alt="text"></td> -->
+                      <!-- <td> {{ $value['com_name'] }}</td> -->
                       <!-- <td>{{ $value['sub_exp_date'] }}</td> -->
                       @if($value['status'] == 1)
                       <td>

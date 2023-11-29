@@ -65,9 +65,9 @@
           <hr>
           <div class="px-2">
             <div class="table-responsive">
-              <div id="table_reload" class="table">
+              <div id="table_reload">
                 <table id="users-table" class="display" style="width:100%">
-                  <thead class="text-secondary" style="background-color: #E9EAEF;">
+                  <thead class="table-dark" style="background-color: #184A45;">
                     <tr style="font-size: small;">
                       <th>#</th>
                       <th>@lang('lang.joining_date')</th>
