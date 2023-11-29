@@ -341,7 +341,7 @@ $serivce_type = config('constants.SERVICE_TYPES');
                       <tr>
                         <td>
                           <label class="custom-control custom-checkbox" style="margin: 0 !important;">
-                            <input type="checkbox"  name="services[]" value="{{ $val['id'] ?? '' }}" class="custom-control-input">
+                            <input type="checkbox" name="services[]" value="{{ $val['id'] ?? '' }}" class="custom-control-input">
                             <span class="custom-control-indicator"></span>
                           </label>
                         </td>
@@ -641,7 +641,6 @@ $serivce_type = config('constants.SERVICE_TYPES');
   drawChart("canvas1", "procent1", compCTPercent);
   drawChart("canvas2", "procent2", compINVPercent);
 
-
   function drawChart(canvasId, spanId, percentage) {
     var can = document.getElementById(canvasId),
       spanProcent = document.getElementById(spanId),
@@ -682,87 +681,8 @@ $serivce_type = config('constants.SERVICE_TYPES');
       }, fps);
     }
   }
-
-  // Function to make the AJAX call and update the charts
-  // function dashboardCharts(selectedDate, user_id) {
-  //   var apiname = 'dashboardCharts';
-  //   var apiurl = "{{ end_url('') }}" + apiname;
-  //   var bearerToken = "{{session('user')}}";
-
-  //   $.ajax({
-  //     url: apiurl + `?selected_date=${selectedDate}&id=${user_id}`,
-  //     type: 'GET',
-  //     data: {
-  //       selected_date: selectedDate,
-  //       id: user_id,
-  //     },
-  //     headers: {
-  //       'Authorization': 'Bearer ' + bearerToken
-  //     },
-  //     contentType: false,
-  //     processData: false,
-  //     beforeSend: function() {
-  //       // Add any loading or UI updates before the API call
-  //     },
-  //     success: function(response) {
-  //       if (response.status === 'success') {
-  //         var data = response.data; // Access the 'data' object from the response
-  //         drawChart("canvas", "procent", data.actvTrp_percentage, true);
-  //         drawChart("canvas1", "procent1", data.compTrp_percentage, true);
-  //         drawChart("canvas2", "procent2", data.pendTrp_percentage, true);
-  //       } else {
-  //         // Handle other status cases if needed
-  //       }
-  //     },
-  //     error: function(xhr, status, error) {
-  //       console.log("Error:" + error);
-  //     }
-  //   });
-  // }
-
-  // Bind the AJAX call to the date picker change event
-  // $('#datePickerInput').change(function() {
-  //   var selectedDate = $(this).val();
-  //   var user_id = "{{$user->id}}";
-  //   dashboardCharts(selectedDate, user_id);
-  // });
 </script>
-<script>
-  // var ourLineChart = document.getElementById('Chart-Line').getContext('2d');
-  // var myChart = new Chart(ourLineChart, {
-  //   type: 'line',
-  //   data: {
-  //     labels: ['1', '5', '10', '15', '20', '25', '30'],
-  //     datasets: [{
-  //         data: [50, 10, 30, 15, 25, 24, 50, 20],
-  //         label: 'Line 1',
-  //         fill: true,
-  //         backgroundColor: "rgba(54, 100, 235, 0.2)",
-  //         borderWidth: 3,
-  //         borderColor: "#5C4B9D"
-  //       },
-  //       {
-  //         data: [20, 35, 18, 28, 40, 12, 10],
-  //         label: 'Line 2',
-  //         fill: true,
-  //         backgroundColor: "rgba(100, 99, 132, 0.2)",
-  //         borderWidth: 3,
-  //         borderColor: "#EAE7F1"
-  //       }
-  //     ]
-  //   },
-  //   options: {
-  //     responsive: true,
-  //     scales: {
-  //       yAxes: [{
-  //         ticks: {
-  //           beginAtZero: true
-  //         }
-  //       }]
-  //     }
-  //   }
-  // });
-</script>
+
 <!-- content-wrapper ends -->
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
