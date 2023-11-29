@@ -44,7 +44,7 @@
 
 @if($user->role!= user_roles('3'))
 <div class="row mb-2">
-    <div class="col-lg-8">
+    <div class="col-lg-9 col-md-10 col-sm-10">
         <div class="input-group">
             <div class="input-group-prepend">
                 <div class="input-group-text bg-white" style="border-right: none; border: 1px solid #DDDDDD;">
@@ -78,13 +78,13 @@
             </select>
         </div>
     </div>
-    <div class="col-lg-4 pt-2">
+    <div class=" col-lg-3 col-md-2 col-sm-2 text-left">
         <span>
-            <a class="show-more btn btn-link" style="font-size: medium; ;" href="/quotations">@lang('Show All')..</a>
+            <a class="show-more btn btn-link" style="font-size: small;" href="/quotations">@lang('Show All')..</a>
         </span>
     </div>
     <div class="col-lg-12">
-        <h6 class="mb-0 mt-2">@lang('Today Acitve Quotations')</h6>
+        <h6 class="mb-0 mt-2 font-weight-bold">@lang('Today Acitve Quotations')</h6>
     </div>
 </div>
 @endif
