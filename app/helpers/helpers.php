@@ -71,10 +71,10 @@ function view_permission($page_name)
                 case 'settings':
                 case 'super_admins':
                 case 'logout':
-                case 'currencies':
-                case 'locations':
-                case 'services':
-                case 'transactional':
+                // case 'currencies':
+                // case 'locations':
+                // case 'services':
+                // case 'transactional':
                 // case 'revenue':
                 // case 'quotations':
                 // case 'invoices':
