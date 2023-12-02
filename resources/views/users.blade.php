@@ -71,7 +71,7 @@
         <div class="px-2">
           <div class="table-responsive">
             <table id="drivers-table" class="display" style="width:100%">
-              <thead class="text-secondary" style="background-color: #E9EAEF;">
+              <thead class="table-dark" style="background-color: #184A45;">
                 <tr style="font-size: small;">
                   <th>#</th>
                   <th>@lang('lang.joining_date')</th>
