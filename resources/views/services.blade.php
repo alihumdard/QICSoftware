@@ -42,7 +42,7 @@
           <div class="row mt-1 mb-4">
             <div class="col-lg-4 col-md-4 col-sm-12">
               <label for="title" class="mb-0 mt-1">@lang('Service Name')</label>
-              <input type="text" maxlength="60" name="title" id="service_name" class="form-control" value="{{ $service['name'] ?? '' }}" placeholder="@lang('service name')" required>
+              <input type="text" maxlength="60" name="title" id="service_name" class="form-control" value="{{ $service['title'] ?? '' }}" placeholder="@lang('service name')" required>
               <div class="text-danger error-message" id="name-error"></div>
             </div>
 

@@ -36,13 +36,4 @@ class Transectional extends Model
         $this->attributes['email_body'] = base64_encode($value);
     }
 
-    public function getPasswordAttribute($value)
-    {
-        return base64_decode($value);
-    }
-
-    public function setPasswordAttribute($value)
-    {
-        $this->attributes['password'] = base64_encode($value);
-    }
 }

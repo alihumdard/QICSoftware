@@ -46,24 +46,6 @@
                   </select>
                 </div>
               </div>
-              <!-- <div class="col-lg-4 px-1">
-                  <div class="input-group">
-                    <div class="input-group-prepend">
-                      <div class="input-group-text bg-white" style="border-right: none; border: 1px solid #DDDDDD;">
-                        <svg width="18" height="15" viewBox="0 0 18 15" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <path d="M13.6752 0.558058C13.4311 0.313981 13.0354 0.313981 12.7913 0.558058L8.81386 4.53553C8.56978 4.77961 8.56978 5.17534 8.81386 5.41942C9.05794 5.6635 9.45366 5.6635 9.69774 5.41942L13.2333 1.88388L16.7688 5.41942C17.0129 5.6635 17.4086 5.6635 17.6527 5.41942C17.8968 5.17534 17.8968 4.77961 17.6527 4.53553L13.6752 0.558058ZM12.6083 14C12.6083 14.3452 12.8881 14.625 13.2333 14.625C13.5785 14.625 13.8583 14.3452 13.8583 14H12.6083ZM12.6083 1V14H13.8583V1H12.6083Z" fill="#323C47" />
-                          <path d="M5.625 1C5.625 0.654822 5.34518 0.375 5 0.375C4.65482 0.375 4.375 0.654822 4.375 1H5.625ZM4.55806 14.4419C4.80214 14.686 5.19786 14.686 5.44194 14.4419L9.41942 10.4645C9.6635 10.2204 9.6635 9.82466 9.41942 9.58058C9.17534 9.3365 8.77961 9.3365 8.53553 9.58058L5 13.1161L1.46447 9.58058C1.22039 9.3365 0.82466 9.3365 0.580583 9.58058C0.336505 9.82466 0.336505 10.2204 0.580583 10.4645L4.55806 14.4419ZM4.375 1V14H5.625V1H4.375Z" fill="#323C47" />
-                        </svg>
-                      </div>
-                    </div>
-                    <select name="sort_by" id="sort_by" class="form-select" style="border-left: none;">
-                      <option value="">
-                        @lang('lang.sort_by')
-                      </option>
-                    </select>
-                  </div>
-                </div>
-                 -->
             </div>
           </div>
         </div>
@@ -108,7 +90,7 @@
                   @if($value['status'] == 1)
                   <td>
                     <button class="btn btn_status">
-                      <span data-client_id="{{$value['id']}}">
+                      <span data-user_id="{{$value['id']}}">
                         <div style="width: 100%; height: 100%; padding-top: 5px; padding-bottom: 5px; padding-left: 19px; padding-right: 20px; background: rgba(48.62, 165.75, 19.34, 0.18); border-radius: 3px; justify-content: center; align-items: center; display: inline-flex">
                           <div style="color: #31A613; font-size: 14px; font-weight: 500; word-wrap: break-word">Active</div>
                         </div>
@@ -118,7 +100,7 @@
                   @elseif($value['status'] == 2)
                   <td>
                     <button class="btn btn_status">
-                      <span data-client_id="{{$value['id']}}">
+                      <span data-user_id="{{$value['id']}}">
                         <div style="width: 100%; height: 100%; padding-top: 6px; padding-bottom: 4px; padding-left: 15px; padding-right: 13px; background: rgba(77, 77, 77, 0.12); border-radius: 3px; justify-content: center; align-items: center; display: inline-flex">
                           <div style="text-align: center; color: #8F9090; font-size: 14px; font-weight: 500; word-wrap: break-word">@lang('lang.pending')</div>
                         </div>
@@ -128,7 +110,7 @@
                   @elseif($value['status'] == 5)
                   <td>
                     <button class="btn btn_status">
-                      <span data-client_id="{{$value['id']}}">
+                      <span data-user_id="{{$value['id']}}">
                         <div style="width: 100%; height: 100%; padding-top: 6px; padding-bottom: 7px; padding-left: 14px; padding-right: 12px;    background: rgba(245, 34, 45, 0.19); border-radius: 3px; justify-content: center; align-items: center; display: inline-flex">
                           <div style="text-align: center; color: #F5222D; font-size: 14px; font-weight: 500; word-wrap: break-word">@lang('lang.deleted')</div>
                         </div>
@@ -139,7 +121,7 @@
                   @else
                   <td>
                     <button class="btn btn_status">
-                      <span data-client_id="{{$value['id']}}">
+                      <span data-user_id="{{$value['id']}}">
                         <div style="width: 100%; height: 100%; padding-top: 6px; padding-bottom: 7px; padding-left: 14px; padding-right: 12px;    background: rgba(245, 34, 45, 0.19); border-radius: 3px; justify-content: center; align-items: center; display: inline-flex">
                           <div style="text-align: center; color: #F5222D; font-size: 14px; font-weight: 500; word-wrap: break-word">@lang('lang.suspend')</div>
                         </div>
@@ -174,7 +156,6 @@
   </div>
   <!-- content-wrapper ends -->
 
-  <!-- Add Client Modal -->
   @php
   $modal_title = "User";
   $login_userId = $user->id;

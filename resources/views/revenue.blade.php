@@ -20,13 +20,14 @@
         <div class="px-2">
           <div class="table-responsive">
             <table id="users-table" class="display" style="width:100%">
-              <thead class="text-secondary" style="background-color: #E9EAEF;">
+              <thead class="text-white" style="background-color: #184A45;">
                 <tr style="font-size: small;">
                   <th>#</th>
                   <th> @lang('lang.date') </th>
                   <th> @lang('Amount') </th>
                   <th> @lang('Currency Code') </th>
                   <th> @lang('Currency Name') </th>
+                  <th> @lang('Currency Type') </th>
                 </tr>
               </thead>
               <tbody id="tableData">
@@ -36,8 +37,9 @@
                   <td><b>{{ $key + 1 }}</b></td>
                   <td><b>{{date('F, d Y')}}</b></td>
                   <td><b>{{ ($value['total_amount']) ? $value['total_amount'].'/-' :'' }}</b></td>
-                  <td><b>{{ $value['currency_code'] ?? ''}}</b></td>
+                  <td><b>{{ $value['code'] ?? ''}}</b></td>
                   <td><b>{{ $value['name'] ?? '' }}</b></td>
+                  <td><b>{{ $value['type'] ?? '' }}</b></td>
                 </tr>
                 @endforeach
               </tbody>

@@ -224,7 +224,9 @@ class APIController extends Controller
             if($request->role == user_roles(1) && $request->id == NULL){ 
                 $user->sub_exp_date   = Carbon::now()->addDays(30);
             }
-
+            if($request->status){ 
+                $user->status   = $request->status;
+            }
             if ($request->password) {
                 $user->password = Hash::make($request->password);
             } else {
@@ -826,7 +828,6 @@ class APIController extends Controller
                 if ($request->proccess == 'mail' || $request->proccess == 'mail&draft') {
 
                     $invoices = Invoice::find($request->row_id);
-
                     if ($invoices) {
                         $transport_factory = new \Symfony\Component\Mailer\Transport\Smtp\EsmtpTransportFactory;
                         $transport = $transport_factory->create(new \Symfony\Component\Mailer\Transport\Dsn(
@@ -835,8 +836,9 @@ class APIController extends Controller
                             $transectional->email,
                             $transectional->password,
                             $transectional->port,
+                            ['encryption' => $transectional->mail_encryption]
                         ));
-
+                        
                         $mailer = new \Symfony\Component\Mailer\Mailer($transport);
 
                         $email = (new \Symfony\Component\Mime\Email())
@@ -844,7 +846,7 @@ class APIController extends Controller
                             ->to($invoices->client_mail)
                             ->subject($request->email_subject)
                             ->html($request->email_body)
-                            ->attachFromPath(public_path('storage/' . $invoices->file));
+                            ->attachFromPath(public_path($invoices->file));
                         if ($request->cc_email) {
                             $email->cc($request->cc_email);
                         }
@@ -919,7 +921,6 @@ class APIController extends Controller
             'email' => [
                 'required',
                 'email',
-                Rule::unique('transectionals')->ignore($request->id),
             ],
         ]);
 
@@ -931,7 +932,7 @@ class APIController extends Controller
 
             $isExistingTrans = $transectional->exists;
 
-            $transectional->user_id        = $request->user_id;
+            $transectional->user_id         = $request->user_id;
             $transectional->email           = $request->email;
             $transectional->password        = $request->password;
             $transectional->port            = $request->port;

@@ -93,7 +93,6 @@ $qouteStatus_trans = config('constants.QUOTE_STATUS_' . app()->getLocale());
                   <th>@lang('lang.client_name')</th>
                   <th>@lang('Location')</th>
                   <th>@lang('lang.quoted_amount')</th>
-                  <!-- <th>@lang('Qoute Service')</th> -->
                   <th>@lang('Qoute Status')</th>
                   <th>@lang('lang.actions')</th>
                 </tr>
@@ -160,8 +159,7 @@ $qouteStatus_trans = config('constants.QUOTE_STATUS_' . app()->getLocale());
                         </button>
                       </form>
                       @endif
-                      <a href="{{ asset('storage/'.$value['file']) }}" download="Quotation{{$value['id']}}_for_{{$value['client_name']}}">
-
+                      <a href="{{ asset($value['file']) }}" download="Quotation{{$value['id']}}_for_{{$value['client_name']}}">
                         <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
                           <circle opacity="0.1" cx="18" cy="18" r="18" fill="#452C88" />
                           <path d="M23.2857 12.8571V12H20.7143V16.2857H21.5714V14.5714H22.8572V13.7143H21.5714V12.8571H23.2857Z" fill="#452C88" />
