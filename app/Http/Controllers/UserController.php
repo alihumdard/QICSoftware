@@ -119,11 +119,16 @@ class UserController extends Controller
                         $data['adminsCount']  = User::where(['role' => user_roles('2'), 'sadmin_id' => $user->id])->count();
                         $data['usersCount']   = User::where(['role' => user_roles('3'), 'sadmin_id' => $user->id])->count();
 
-                        $data['revenue']  = Invoice::join('currencies as c', 'invoices.currency_code', '=', 'c.code')
+                        $data['revenue'] = Invoice::join('currencies as cur', 'invoices.currency_id', '=', 'cur.id')
                             ->where('invoices.status', $this->status['Completed'])
-                            ->where('c.type', $this->currencyTypes[1])
-                            ->groupBy('invoices.currency_code', 'c.name')
-                            ->select('invoices.currency_code', 'c.name', DB::raw('SUM(amount) as total_amount'))
+                            ->where('cur.type', 'Default')
+                            ->where('cur.sadmin_id', $user->id)
+                            ->groupBy('cur.id', 'cur.code')
+                            ->select(
+                                DB::raw('SUM(invoices.amount) as total_amount'),
+                                'cur.code',
+                                DB::raw('cur.id as currency_id')
+                            )
                             ->get()
                             ->toArray();
 
@@ -298,7 +303,7 @@ class UserController extends Controller
         if (isset($user->role) && $user->role == user_roles('1')) {
 
             $users = User::join('users as admin', 'users.admin_id', '=', 'admin.id')
-                ->where('users.role', user_roles('3'))
+                ->where(['users.role' => user_roles('3'), 'users.sadmin_id' => $user->id])
                 ->select('users.*', 'admin.name as admin_name', 'admin.user_pic as admin_pic', 'admin.email as admin_email')
                 ->orderBy('users.id', 'desc')
                 ->get()
@@ -905,12 +910,12 @@ class UserController extends Controller
             $message = "Currency " . ($request->id ? "Updated" : "Saved") . " Successfully";
             Session::flash('msg', $message);
         } else if ($request->action == 'dell') {
-            $deleted = Currency::find($request->id)->delete();
+            Currency::where('id', $request->id)->update(['status' => $this->sev_status['Deleted']]);
             $message = "Currency has been deleted Successfully";
             Session::flash('msg', $message);
         }
 
-        $currencies = Currency::where(['sadmin_id' => $user->id, 'status' => '1'])->latest('id')->get()->toArray();
+        $currencies = Currency::where(['sadmin_id' => $user->id, 'status' => $this->sev_status['Active']])->latest('id')->get()->toArray();
         return view('currencies', ['user' => $user, 'currency' => $currency, 'data' => $currencies, 'types' => $this->currencyTypes]);
     }
 
@@ -942,12 +947,12 @@ class UserController extends Controller
             $message = "Location " . ($request->id ? "Updated" : "Saved") . " Successfully";
             Session::flash('msg', $message);
         } else if ($request->action == 'dell') {
-            $deleted = Location::find($request->id)->delete();
+            $deleted = Location::where('id', $request->id)->update(['status' => $this->sev_status['Deleted']]);
             $message = "Location has been deleted Successfully";
             Session::flash('msg', $message);
         }
 
-        $locations = Location::where(['sadmin_id' => $user->id, 'status' => '1'])->latest('id')->get()->toArray();
+        $locations = Location::where(['sadmin_id' => $user->id, 'status' => $this->sev_status['Active']])->latest('id')->get()->toArray();
         $data = ['user' => $user, 'location' => $location, 'data' => $locations, 'types' => $this->locationType];
         return view('locations', $data);
     }
@@ -978,12 +983,12 @@ class UserController extends Controller
             $message = "Service " . ($request->id ? "Updated" : "Saved") . " Successfully";
             Session::flash('msg', $message);
         } else if ($request->action == 'dell') {
-            $deleted = Service::find($request->id)->delete();
+            $deleted = Service::where('id', $request->id)->update(['status' => $this->sev_status['Deleted']]);
             $message = "Service has been deleted Successfully";
             Session::flash('msg', $message);
         }
 
-        $services = Service::where(['sadmin_id' => $user->id, 'status' => '1'])->latest('id')->get()->toArray();
+        $services = Service::where(['sadmin_id' => $user->id, 'status' => $this->sev_status['Active']])->latest('id')->get()->toArray();
         $data = ['user' => $user, 'service' => $service, 'data' => $services, 'types' => $this->sev_type];
         return view('services', $data);
     }
@@ -996,13 +1001,19 @@ class UserController extends Controller
         if (!view_permission($page_name)) {
             return redirect()->back();
         }
-
-        $data  = Invoice::join('currencies as c', 'invoices.currency_code', '=', 'c.code')
-            ->where('invoices.status', $this->status['Completed'])
-            ->groupBy('invoices.currency_code', 'c.name')
-            ->select('invoices.currency_code', 'c.name', DB::raw('SUM(amount) as total_amount'))
-            ->get()
-            ->toArray();
+        $data = Invoice::join('currencies as cur', 'invoices.currency_id', '=', 'cur.id')
+        ->where('invoices.status', $this->status['Completed'])
+        ->where('cur.sadmin_id', $user->id)
+        ->groupBy('cur.id', 'cur.code', 'cur.name','cur.type') 
+        ->select(
+            DB::raw('SUM(invoices.amount) as total_amount'),
+            'cur.id',
+            'cur.name',
+            'cur.code',
+            'cur.type'
+        )
+        ->get()
+        ->toArray();
         return view('revenue', ['user' => $user, 'data' => $data]);
     }
 

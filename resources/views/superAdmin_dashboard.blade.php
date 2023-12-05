@@ -448,7 +448,7 @@ $serivce_type = config('constants.SERVICE_TYPES');
           <div class="revenue-section">
             @foreach($revenue as $key => $val)
             <div class="revenue-item">
-              <span class="currency">{{ $val['currency_code'] }}</span>
+              <span class="currency">{{ $val['code'] }}</span>
               <span class="amount" style="color: #E45F00;">{{ number_format($val['total_amount'], 2) }}</span>
             </div>
             @endforeach

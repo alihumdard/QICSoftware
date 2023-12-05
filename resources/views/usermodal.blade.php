@@ -37,6 +37,7 @@
           @csrf
           <input type="hidden" id="role" name="role" value="{{isset($add_as_user) ? $add_as_user : ''}}">
           <input type="hidden" id="id" name="id">
+          <input type="hidden" id="status" name="status" value="1">
 
           @if($add_as_user == user_roles('1'))
           <input type="hidden" id="manager_id" name="manager_id" value="{{$user->id}}">
@@ -51,6 +52,11 @@
           <input type="hidden" id="manager_id" name="manager_id" value="{{$user->manager_id}}">
           <input type="hidden" id="sadmin_id" name="sadmin_id" value="{{$user->sadmin_id}}">
           <input type="hidden" id="admin_id" name="admin_id" value="{{$user->id}}">
+          @endif
+
+          @if($add_as_user == user_roles('3') && $user->role == user_roles('1'))
+          <input type="hidden" id="manager_id" name="manager_id" value="{{$user->manager_id}}">
+          <input type="hidden" id="sadmin_id" name="sadmin_id" value="{{$user->id}}">
           @endif
  
           <div class="modal-body pt-0">
@@ -79,7 +85,7 @@
                   </option>
                   @endforeach
                 </select>
-                <div id="adminError" class="text-danger d-none">*@lang('lang.select_admin_error')</div>
+                <div id="adminError" class="text-danger d-none">*@lang('select an admin')</div>
               </div>
               @endif 
 

@@ -578,7 +578,7 @@ $user = auth()->user();
 
                         let responseData = response.data[0];
                         let formattedDateTime = moment(responseData.created_at).format("YYYY-MM-DDTHH:mm");
-                        $('#addUsers #btn_save').html('<div class="spinner-border spinner-border-sm text-white d-none" id="spinner"></div><span id="add_btn">' + "{{ trans('lang.update') }}" + '</span>').css('background-color', '#233A85');
+                        $('#addUsers #btn_save').html('<div class="spinner-border spinner-border-sm text-white d-none" id="spinner"></div><span id="add_btn">' + "{{ trans('lang.update') }}" + '</span>').css('background-color', '#184A45');
                         if (responseData.user_pic) {
                             $('#addUsers #user_pic').attr('src', "{{ asset('storage') }}/" + responseData.user_pic).removeClass('d-none');
                         } else {
@@ -590,7 +590,7 @@ $user = auth()->user();
                             $('#addUsers #com_pic').attr('src', "assets/images/user.png").removeClass('d-none');
                         }
                         $('#addUsers #id').val(responseData.id);
-                        $('#addUsers #client_id').val(responseData.client_id);
+                        $('#addUsers #admin_id').val(responseData.admin_id);
                         $('#addUsers #role').val(responseData.role);
                         $('#addUsers #name').val(responseData.name);
                         $('#addUsers #phone').val(responseData.phone);

@@ -25,7 +25,6 @@ $qouteStatus_trans = config('constants.QUOTE_STATUS_' . app()->getLocale());
           <span>@lang('lang.invoices')</span>
         </h3>
         <div class="row mb-2">
-          <!-- <div class="col-lg-4"></div> -->
           <div class="col-lg-12">
             <div class="row mx-1">
               <div class="col-lg-6 col-md-12 col-sm-12 my-2 pr-0" style="text-align: right;">
@@ -171,7 +170,7 @@ $qouteStatus_trans = config('constants.QUOTE_STATUS_' . app()->getLocale());
                         </button>
                       </form>
                       @endif
-                      <a href="{{ asset('storage/'.$value['file']) }}" download="Invoice{{$value['id']}}_for_{{$value['client_name']}}">
+                      <a href="{{ asset($value['file'])}}" download="Invoice{{$value['id']}}_for_{{$value['client_name']}}">
 
                         <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
                           <circle opacity="0.1" cx="18" cy="18" r="18" fill="#452C88" />
