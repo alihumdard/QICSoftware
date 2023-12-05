@@ -67,17 +67,17 @@
             <div class="table-responsive">
               <div id="table_reload">
                 <table id="users-table" class="display" style="width:100%">
-                  <thead class="table-dark" style="background-color: #184A45;">
-                    <tr style="font-size: small;">
+                  <thead class="table-dark" style="background-color: #184A45; ">
+                    <tr style="font-size: small; text-align:center !important;">
                       <th>#</th>
-                      <th>@lang('lang.joining_date')</th>
+                      <th class="text-center">@lang('lang.joining_date')</th>
                       <th></th>
-                      <th>@lang('lang.name')</th>
-                      <th>@lang('lang.email')</th>
+                      <th  >@lang('lang.name')</th>
+                      <th class="text-center" >@lang('lang.email')</th>
                       <th> </th>
-                      <th> @lang('lang.company_name') </th>
-                      <th>@lang('lang.status')</th>
-                      <th>@lang('lang.actions')</th>
+                      <th  > @lang('lang.company_name') </th>
+                      <th class="text-center">@lang('lang.status')</th>
+                      <th class="text-center" >@lang('lang.actions')</th>
                     </tr>
                   </thead>
                   <tbody>

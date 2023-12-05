@@ -30,6 +30,7 @@ use Illuminate\Support\Facades\File;
 use App\Models\Location;
 use App\Models\Service;
 use App\Models\Currency;
+use Carbon\Carbon;
 
 
 class APIController extends Controller
@@ -214,10 +215,15 @@ class APIController extends Controller
             $user->state              = $request->state;
             $user->reset_pswd_attempt = $request->reset_pswd_attempt;
             $user->reset_pswd_time    = $request->reset_pswd_time;
+            $user->reset_pswd_time    = $request->reset_pswd_time;
             $user->manager_id         = $request->manager_id ?? NULL;
             $user->sadmin_id          = $request->sadmin_id ?? NULL;
             $user->admin_id           = $request->admin_id ?? NULL;
             $user->created_by         = Auth::id();
+
+            if($request->role == user_roles(1) && $request->id == NULL){ 
+                $user->sub_exp_date   = Carbon::now()->addDays(30);
+            }
 
             if ($request->password) {
                 $user->password = Hash::make($request->password);
@@ -251,7 +257,6 @@ class APIController extends Controller
                 $userPicPath = $userPic->store('user_pics', 'public');
                 $user->user_pic = $userPicPath;
             }
-
             $save = $user->save();
 
             if ($save) {
