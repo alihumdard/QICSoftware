@@ -49,6 +49,7 @@ class Users extends Seeder
             'password'   => Hash::make('12345'),
             'role'       => 'Super Admin',
             'status'     => '1',
+            'sub_exp_date' => Carbon::now()->addDays(30),
             'manager_id' =>  1,
             'created_by' => '1',
         ]);
@@ -60,7 +61,6 @@ class Users extends Seeder
             'password'     => Hash::make('12345'),
             'role'         => 'Admin',
             'status'       => '1',
-            'sub_exp_date' => Carbon::now()->addDays(30),
             'sadmin_id'    => '2',
             'manager_id'   => '1',
             'created_by'   => '2'

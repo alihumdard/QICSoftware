@@ -98,92 +98,125 @@ class UserController extends Controller
 
             // User roles: 1 for Super Admin, 2 for Admin, 3 for User, 4 Manager
             if (isset($user->role) && $user->role == user_roles('1')) {
-                $data['services']   = Service::where('sadmin_id',$user->id)->latest('id')->get()->toArray();
-                $data['locations']  = Location::where('sadmin_id',$user->id)->latest('id')->get()->toArray();
-                $data['currencies'] = Currency::where('sadmin_id',$user->id)->latest('id')->get()->toArray();
-                if($data['services'] == Null && $data['locations'] == Null && $data['currencies'] == Null){
-                    $data['def_serv_q'] = Service::where(['created_by' => 'Default','sadmin_id' => NULL, 'type' => $this->sev_type[1]])->get()->toArray();
-                    $data['def_serv_c'] = Service::where(['created_by' => 'Default','sadmin_id' => NULL, 'type' => $this->sev_type[2]])->get()->toArray();
-                    $data['def_serv_i'] = Service::where(['created_by' => 'Default','sadmin_id' => NULL, 'type' => $this->sev_type[3]])->get()->toArray();
-                    $data['def_loca']   = Location::where(['created_by' => 'Default','sadmin_id' => NULL])->latest('id')->get()->toArray();
-                    $data['def_curn']   = Currency::where(['created_by' => 'Default','sadmin_id' => NULL])->latest('id')->get()->toArray();
-                    // dd($data['def_curn']);
-                }
+                if ($user->sub_exp_date) {
+                    $expirationDate = Carbon::createFromFormat('Y-m-d', $user->sub_exp_date);
+                    if ($currentDate->gt($expirationDate)) {
+                        return view('subscription_expired', ['user' => $user]);
+                    } else {
 
-                $data['adminsCount']  = User::where(['role' => user_roles('2'), 'sadmin_id' => $user->id])->count();
-                $data['usersCount']   = User::where(['role' => user_roles('3'), 'sadmin_id' => $user->id])->count();
+                        $data['services']   = Service::where('sadmin_id', $user->id)->latest('id')->get()->toArray();
+                        $data['locations']  = Location::where('sadmin_id', $user->id)->latest('id')->get()->toArray();
+                        $data['currencies'] = Currency::where('sadmin_id', $user->id)->latest('id')->get()->toArray();
+                        if ($data['services'] == Null && $data['locations'] == Null && $data['currencies'] == Null) {
+                            $data['def_serv_q'] = Service::where(['created_by' => 'Default', 'sadmin_id' => NULL, 'type' => $this->sev_type[1]])->get()->toArray();
+                            $data['def_serv_c'] = Service::where(['created_by' => 'Default', 'sadmin_id' => NULL, 'type' => $this->sev_type[2]])->get()->toArray();
+                            $data['def_serv_i'] = Service::where(['created_by' => 'Default', 'sadmin_id' => NULL, 'type' => $this->sev_type[3]])->get()->toArray();
+                            $data['def_loca']   = Location::where(['created_by' => 'Default', 'sadmin_id' => NULL])->latest('id')->get()->toArray();
+                            $data['def_curn']   = Currency::where(['created_by' => 'Default', 'sadmin_id' => NULL])->latest('id')->get()->toArray();
+                            // dd($data['def_curn']);
+                        }
 
-                $data['revenue']  = Invoice::join('currencies as c', 'invoices.currency_code', '=', 'c.code')
-                    ->where('invoices.status', $this->status['Completed'])
-                    ->where('c.type', $this->currencyTypes[1])
-                    ->groupBy('invoices.currency_code', 'c.name')
-                    ->select('invoices.currency_code', 'c.name', DB::raw('SUM(amount) as total_amount'))
-                    ->get()
-                    ->toArray();
+                        $data['adminsCount']  = User::where(['role' => user_roles('2'), 'sadmin_id' => $user->id])->count();
+                        $data['usersCount']   = User::where(['role' => user_roles('3'), 'sadmin_id' => $user->id])->count();
 
-                $data['totalQuotion']      = Quotation::where('sadmin_id', $user->id)->count();
-                $data['totalInvoice']      = Invoice::where('sadmin_id', $user->id)->count();
-                $data['completedContract'] = Contract::where(['status' => $this->status['Completed'], 'sadmin_id' => $user->id])->count();
+                        $data['revenue']  = Invoice::join('currencies as c', 'invoices.currency_code', '=', 'c.code')
+                            ->where('invoices.status', $this->status['Completed'])
+                            ->where('c.type', $this->currencyTypes[1])
+                            ->groupBy('invoices.currency_code', 'c.name')
+                            ->select('invoices.currency_code', 'c.name', DB::raw('SUM(amount) as total_amount'))
+                            ->get()
+                            ->toArray();
 
-                $data['totalTodayQT']      = Quotation::whereDate('date', $this->curFormatDate)->whereIn('status', [$this->status['Pending'], $this->status['In Progress']])->where('sadmin_id', $user->id)->count();
-                $data['TodayQTsent']       = Quotation::whereDate('date', $this->curFormatDate)->whereIn('status', [$this->status['In Progress']])->where('sadmin_id', $user->id)->count();
-                $data['sentQuote_percent'] = $data['totalTodayQT'] > 0 ? round(($data['TodayQTsent'] / $data['totalTodayQT']) * 100, 1) : 0;
+                        $data['totalQuotion']      = Quotation::where('sadmin_id', $user->id)->count();
+                        $data['totalInvoice']      = Invoice::where('sadmin_id', $user->id)->count();
+                        $data['completedContract'] = Contract::where(['status' => $this->status['Completed'], 'sadmin_id' => $user->id])->count();
 
-                $data['totalTodayCT']   = Contract::whereDate('end_date', $this->curFormatDate)->whereIn('status', [$this->status['Pending'], $this->status['In Progress'], $this->status['Completed']])->where('sadmin_id', $user->id)->count();
-                $data['TodayCTcomp']    = Contract::whereDate('end_date', $this->curFormatDate)->whereIn('status', [$this->status['Completed']])->where('sadmin_id', $user->id)->count();
-                $data['compCT_percent'] = $data['totalTodayCT'] > 0 ? round(($data['TodayCTcomp'] / $data['totalTodayCT']) * 100, 1) : 0;
+                        $data['totalTodayQT']      = Quotation::whereDate('date', $this->curFormatDate)->whereIn('status', [$this->status['Pending'], $this->status['In Progress']])->where('sadmin_id', $user->id)->count();
+                        $data['TodayQTsent']       = Quotation::whereDate('date', $this->curFormatDate)->whereIn('status', [$this->status['In Progress']])->where('sadmin_id', $user->id)->count();
+                        $data['sentQuote_percent'] = $data['totalTodayQT'] > 0 ? round(($data['TodayQTsent'] / $data['totalTodayQT']) * 100, 1) : 0;
 
-                $data['totalTodayINV']   = Invoice::whereDate('date', $this->curFormatDate)->whereIn('status', [$this->status['Pending'], $this->status['In Progress']])->where('sadmin_id', $user->id)->count();
-                $data['TodayINVcomp']    = Invoice::whereDate('date', $this->curFormatDate)->whereIn('status', [$this->status['In Progress']])->where('sadmin_id', $user->id)->count();
-                $data['compINV_percent'] = $data['totalTodayINV'] > 0 ? round(($data['TodayINVcomp'] / $data['totalTodayINV']) * 100, 1) : 0;
-                $data['activeQuotes']    = Quotation::with('admins:id,name')->whereDate('date', $this->curFormatDate)->where('status', $this->status['In Progress'])->where('sadmin_id', $user->id)->get(['id', 'desc', 'client_name', 'date', 'user_id', 'admin_id', 'status'])->toArray();
+                        $data['totalTodayCT']   = Contract::whereDate('end_date', $this->curFormatDate)->whereIn('status', [$this->status['Pending'], $this->status['In Progress'], $this->status['Completed']])->where('sadmin_id', $user->id)->count();
+                        $data['TodayCTcomp']    = Contract::whereDate('end_date', $this->curFormatDate)->whereIn('status', [$this->status['Completed']])->where('sadmin_id', $user->id)->count();
+                        $data['compCT_percent'] = $data['totalTodayCT'] > 0 ? round(($data['TodayCTcomp'] / $data['totalTodayCT']) * 100, 1) : 0;
 
-                return view('superAdmin_dashboard', $data);
-            } else if (isset($user->role) && $user->role == user_roles('2')) {
-                $data['users']      = User::where(['role' => user_roles('3'), 'admin_id' => $user->id, 'status' => $this->userStatus['Active']])->select('id', 'name', 'user_pic')->get()->toArray();
-                $data['usersCount'] = count($data['users'] ?? []);
-                $data['user_quote_percentage'] = 0;
+                        $data['totalTodayINV']   = Invoice::whereDate('date', $this->curFormatDate)->whereIn('status', [$this->status['Pending'], $this->status['In Progress']])->where('sadmin_id', $user->id)->count();
+                        $data['TodayINVcomp']    = Invoice::whereDate('date', $this->curFormatDate)->whereIn('status', [$this->status['In Progress']])->where('sadmin_id', $user->id)->count();
+                        $data['compINV_percent'] = $data['totalTodayINV'] > 0 ? round(($data['TodayINVcomp'] / $data['totalTodayINV']) * 100, 1) : 0;
+                        $data['activeQuotes']    = Quotation::with('admins:id,name')->whereDate('date', $this->curFormatDate)->where('status', $this->status['In Progress'])->where('sadmin_id', $user->id)->get(['id', 'desc', 'client_name', 'date', 'user_id', 'admin_id', 'status'])->toArray();
 
-                $data['totalQuotion']   = Quotation::where('admin_id', $user->id)->count();
-                $data['totalInvoice']   = Invoice::where('admin_id', $user->id)->count();
-                $data['totalContract']  = Contract::where('admin_id', $user->id)->count();
-
-                $data['totalTodayQT']   = Quotation::whereDate('date', $this->curFormatDate)->whereIn('status', [$this->status['Pending'], $this->status['In Progress']])->where('admin_id', $user->id)->count();
-                $data['TodayQTsent']    = Quotation::whereDate('date', $this->curFormatDate)->whereIn('status', [$this->status['In Progress']])->where('admin_id', $user->id)->count();
-                $data['sentQuote_percent'] = $data['totalTodayQT'] > 0 ? round(($data['TodayQTsent'] / $data['totalTodayQT']) * 100, 1) : 0;
-
-                $data['totalTodayCT']   = Contract::whereDate('end_date', $this->curFormatDate)->whereIn('status', [$this->status['Pending'], $this->status['In Progress'], $this->status['Completed']])->where('admin_id', $user->id)->count();
-                $data['TodayCTcomp']    = Contract::whereDate('end_date', $this->curFormatDate)->whereIn('status', [$this->status['Completed']])->where('admin_id', $user->id)->count();
-                $data['compCT_percent'] = $data['totalTodayCT'] > 0 ? round(($data['TodayCTcomp'] / $data['totalTodayCT']) * 100, 1) : 0;
-
-                $data['totalTodayINV']   = Invoice::whereDate('date', $this->curFormatDate)->whereIn('status', [$this->status['Pending'], $this->status['In Progress']])->where('admin_id', $user->id)->count();
-                $data['TodayINVcomp']    = Invoice::whereDate('date', $this->curFormatDate)->whereIn('status', [$this->status['In Progress']])->where('admin_id', $user->id)->count();
-                $data['compINV_percent'] = $data['totalTodayINV'] > 0 ? round(($data['totalTodayINV'] / $data['totalTodayINV']) * 100, 1) : 0;
-
-                $data['activeQuotes']   = Quotation::with(['admins:id,name', 'users:id,name'])
-                    ->whereDate('date', $this->curFormatDate)
-                    ->where(['status' => $this->status['In Progress'], 'admin_id' => $user->id])
-                    ->get(['id', 'desc', 'client_name', 'date', 'user_id', 'admin_id', 'status'])
-                    ->toArray();
-
-                return view('admin_dashboard', $data);
-            } else if (isset($user->role) && $user->role == user_roles('3')) {
-                $admin = User::where(['role' => user_roles('2'), 'id' => $user->admin_id])->first();
-                if ($admin) {
-                    $data['totalQuotion']   = Quotation::where('user_id', $user->id)->count();
-                    $data['totalInvoice']   = Invoice::where('user_id', $user->id)->count();
-                    $data['totalContract']  = Contract::where('user_id', $user->id)->count();
-                    $data['completedCOT_detail']  = Contract::where([['status', $this->status['Completed']], ['user_id', $user->id]])->get()->toArray();
-                    $data['completedTrips'] = count($data['completedTrips_detail'] ?? []);
-                    $data['activeQuotes']   = Quotation::with(['admins:id,name', 'users:id,name'])
-                        ->whereDate('date', $this->curFormatDate)
-                        ->where(['status' => $this->status['In Progress'], 'user_id' => $user->id])
-                        ->get(['id', 'desc', 'client_name', 'date', 'user_id', 'admin_id', 'status'])
-                        ->toArray();
-
-                    return view('user_dashboard', $data);
+                        return view('superAdmin_dashboard', $data);
+                    }
                 } else {
-                    return redirect('/login');
+                    return view('subscription_expired', ['user' => $user]);
+                }
+            } else if (isset($user->role) && $user->role == user_roles('2')) {
+                $sadmin = User::where(['role' => user_roles('1'), 'id' => $user->sadmin_id])->first();
+                if ($sadmin) {
+                    if ($sadmin->sub_exp_date) {
+                        $expirationDate = Carbon::createFromFormat('Y-m-d', $sadmin->sub_exp_date);
+                        if ($currentDate->gt($expirationDate)) {
+                            return view('sub_expired_admin', ['user' => $user]);
+                        } else {
+                            $data['users']      = User::where(['role' => user_roles('3'), 'admin_id' => $user->id, 'status' => $this->userStatus['Active']])->select('id', 'name', 'user_pic')->get()->toArray();
+                            $data['usersCount'] = count($data['users'] ?? []);
+                            $data['user_quote_percentage'] = 0;
+
+                            $data['totalQuotion']   = Quotation::where('admin_id', $user->id)->count();
+                            $data['totalInvoice']   = Invoice::where('admin_id', $user->id)->count();
+                            $data['totalContract']  = Contract::where('admin_id', $user->id)->count();
+
+                            $data['totalTodayQT']   = Quotation::whereDate('date', $this->curFormatDate)->whereIn('status', [$this->status['Pending'], $this->status['In Progress']])->where('admin_id', $user->id)->count();
+                            $data['TodayQTsent']    = Quotation::whereDate('date', $this->curFormatDate)->whereIn('status', [$this->status['In Progress']])->where('admin_id', $user->id)->count();
+                            $data['sentQuote_percent'] = $data['totalTodayQT'] > 0 ? round(($data['TodayQTsent'] / $data['totalTodayQT']) * 100, 1) : 0;
+
+                            $data['totalTodayCT']   = Contract::whereDate('end_date', $this->curFormatDate)->whereIn('status', [$this->status['Pending'], $this->status['In Progress'], $this->status['Completed']])->where('admin_id', $user->id)->count();
+                            $data['TodayCTcomp']    = Contract::whereDate('end_date', $this->curFormatDate)->whereIn('status', [$this->status['Completed']])->where('admin_id', $user->id)->count();
+                            $data['compCT_percent'] = $data['totalTodayCT'] > 0 ? round(($data['TodayCTcomp'] / $data['totalTodayCT']) * 100, 1) : 0;
+
+                            $data['totalTodayINV']   = Invoice::whereDate('date', $this->curFormatDate)->whereIn('status', [$this->status['Pending'], $this->status['In Progress']])->where('admin_id', $user->id)->count();
+                            $data['TodayINVcomp']    = Invoice::whereDate('date', $this->curFormatDate)->whereIn('status', [$this->status['In Progress']])->where('admin_id', $user->id)->count();
+                            $data['compINV_percent'] = $data['totalTodayINV'] > 0 ? round(($data['totalTodayINV'] / $data['totalTodayINV']) * 100, 1) : 0;
+
+                            $data['activeQuotes']   = Quotation::with(['admins:id,name', 'users:id,name'])
+                                ->whereDate('date', $this->curFormatDate)
+                                ->where(['status' => $this->status['In Progress'], 'admin_id' => $user->id])
+                                ->get(['id', 'desc', 'client_name', 'date', 'user_id', 'admin_id', 'status'])
+                                ->toArray();
+
+                            return view('admin_dashboard', $data);
+                        }
+                    } else {
+                        return view('sub_expired_admin', ['user' => $user]);
+                    }
+                } else {
+                    return redirect('/logout');
+                }
+            } else if (isset($user->role) && $user->role == user_roles('3')) {
+                $sadmin = User::where(['role' => user_roles('1'), 'id' => $user->sadmin_id])->first();
+                if ($sadmin) {
+                    if ($sadmin->sub_exp_date) {
+                        $expirationDate = Carbon::createFromFormat('Y-m-d', $sadmin->sub_exp_date);
+                        if ($currentDate->gt($expirationDate)) {
+                            return view('sub_expired_admin', ['user' => $user]);
+                        } else {
+                            $data['totalQuotion']   = Quotation::where('user_id', $user->id)->count();
+                            $data['totalInvoice']   = Invoice::where('user_id', $user->id)->count();
+                            $data['totalContract']  = Contract::where('user_id', $user->id)->count();
+                            $data['completedCOT_detail']  = Contract::where([['status', $this->status['Completed']], ['user_id', $user->id]])->get()->toArray();
+                            $data['completedTrips'] = count($data['completedTrips_detail'] ?? []);
+                            $data['activeQuotes']   = Quotation::with(['admins:id,name', 'users:id,name'])
+                                ->whereDate('date', $this->curFormatDate)
+                                ->where(['status' => $this->status['In Progress'], 'user_id' => $user->id])
+                                ->get(['id', 'desc', 'client_name', 'date', 'user_id', 'admin_id', 'status'])
+                                ->toArray();
+
+                            return view('user_dashboard', $data);
+                        }
+                    } else {
+                        return view('sub_expired_admin', ['user' => $user]);
+                    }
+                } else {
+                    return redirect('/logout');
                 }
             } else if (isset($user->role) && $user->role == user_roles('4')) {
                 $data['sadminsCount']    = User::where('role', user_roles('1'))->count();
@@ -231,14 +264,14 @@ class UserController extends Controller
         if (isset($user->role) && $user->role == user_roles('4')) {
             $data['superAdmins'] = User::where(['role' => user_roles('1'), 'manager_id' => $user->id])->latest('id')->get()->toArray();
         }
-        return view('superAdmins',$data);
+        return view('superAdmins', $data);
     }
 
 
     public function admins()
     {
         $user = auth()->user();
-        $page_name = 'admins';  
+        $page_name = 'admins';
         if (!view_permission($page_name)) {
             return redirect()->back();
         }
@@ -270,7 +303,7 @@ class UserController extends Controller
                 ->orderBy('users.id', 'desc')
                 ->get()
                 ->toArray();
-            $admins_list = User::where(['role' => user_roles('2'), 'sadmin_id' => $user->id ])->orderBy('id', 'desc')->select('id', 'name')->get()->toArray();
+            $admins_list = User::where(['role' => user_roles('2'), 'sadmin_id' => $user->id])->orderBy('id', 'desc')->select('id', 'name')->get()->toArray();
 
             return view('users', ['data' => $users, 'user' => $user, 'add_as_user' => user_roles('3'), 'admins_list' => $admins_list]);
         } else {
@@ -279,7 +312,7 @@ class UserController extends Controller
             return view('users', ['data' => $users, 'user' => $user, 'add_as_user' => user_roles('3')]);
         }
     }
-    
+
     // quotations managment module....
     public function quotations()
     {
@@ -337,9 +370,9 @@ class UserController extends Controller
 
         $data['user'] = $user;
         $data['duplicate_qoute'] = NULL;
-        $data['currencies'] = Currency::select('id', 'name')->where(['status' => $this->sev_status['Active'],'sadmin_id' => $user->id])->pluck('name', 'id')->toArray();
-        $data['location']   = Location::select('id', 'name')->where(['status' => $this->sev_status['Active'],'sadmin_id' => $user->id])->pluck('name', 'id')->toArray();
-        $data['services']   = Service::select('id', 'title')->where(['status' => $this->sev_status['Active'], 'type' => $this->sev_type[1],'sadmin_id' => $user->id])->pluck('title', 'id')->toArray();
+        $data['currencies'] = Currency::select('id', 'name')->where(['status' => $this->sev_status['Active'], 'sadmin_id' => $user->id])->pluck('name', 'id')->toArray();
+        $data['location']   = Location::select('id', 'name')->where(['status' => $this->sev_status['Active'], 'sadmin_id' => $user->id])->pluck('name', 'id')->toArray();
+        $data['services']   = Service::select('id', 'title')->where(['status' => $this->sev_status['Active'], 'type' => $this->sev_type[1], 'sadmin_id' => $user->id])->pluck('title', 'id')->toArray();
 
         if ($request->has('id')) {
             $data['duplicate_qoute'] = $request->duplicate_qoute ?? NULL;
@@ -438,7 +471,7 @@ class UserController extends Controller
         $data['duplicate_contract'] = NULL;
         $data['currencies'] = Currency::select('id', 'name')->where(['status' => $this->sev_status['Active'], 'sadmin_id' => $user->id])->pluck('name', 'id')->toArray();
         $data['location']   = Location::select('id', 'name')->where(['status' => $this->sev_status['Active'], 'sadmin_id' => $user->id])->pluck('name', 'id')->toArray();
-        $data['services']   = Service::select('id', 'title')->where(['status' => $this->sev_status['Active'], 'type' => $this->sev_type[2],'sadmin_id' => $user->id])->pluck('title', 'id')->toArray();
+        $data['services']   = Service::select('id', 'title')->where(['status' => $this->sev_status['Active'], 'type' => $this->sev_type[2], 'sadmin_id' => $user->id])->pluck('title', 'id')->toArray();
 
         if ($request->has('id')) {
 
@@ -525,9 +558,9 @@ class UserController extends Controller
         }
 
         $data['user'] = $user;
-        $data['currencies'] = Currency::select('id', 'name')->where(['status' => $this->sev_status['Active'],'sadmin_id' => $user->id])->pluck('name', 'id')->toArray();
-        $data['location']   = Location::select('id', 'name')->where(['status' => $this->sev_status['Active'],'sadmin_id' => $user->id])->pluck('name', 'id')->toArray();
-        $data['services']   = Service::select('id', 'title')->where(['status' => $this->sev_status['Active'], 'type' => $this->sev_type[2],'sadmin_id' => $user->id])->pluck('title', 'id')->toArray();
+        $data['currencies'] = Currency::select('id', 'name')->where(['status' => $this->sev_status['Active'], 'sadmin_id' => $user->id])->pluck('name', 'id')->toArray();
+        $data['location']   = Location::select('id', 'name')->where(['status' => $this->sev_status['Active'], 'sadmin_id' => $user->id])->pluck('name', 'id')->toArray();
+        $data['services']   = Service::select('id', 'title')->where(['status' => $this->sev_status['Active'], 'type' => $this->sev_type[2], 'sadmin_id' => $user->id])->pluck('title', 'id')->toArray();
 
         if ($request->has('id')) {
             $invoices = Invoice::find($request->id);
@@ -877,7 +910,7 @@ class UserController extends Controller
             Session::flash('msg', $message);
         }
 
-        $currencies = Currency::where(['sadmin_id' => $user->id, 'status' => '1' ])->latest('id')->get()->toArray();
+        $currencies = Currency::where(['sadmin_id' => $user->id, 'status' => '1'])->latest('id')->get()->toArray();
         return view('currencies', ['user' => $user, 'currency' => $currency, 'data' => $currencies, 'types' => $this->currencyTypes]);
     }
 
@@ -914,7 +947,7 @@ class UserController extends Controller
             Session::flash('msg', $message);
         }
 
-        $locations = Location::where(['sadmin_id' => $user->id, 'status' => '1' ])->latest('id')->get()->toArray();
+        $locations = Location::where(['sadmin_id' => $user->id, 'status' => '1'])->latest('id')->get()->toArray();
         $data = ['user' => $user, 'location' => $location, 'data' => $locations, 'types' => $this->locationType];
         return view('locations', $data);
     }
@@ -950,7 +983,7 @@ class UserController extends Controller
             Session::flash('msg', $message);
         }
 
-        $services = Service::where(['sadmin_id' => $user->id, 'status' => '1' ])->latest('id')->get()->toArray();
+        $services = Service::where(['sadmin_id' => $user->id, 'status' => '1'])->latest('id')->get()->toArray();
         $data = ['user' => $user, 'service' => $service, 'data' => $services, 'types' => $this->sev_type];
         return view('services', $data);
     }
