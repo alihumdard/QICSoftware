@@ -837,29 +837,30 @@ class UserController extends Controller
 
     public function change_status(REQUEST $request)
     {
-        $user = User::where('id', $request->id)->first();
-        if ($request->status == 1) {
-            $user->status     = $request->status;
-            $save = $user->save();
-            if ($save) {
-                $emailData = [
-                    'otp' => 'Account Activation',
-                    'name' => $user->name,
-                    'body' => 'Dear You Account has been activated successfully :',
-                ];
-                $mail = new otpVerifcation($emailData);
+        try {
+            $user = User::where('id', $request->id)->first();
+            if ($request->status == 1) {
+                $user->status    = $request->status;
+                $save            = $user->save();
+                if ($save) {
+                    $emailData = [
+                        'otp' => 'Account Activation',
+                        'name' => $user->name,
+                        'body' => 'Dear You Account has been activated successfully. Login and Enjoy Our Services',
+                    ];
+                    $mail = new otpVerifcation($emailData);
 
-                try {
                     Mail::to($user->email)->send($mail);
-                    echo $save;
-                } catch (\Exception $e) {
-                    echo "Failed to send email: " . $e->getMessage();
+                    echo 'changed';
                 }
+            } else {
+                $user->status     = $request->status;
+                $save = $user->save();
+                echo 'changed';
             }
-        } else {
-            $user->status     = $request->status;
-            $save = $user->save();
-            echo $save;
+        } catch (\Exception $e) {
+            // echo $e->getMessage();
+            echo "Error Occur: Invalid User Email Or Id.";
         }
     }
 
@@ -1002,22 +1003,22 @@ class UserController extends Controller
             return redirect()->back();
         }
         $data = Invoice::join('currencies as cur', 'invoices.currency_id', '=', 'cur.id')
-        ->where('invoices.status', $this->status['Completed'])
-        ->where('cur.sadmin_id', $user->id)
-        ->groupBy('cur.id', 'cur.code', 'cur.name','cur.type') 
-        ->select(
-            DB::raw('SUM(invoices.amount) as total_amount'),
-            'cur.id',
-            'cur.name',
-            'cur.code',
-            'cur.type'
-        )
-        ->get()
-        ->toArray();
+            ->where('invoices.status', $this->status['Completed'])
+            ->where('cur.sadmin_id', $user->id)
+            ->groupBy('cur.id', 'cur.code', 'cur.name', 'cur.type')
+            ->select(
+                DB::raw('SUM(invoices.amount) as total_amount'),
+                'cur.id',
+                'cur.name',
+                'cur.code',
+                'cur.type'
+            )
+            ->get()
+            ->toArray();
         return view('revenue', ['user' => $user, 'data' => $data]);
     }
 
-    public function email_templates(REQUEST $request)
+    public function transactionals(REQUEST $request)
     {
         $user = auth()->user();
         $data['user'] = $user;
@@ -1025,11 +1026,24 @@ class UserController extends Controller
         if (!view_permission($page_name)) {
             return redirect()->back();
         }
+        Session::forget('msg');
+        $data['transectional'] = NULL;
+        $message  = NULL;
 
         if ($user->role == user_roles('1')) {
+
+            if ($request->action == 'edit' && $request->id ) {
+                $data['transectional'] = Transectional::where(['id' => $request->id])->first();
+            } 
+            else if ($request->action == 'dell') {
+                Transectional::where('id', $request->id)->update(['status' => $this->sev_status['Deleted']]);
+                $message = "Transectional has been deleted Successfully";
+                Session::flash('msg', $message);
+            }
+
+            
             $data['admins'] = User::select('id', 'name')->where(['role' => user_roles('2'), 'sadmin_id' => $user->id, 'status' => $this->userStatus['Active']])->orderBy('id', 'desc')->pluck('name', 'id')->toArray();
-            $data['data']   = Transectional::with(['user:id,name'])->where(['created_by' => $user->id, 'status' => $this->userStatus['Active']])->latest('id')->get()->toArray();
-            // dd($data['data']);
+            $data['data']   = Transectional::with(['user:id,name'])->where(['created_by' => $user->id, 'status' => $this->sev_status['Active']])->latest('id')->get()->toArray();
         }
         return view('transactional', $data);
     }
@@ -1060,16 +1074,4 @@ class UserController extends Controller
             echo $e->getMessage();
         }
     }
-
-    // foreach ($emails as $email) {
-    //     $transport = new EsmtpTransport('mail.host', 465);
-    //     $transport->setUsername($email->email);
-    //     $transport->setPassword($email->password);
-
-    //     $mailer = new Mailer($transport);
-
-    //     $mailable = (new SymfonyEmail())->from($email->email)->bcc('test@test.com')->subject($request->subject)->html('email body');
-
-    //     $mailer->send($mailable);
-    // } 
 }

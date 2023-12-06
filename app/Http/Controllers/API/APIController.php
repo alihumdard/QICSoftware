@@ -389,7 +389,7 @@ class APIController extends Controller
                     $message = $save ? 'Admin Deleted successfully' : 'Admin can not deleted';
 
                     if ($request->delete_all_user) {
-                        User::where(['role' => user_roles('3'), 'client_id' => $request->id])->update(['status' => $status['Deleted'], 'updated_by' => $request->deleted_by]);
+                        User::where(['role' => user_roles('3'), 'admin_id' => $request->id])->update(['status' => $status['Deleted'], 'updated_by' => $request->deleted_by]);
                         $message .= "\nAll Users deleted successfully";
                     }
 

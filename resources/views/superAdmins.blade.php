@@ -31,7 +31,7 @@
                       </svg>
                     </div>
                   </div>
-                  <select name="filter_by_sts" id="filter_by_sts_users" class="form-select select-group">
+                  <select name="filter_by_sts" id="filter_by_sts_superadmin" class="form-select select-group">
                     <option value="">
                       @lang('lang.filter_by_status')
                     </option>
@@ -49,7 +49,7 @@
           <div class="table-responsive">
             <div id="table_reload">
               <table id="users-table" class="display" style="width:100%">
-                <thead class="table-dark" style="background-color: #184A45; ">
+                <thead class="table-dark" style="background-color: #184A45;">
                   <tr style="font-size: small; text-align:center !important;">
                     <th>#</th>
                     <th></th>
@@ -62,7 +62,7 @@
                     <th>@lang('lang.actions')</th>
                   </tr>
                 </thead>
-                <tbody>
+                <tbody id="tableData">
 
                   @foreach($superAdmins as $key => $value)
                   <tr style="font-size: small;">
@@ -144,10 +144,16 @@
 </div>
 <!-- content-wrapper ends -->
 @php
-$login_userId = $user->id;
 $user_role_static = user_roles('1');
 @endphp
 
 @include('usermodal')
-
+ <!-- filter selection active ,pendding, dell .... -->
+<script>
+  var users_table = $('#users-table').DataTable();
+  $('#filter_by_sts_superadmin').on('change', function() {
+    let selectedStatus = $(this).val();
+    users_table.column(7).search(selectedStatus).draw();
+  });
+</script>
 @endsection

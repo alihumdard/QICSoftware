@@ -4,7 +4,6 @@ $user = auth()->user();
 <script>
     $(document).ready(function() {
         var user = @json($user);
-
         var simple_toolbar = [
             ['style', ['style']],
             ['font', ['bold', 'italic', 'underline']],
@@ -24,7 +23,6 @@ $user = auth()->user();
             ['view', ['fullscreen', 'codeview']],
             ['help', ['help']]
         ];
-
 
         $(document).on('click', '.btn_status_q', function() {
             var id = $(this).find('span').attr('data-qoute_id');
@@ -442,188 +440,10 @@ $user = auth()->user();
             });
         });
 
-        // Delete users  data in through the api...
-        $('#DeleteData').on('submit', function(e) {
-            e.preventDefault();
-
-            var form = $(this);
-            var button = form.find('.btn_deleteUser');
-            var spinner = button.find('.btn_spinner');
-            var buttonText = button.find('#add_btn');
-
-            var apiname = $(this).attr('action');
-            var apiurl = "{{ end_url('') }}" + apiname;
-            var formData = new FormData(this);
-            var bearerToken = "{{session('user')}}";
-
-            $.ajax({
-                url: apiurl,
-                type: 'POST',
-                data: formData,
-                headers: {
-                    'Authorization': 'Bearer ' + bearerToken
-                },
-                contentType: false,
-                processData: false,
-                beforeSend: function() {
-                    button.prop('disabled', true);
-                    spinner.removeClass('d-none');
-                    buttonText.addClass('d-none');
-                    // showloading('Wait', 'saving......');
-                },
-                success: function(response) {
-
-                    button.prop('disabled', false);
-                    spinner.addClass('d-none');
-                    buttonText.removeClass('d-none');
-
-                    if (response.status === 'success') {
-                        $('#DeleteData')[0].reset();
-                        if (response.tripDleted) {
-                            if (response.tripDleted == 'yes') {
-                                $('#routes-table').load(location.href + " #routes-table > *");
-                                $('#deleteroute').modal('hide');
-                                showAlert("Success", response.message, response.status);
-                            }
-
-                        }
-                        if (response.announcementDeleted) {
-                            if (response.announcementDeleted == 'yes') {
-                                $('#users-table').load(location.href + " #users-table > *");
-                                $('#deleteAnnoncement').modal('hide');
-                                showAlert("Success", response.message, response.status);
-                            }
-
-                        }
-                        if (response.packageDeleted) {
-                            if (response.packageDeleted == 'yes') {
-                                $('#users-table').load(location.href + " #users-table > *");
-                                $('#deletePackage').modal('hide');
-                                showAlert("Success", response.message, response.status);
-                            }
-
-                        } else {
-                            if (response.role == 3) {
-                                $('#drivers-table').load(location.href + " #drivers-table > *");
-                            } else {
-                                $('#users-table').load(location.href + " #users-table > *");
-                            }
-                            $('#closeicon').trigger('click');
-
-                            $('#userDeleteModal').modal('hide');
-                            showAlert("Success", response.message, response.status);
-
-                            if (response.logout) {
-                                setTimeout(function() {
-                                    window.location.href = '/logout';
-                                }, 2000);
-                            }
-                        }
-                    } else if (response.status === 'error') {
-
-                        showAlert("Warning", "Please fill the form correctly", response.status);
-                        console.log(response.message);
-                        $('.error-label').remove();
-
-                        $.each(response.message, function(field, errorMessages) {
-                            var inputField = $('input[name="' + field + '"]');
-
-                            $.each(errorMessages, function(index, errorMessage) {
-                                var errorLabel = $('<label class="error-label text-danger">* ' + errorMessage + '</label>');
-                                inputField.addClass('error');
-                                inputField.after(errorLabel);
-                            });
-                        });
-
-                    }
-                },
-                error: function(xhr, status, error) {
-                    console.log(status);
-
-                    button.prop('disabled', false);
-                    spinner.addClass('d-none');
-                    buttonText.removeClass('d-none');
-                    showAlert("Error", 'Request Can not Procceed', 'Can not Procceed furhter');
-                }
-            });
-        });
-
-        // get api .....
-        $(document).on('click', '#btn_edit_user', function() {
-            var id = $(this).data('user_id');
-            var apiname = $(this).data('api_name');
-            var apiurl = "{{ end_url('') }}" + apiname;
-            var bearerToken = "{{session('user')}}";
-            $.ajax({
-                url: apiurl + '?id=' + id,
-                type: 'GET',
-                data: {
-                    'id': id
-                },
-                headers: {
-                    'Authorization': 'Bearer ' + bearerToken
-                },
-                contentType: false,
-                processData: false,
-                beforeSend: function() {
-                    $('#addUsers #btn_save').css('background-color', '#233A85');
-                    $('#addUsers').modal('show');
-                    $('#btn_save #spinner').removeClass('d-none');
-                    $('#btn_save #add_btn').addClass('d-none');
-                    // showloading('Wait', 'loading......');
-                },
-                success: function(response) {
-
-                    if (response.status === 'success') {
-
-                        let responseData = response.data[0];
-                        let formattedDateTime = moment(responseData.created_at).format("YYYY-MM-DDTHH:mm");
-                        $('#addUsers #btn_save').html('<div class="spinner-border spinner-border-sm text-white d-none" id="spinner"></div><span id="add_btn">' + "{{ trans('lang.update') }}" + '</span>').css('background-color', '#184A45');
-                        if (responseData.user_pic) {
-                            $('#addUsers #user_pic').attr('src', "{{ asset('storage') }}/" + responseData.user_pic).removeClass('d-none');
-                        } else {
-                            $('#addUsers #user_pic').attr('src', "assets/images/user.png").removeClass('d-none');
-                        }
-                        if (responseData.com_pic) {
-                            $('#addUsers #com_pic').attr('src', "{{ asset('storage') }}/" + responseData.com_pic).removeClass('d-none');
-                        } else {
-                            $('#addUsers #com_pic').attr('src', "assets/images/user.png").removeClass('d-none');
-                        }
-                        $('#addUsers #id').val(responseData.id);
-                        $('#addUsers #admin_id').val(responseData.admin_id);
-                        $('#addUsers #role').val(responseData.role);
-                        $('#addUsers #name').val(responseData.name);
-                        $('#addUsers #phone').val(responseData.phone);
-                        $('#addUsers #email').val(responseData.email);
-                        $('#addUsers #com_name').val(responseData.com_name);
-                        $('#addUsers #address').val(responseData.address);
-                        $('#addUsers #joining_date').val(formattedDateTime);
-
-                        $('#spinner').addClass('d-none');
-                        $('#add_btn').removeClass('d-none');
-                    } else {
-                        showAlert("Warning", response.message, response.status);
-                    }
-                },
-                error: function(xhr, status, error) {
-                    $('#spinner').addClass('d-none');
-                    $('#add_btn').removeClass('d-none');
-                    showAlert("Error", status, error);
-                }
-            });
-        });
-
         // send mail invoice .....
         $(document).on('click', '.send_mail', function() {
             let row_id = $(this).attr('data-id');
             $('#row_id').val(row_id);
-        });
-
-        // deleting users ... calling modals
-        $(document).on('click', '#btn_dell_user', function() {
-            let user_id = $(this).attr('data-id');
-            $('#userDeleteModal #user_id').val(user_id);
-            $('#userDeleteModal').modal('show');
         });
 
         function dismissModal(modle_id) {
@@ -699,67 +519,6 @@ $user = auth()->user();
         $('input').on('input', function() {
             $(this).removeClass('error');
             $(this).next('.error-label').remove();
-        });
-
-        //user status
-        $(document).on('click', '.btn_status', function() {
-            var id = $(this).find('span').attr('data-client_id');
-            $('#user_sts_modal').modal('show');
-            $('#user_sts').data('id', id);
-        });
-
-        $(document).on('click', '#btn_dell_client', function() {
-            let user_id = $(this).attr('data-id');
-            $('#userDeleteModal #user_id').val(user_id);
-            $('#userDeleteModal').modal('show');
-        });
-
-        $(document).on('submit', '#user_sts', function(event) {
-            event.preventDefault();
-            var id = $('#user_sts').data('id');
-            var status = $('#status').val();
-            var _token = $(this).find('input[name="_token"]').val();
-
-            $.ajax({
-                url: '/change_status',
-                method: 'POST',
-                beforeSend: function() {
-
-                    $('#change_sts').prop('disabled', true);
-                    $('#change_sts #spinner').removeClass('d-none');
-                    $('#change_sts #add_btn').addClass('d-none');
-                },
-                data: {
-                    'id': id,
-                    '_token': _token,
-                    'status': status
-                },
-                success: function(response) {
-                    if (response) {
-
-                        $('#change_sts').prop('disabled', false);
-                        $('#spinner').addClass('d-none');
-                        $('#add_btn').removeClass('d-none');
-
-                        console.log(response);
-                        $('#user_sts').off('submit');
-                        window.location.href = window.location.href;
-                    }
-                }
-            });
-        });
-
-        // datatables only for client table and users table
-        var users_table = $('#users-table').DataTable();
-
-        $('#filter_by_sts_client').on('change', function() {
-            var selectedStatus = $(this).val();
-            users_table.column(7).search(selectedStatus).draw();
-        });
-
-        $('#filter_by_sts_users').on('change', function() {
-            var selectedStatus = $(this).val();
-            users_table.column(6).search(selectedStatus).draw();
         });
 
         $('#btn_cancel').click(function() {

@@ -44,7 +44,7 @@
                       </svg>
                     </div>
                   </div>
-                  <select name="filter_by_sts" id="filter_by_sts_client" class="form-select select-group">
+                  <select name="filter_by_sts" id="filter_by_sts_admin" class="form-select select-group">
                     <option value="">
                       @lang('lang.filter_by_status')
                     </option>
@@ -155,6 +155,15 @@
 </div>
 </div>
 <!-- content-wrapper ends -->
+
+ <!-- filter selection active ,pendding, dell .... -->
+<script>
+  var users_table = $('#users-table').DataTable();
+  $('#filter_by_sts_admin').on('change', function() {
+    let selectedStatus = $(this).val();
+    users_table.column(6).search(selectedStatus).draw();
+  });
+</script> 
 
 @php
 $login_userId = $user->id;

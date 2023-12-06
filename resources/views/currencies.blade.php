@@ -43,12 +43,14 @@
             <div class="col-lg-3 col-md-3 col-sm-12">
               <label for="title" class="mb-0 mt-1">@lang('Currency Name')</label>
               <input type="text" maxlength="60" name="name" id="currency_name" class="form-control" value="{{ $currency['name'] ?? '' }}" placeholder="@lang('currency name')" required>
+              <span id="currency_name_error" class="error-message text-danger"></span>
               <div class="text-danger error-message" id="name-error"></div>
             </div>
 
             <div class="col-lg-3 col-md-3 col-sm-12">
               <label for="title" class="mb-0 mt-1">@lang('Currency Code')</label>
               <input type="text" maxlength="60" name="code" id="currency_code" class="form-control" value="{{ $currency['code'] ?? '' }}" placeholder="@lang('currency code')" required>
+              <span id="currency_code_error" class="error-message text-danger"></span>
               <div class="text-danger error-message" id="code-error"></div>
             </div>
 
@@ -60,16 +62,17 @@
                 <option value="{{ $val }}" {{ (isset($currency['type']) && $currency['type'] == $val) ? 'selected' : '' }}>{{ $val }}</option>
                 @endforeach
               </select>
+              <span id="currency_type_error" class="error-message text-danger"></span>
               <div class="text-danger error-message" id="title-error"></div>
             </div>
 
             <div class="col-lg-3 col-md-3 col-sm-12 d-flex align-items-end  justify-content-center">
-              <input type="submit" class="btn form-control content-background w-50 text-white mt-2" name="submit" value="{{ ($currency['id'] ?? '') !== '' ? __('lang.update') : __('lang.add') }}" />
+              <input type="submit" id="btn_save_currency" class="btn form-control content-background w-50 text-white mt-2" name="submit" value="{{ ($currency['id'] ?? '') !== '' ? __('lang.update') : __('lang.add') }}" />
               <div class="text-danger error-message mt-1" id="submitBtn-error"></div>
             </div>
           </div>
         </form>
-        
+
         @if (Session::has('msg'))
         <div class="alert alert-success col-lg-8 col-md-12 col-sm-12 ">
           <button type="button" class="close ml-2" data-dismiss="alert">&times;</button>
@@ -80,7 +83,7 @@
         <hr class="mt-3 mb-2">
         <div class="px-2">
           <div class="table-responsive">
-            <table id="users-table" class="display" style="width:100%">
+            <table id="currencies-table" class="display" style="width:100%">
               <thead class="table-dark" style="background-color: #184A45;">
                 <tr style="font-size: small;">
                   <th>#</th>
@@ -107,7 +110,7 @@
                           @csrf
                           <input type="hidden" name="id" value="{{$value['id']}}">
                           <input type="hidden" name="action" value="edit">
-                          <button id="btn_edit_announcement" class="btn p-0">
+                          <button id="btn_edit_currency" class="btn p-0">
                             <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
                               <circle opacity="0.1" cx="18" cy="18" r="18" fill="#233A85" />
                               <path fill-rule="evenodd" clip-rule="evenodd" d="M16.1634 23.6195L22.3139 15.6658C22.6482 15.2368 22.767 14.741 22.6556 14.236C22.559 13.777 22.2768 13.3406 21.8534 13.0095L20.8208 12.1893C19.922 11.4744 18.8078 11.5497 18.169 12.3699L17.4782 13.2661C17.3891 13.3782 17.4114 13.5438 17.5228 13.6341C17.5228 13.6341 19.2684 15.0337 19.3055 15.0638C19.4244 15.1766 19.5135 15.3271 19.5358 15.5077C19.5729 15.8614 19.3278 16.1925 18.9638 16.2376C18.793 16.2602 18.6296 16.2075 18.5107 16.1097L16.676 14.6499C16.5868 14.5829 16.4531 14.5972 16.3788 14.6875L12.0185 20.3311C11.7363 20.6848 11.6397 21.1438 11.7363 21.5878L12.2934 24.0032C12.3231 24.1312 12.4345 24.2215 12.5682 24.2215L15.0195 24.1914C15.4652 24.1838 15.8812 23.9807 16.1634 23.6195ZM19.5955 22.8673H23.5925C23.9825 22.8673 24.2997 23.1886 24.2997 23.5837C24.2997 23.9795 23.9825 24.3 23.5925 24.3H19.5955C19.2055 24.3 18.8883 23.9795 18.8883 23.5837C18.8883 23.1886 19.2055 22.8673 19.5955 22.8673Z" fill="#233A85" />
@@ -140,224 +143,63 @@
     </div>
   </div>
 
-  <!-- deleteAnnoncement Modal -->
-  <div class="modal fade" id="deleteAnnoncement" tabindex="-1" aria-labelledby="deleterouteLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <!-- <div class="modal-header">
-          <h5 class="modal-title" id="deleterouteLabel"></h5>
-        </div> -->
-        <div class="modal-body">
-          <svg width="56" height="56" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect x="4" y="4" width="48" height="48" rx="24" fill="#FEE4E2" />
-            <path d="M32 22V21.2C32 20.0799 32 19.5198 31.782 19.092C31.5903 18.7157 31.2843 18.4097 30.908 18.218C30.4802 18 29.9201 18 28.8 18H27.2C26.0799 18 25.5198 18 25.092 18.218C24.7157 18.4097 24.4097 18.7157 24.218 19.092C24 19.5198 24 20.0799 24 21.2V22M26 27.5V32.5M30 27.5V32.5M19 22H37M35 22V33.2C35 34.8802 35 35.7202 34.673 36.362C34.3854 36.9265 33.9265 37.3854 33.362 37.673C32.7202 38 31.8802 38 30.2 38H25.8C24.1198 38 23.2798 38 22.638 37.673C22.0735 37.3854 21.6146 36.9265 21.327 36.362C21 35.7202 21 34.8802 21 33.2V22" stroke="#D92D20" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-            <rect x="4" y="4" width="48" height="48" rx="24" stroke="#FEF3F2" stroke-width="8" />
-          </svg>
-          <div class="float-right">
-            <button class="btn p-0" data-dismiss="modal">
-              <svg width="40" height="40" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M28 16L16 28M16 16L28 28" stroke="#667085" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-              </svg>
-            </button>
-          </div>
-          <div class="mt-3">
-            <h6>@lang('lang.really_want_to_delete_route')</h6>
-          </div>
-          <div class="row mt-3 text-center">
-            <div class="col-lg-6">
-              <button class="btn btn-sm btn-outline px-5" data-toggle="modal" data-target="#deleteroute" style="background-color: #ffffff; border: 1px solid #D0D5DD; border-radius: 8px; width: 100%;">@lang('lang.cancel')</button>
-            </div>
-            <div class="col-lg-6">
-              <form method="post" id="DeleteData" action="deleteUsers">
-                <input type="hidden" id="annoucement_id" name="annoucement_id">
-                <input type="hidden" id="user_id" name="id" value="{{$user->id}}">
-                <button type="submit" class="btn  btn_deleteUser btn-sm btn-outline text-white px-5" style="background-color: #D92D20; border-radius: 8px; width: 100%;">
-                  <div class="spinner-border btn_spinner spinner-border-sm text-white d-none"></div>
-                  <span id="add_btn">@lang('lang.delete')</span>
-                </button>
-                </from>
-            </div>
-          </div>
-        </div>
-        <!-- <div class="modal-footer">
-                    
-                </div> -->
-      </div>
-    </div>
-  </div>
-  <!-- deleteAnnoncement Modal End -->
-
-  <!-- content-wrapper ends -->
   <script>
-    $(document).ready(function() {
+    $('#btn_save_currency').click(function(event) {
+      let currency_name = $('#currency_name').val();
+      let currency_code = $('#currency_code').val();
+      let currency_type = $('#currency_type').val();
 
-      const maxLength = 250;
-      const textarea = $('#desc');
-      const charCountElement = $('#charCount');
-      const charCountContainer = $('#charCountContainer');
-      const submitButton = $('#submitBtn');
+      if (currency_name === '') {
+        $('#currency_name_error').text('*Please enter a currency name.');
+        event.preventDefault();
+      }
 
-      textarea.on('input', function() {
-        const currentLength = textarea.val().length;
-        const charCount = Math.max(maxLength - currentLength); // Ensure non-negative count
+      if (currency_code === '') {
+        $('#currency_code_error').text('*Please enter a currency code.');
+        event.preventDefault();
+      }
 
-        charCountElement.text(charCount);
+      if (currency_type === null) {
+        $('#currency_type_error').text('*Please select a currency type.');
+        event.preventDefault();
+      }
 
-        if (currentLength > 0) {
-          charCountContainer.show();
-        } else {
-          charCountContainer.hide();
-        }
-
-        if (currentLength > maxLength) {
-          const exceededCount = currentLength - maxLength;
-          charCountElement.css('color', 'red'); // Set text color to red
-          charCountElement.text(`Your limit exceeded by ${exceededCount} characters`);
-          submitButton.prop('disabled', true);
-        } else if (currentLength === maxLength) {
-          charCountElement.css('color', ''); // Reset text color
-          charCountElement.text(''); // Clear the message
-          submitButton.prop('disabled', false);
-        } else {
-          charCountElement.css('color', ''); // Reset text color
-          charCountElement.text(`${maxLength - currentLength}`);
-          submitButton.prop('disabled', false);
-        }
-
-      });
-
-      // // Enable textarea when content is deleted after exceeding limit
-      // textarea.on('keyup', function() {
-      //     // const currentLength = textarea.val().length;
-
-      //     if (currentLength > maxLength) {
-      //         textarea.val(textarea.val().substring(0, maxLength)); // Truncate content
-      //         charCountElement.css('color', 'red'); // Set text color to red
-      //         charCountElement.text('Your limit exceeded');
-      //         submitButton.prop('disabled', true);
-      //     } else {
-      //         charCountElement.css('color', ''); // Reset text color
-      //         submitButton.prop('disabled', false);
-      //     }
-      // });
-
-      // Add input event handler to clear error messages
-      $('#title, #start_date, #end_date, #desc').on('input', function() {
-        $(this).removeClass('is-invalid');
-        $(this).next('.error-message').text('');
-      });
-
-      $('#submitBtn').on('click', function(e) {
-        e.preventDefault();
-
-        // Reset the error messages and styles
-        $('.error-message').text('');
-        $('.is-invalid').removeClass('is-invalid');
-
-        // Flag to track if any validation error occurs
-        var hasErrors = false;
-
-        // Validate the title input
-        var titleInput = $('#title');
-        var titleError = $('#title-error');
-        if (titleInput.val().trim() === '') {
-          titleError.text('*Title is required.');
-          hasErrors = true;
-        }
-
-        // Validate the start date input
-        var startDateInput = $('#start_date');
-        var startDateError = $('#start-date-error');
-        if (startDateInput.val().trim() === '') {
-          startDateError.text('*Start date is required.');
-          hasErrors = true;
-        }
-
-        // Validate the end date input
-        var endDateInput = $('#end_date');
-        var endDateError = $('#end-date-error');
-        if (endDateInput.val().trim() === '') {
-          endDateError.text('*End date is required.');
-          hasErrors = true;
-        }
-
-        // Validate the description input
-        var descInput = $('#desc');
-        var descError = $('#desc-error');
-        if (descInput.val().trim() === '') {
-          descError.text('*Description is required.');
-          hasErrors = true;
-        }
-
-        var typeInput = $('.type');
-        var typeError = $('#type-error');
-        var selectedType = typeInput.filter(':checked').val();
-
-        if (!selectedType) {
-          typeError.text('*Select one of them.');
-          hasErrors = true;
-        }
-
-        // Scroll to the first error message
-        if (hasErrors) {
-          $('html, body').animate({
-            scrollTop: $('.is-invalid:first').offset().top
-          }, 500);
-        } else {
-          // If no errors, allow form submission
-          $('#formData').submit();
-        }
-      });
     });
-  </script>
 
-
-  <script>
-    var today = new Date().toISOString().split('T')[0];
-    document.getElementById("start_date").setAttribute("min", today);
-  </script>
-  <script>
-    var today = new Date().toISOString().split('T')[0];
-    document.getElementById("start_date").setAttribute("min", today);
-  </script>
-  <script>
-    var tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-
-    var endDateInput = document.getElementById("end_date");
-    endDateInput.setAttribute("min", tomorrow.toISOString().split('T')[0]);
-  </script>
-
-  <script>
-    // Get the input elements
-    var startDateInput = document.getElementById("start_date");
-    var endDateInput = document.getElementById("end_date");
-
-    // Add event listener to "start_date" input
-    startDateInput.addEventListener("change", function() {
-      // Get the selected start_date value
-      var selectedStartDate = new Date(startDateInput.value);
-
-      // Update "end_date" min attribute to disable previous dates
-      var minEndDate = selectedStartDate.toISOString().split('T')[0];
-      endDateInput.setAttribute("min", minEndDate);
-
-      // If the current end_date is before the selected start_date, update end_date to the selected start_date
-      var selectedEndDate = new Date(endDateInput.value);
-      if (selectedEndDate < selectedStartDate) {
-        endDateInput.value = minEndDate;
+    $('#currency_name').on('input', function() {
+      let currency_name = $('#currency_name').val();
+      if (currency_name === '') {
+        $('#currency_name_error').text('*Please enter a currency name.');
+        event.preventDefault();
+      } else {
+        $('#currency_name_error').text('');
       }
     });
-  </script>
-  <script>
-    // Function to scroll to the form
-    function scrollToForm() {
-      const formElement = document.getElementById('formData');
-      formElement.scrollIntoView({
-        behavior: 'smooth',
-        top: 0
-      });
-    }
-  </script>
 
+    $('#currency_code').on('input', function() {
+      let currency_code = $('#currency_code').val();
+      if (currency_code === '') {
+        $('#currency_code_error').text('*Please enter a currency code.');
+        event.preventDefault();
+      } else {
+        $('#currency_code_error').text('');
+      }
+    });
+
+    $('#currency_type').on('change', function() {
+      let currency_type = $('#currency_type').val();
+      if (currency_type === null) {
+        $('#currency_type_error').text('*Please select a currency type.');
+        event.preventDefault();
+      } else {
+        $('#currency_type_error').text('');
+      }
+    });
+
+    let service_table = $('#currencies-table').DataTable();
+    $('#filter_by_type_currencies').on('change', function() {
+      let selectedtype = $(this).val();
+      service_table.column(3).search(selectedtype).draw();
+    });
+  </script>
   @endsection

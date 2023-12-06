@@ -8,8 +8,8 @@
       background-color: #01223770;
     }
   </style>
-<!-- include the moment.js library using a CDN -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+  <!-- include the moment.js library using a CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
 
   <!-- Add Users Modal -->
   <div class="modal" id="addUsers" tabindex="-1" aria-labelledby="addUsers" aria-hidden="true">
@@ -37,7 +37,7 @@
           @csrf
           <input type="hidden" id="role" name="role" value="{{isset($add_as_user) ? $add_as_user : ''}}">
           <input type="hidden" id="id" name="id">
-          <input type="hidden" id="status" name="status" value="1">
+          <input type="hidden" id="user_status" name="status" value="1">
 
           @if($add_as_user == user_roles('1'))
           <input type="hidden" id="manager_id" name="manager_id" value="{{$user->id}}">
@@ -58,7 +58,7 @@
           <input type="hidden" id="manager_id" name="manager_id" value="{{$user->manager_id}}">
           <input type="hidden" id="sadmin_id" name="sadmin_id" value="{{$user->id}}">
           @endif
- 
+
           <div class="modal-body pt-0">
             <div class="row">
 
@@ -74,7 +74,7 @@
                 </div>
               </div>
 
-              @if($add_as_user == user_roles('3') && $user->role == user_roles('1')) 
+              @if($add_as_user == user_roles('3') && $user->role == user_roles('1'))
               <div class="col-lg-6 mb-2">
                 <label for="com_pic">@lang('lang.admin')</label>
                 <select name="admin_id" id="admin_id" class="form-select">
@@ -87,7 +87,7 @@
                 </select>
                 <div id="adminError" class="text-danger d-none">*@lang('select an admin')</div>
               </div>
-              @endif 
+              @endif
 
               @if($add_as_user == user_roles('1'))
               <div class="col-lg-6 mb-2">
@@ -159,7 +159,7 @@
       <div class="modal-content bg-white" style="border-radius: 10px;">
         <div class="modal-header pb-0" style="border: none;">
           <h5 class="modal-title" id="user_stsLabel"></h5>
-          <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+          <button type="button" class="close closeModalButton close_st_model" id="closeicon" data-dismiss="modal" data-bs-dismiss="modal" aria-label="Close">
             <svg width="40" height="40" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M28 16L16 28M16 16L28 28" stroke="#667085" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
             </svg>
@@ -168,14 +168,15 @@
         <form method="post" id="user_sts">
           @csrf
           <input type="hidden" name="_previous" value="{{url()->previous()}}">
-          <input type="hidden" id="admin_id" name="id">
+          <input type="hidden" id="sts_user_id" name="id">
           <div class="modal-body pt-0">
             <svg width="56" height="56" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
               <rect x="4" y="4" width="48" height="48" rx="24" fill="#D1FADF" />
               <path d="M23.5 28L26.5 31L32.5 25M38 28C38 33.5228 33.5228 38 28 38C22.4772 38 18 33.5228 18 28C18 22.4772 22.4772 18 28 18C33.5228 18 38 22.4772 38 28Z" stroke="#039855" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
               <rect x="4" y="4" width="48" height="48" rx="24" stroke="#ECFDF3" stroke-width="8" />
-            </svg> 
+            </svg>
             <label class="font-weight-semibold pl-1 mt-4"> Sure to change the user's status? </label>
+            <label class="font-weight-semibold pl-1 mt-2 text-danger status_change_error"> </label>
             <select name="status" id="status" class="form-select mt-3">
               <option value="1">@lang('lang.activate')</option>
               <option value="3">@lang('lang.suspend')</option>
@@ -201,21 +202,26 @@
       <div class="modal-content bg-white" style="border-radius: 10px;">
         @if($user_role_static == user_roles(1))
         <div class="modal-body">
-          <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle opacity="0.1" cx="18" cy="18" r="18" fill="#DF6F79" />
-            <path fill-rule="evenodd" clip-rule="evenodd" d="M23.4909 13.743C23.7359 13.743 23.94 13.9465 23.94 14.2054V14.4448C23.94 14.6975 23.7359 14.9072 23.4909 14.9072H13.0497C12.804 14.9072 12.6 14.6975 12.6 14.4448V14.2054C12.6 13.9465 12.804 13.743 13.0497 13.743H14.8866C15.2597 13.743 15.5845 13.4778 15.6684 13.1036L15.7646 12.6739C15.9141 12.0887 16.4061 11.7 16.9692 11.7H19.5708C20.1277 11.7 20.6252 12.0887 20.7692 12.6431L20.8721 13.1029C20.9555 13.4778 21.2802 13.743 21.654 13.743H23.4909ZM22.5577 22.4943C22.7495 20.707 23.0852 16.4609 23.0852 16.418C23.0975 16.2883 23.0552 16.1654 22.9713 16.0665C22.8812 15.9739 22.7672 15.9191 22.6416 15.9191H13.9032C13.777 15.9191 13.6569 15.9739 13.5735 16.0665C13.489 16.1654 13.4473 16.2883 13.4534 16.418C13.4546 16.4259 13.4666 16.5755 13.4868 16.8255C13.5762 17.9364 13.8255 21.0303 13.9865 22.4943C14.1005 23.5729 14.8081 24.2507 15.8332 24.2753C16.6242 24.2936 17.4391 24.2999 18.2724 24.2999C19.0573 24.2999 19.8544 24.2936 20.6699 24.2753C21.7305 24.257 22.4376 23.5911 22.5577 22.4943Z" fill="#D11A2A" />
-          </svg>
-          <div class="mt-3">
-            <h6>@lang('lang.really_want_to_delete_user')</h6>
+          <button class="btn p-0 float-right closeModalButton" data-dismiss="modal">
+            <svg width="40" height="40" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M28 16L16 28M16 16L28 28" stroke="#667085" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </button>
+          <div class="my-3 d-flex align-items-center">
+            <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle opacity="0.1" cx="18" cy="18" r="18" fill="#DF6F79" />
+              <path fill-rule="evenodd" clip-rule="evenodd" d="M23.4909 13.743C23.7359 13.743 23.94 13.9465 23.94 14.2054V14.4448C23.94 14.6975 23.7359 14.9072 23.4909 14.9072H13.0497C12.804 14.9072 12.6 14.6975 12.6 14.4448V14.2054C12.6 13.9465 12.804 13.743 13.0497 13.743H14.8866C15.2597 13.743 15.5845 13.4778 15.6684 13.1036L15.7646 12.6739C15.9141 12.0887 16.4061 11.7 16.9692 11.7H19.5708C20.1277 11.7 20.6252 12.0887 20.7692 12.6431L20.8721 13.1029C20.9555 13.4778 21.2802 13.743 21.654 13.743H23.4909ZM22.5577 22.4943C22.7495 20.707 23.0852 16.4609 23.0852 16.418C23.0975 16.2883 23.0552 16.1654 22.9713 16.0665C22.8812 15.9739 22.7672 15.9191 22.6416 15.9191H13.9032C13.777 15.9191 13.6569 15.9739 13.5735 16.0665C13.489 16.1654 13.4473 16.2883 13.4534 16.418C13.4546 16.4259 13.4666 16.5755 13.4868 16.8255C13.5762 17.9364 13.8255 21.0303 13.9865 22.4943C14.1005 23.5729 14.8081 24.2507 15.8332 24.2753C16.6242 24.2936 17.4391 24.2999 18.2724 24.2999C19.0573 24.2999 19.8544 24.2936 20.6699 24.2753C21.7305 24.257 22.4376 23.5911 22.5577 22.4943Z" fill="#D11A2A" />
+            </svg>
+            <h6 class="ml-2 mt-2">@lang('Are you really want to delete Super Admin ?')</h6>
           </div>
-          <div class="row mt-3 text-center">
-            <div class="col-lg-6">
-              <button class="btn btn-sm btn-outline px-5 closeModalButton" type="button" data-toggle="modal" data-target="#deleteadmin" style="background-color: #ffffff; border: 1px solid #D0D5DD; border-radius: 8px; width: 100%;">@lang('lang.cancel')</button>
+          <div class="row mb-3 text-center">
+            <div class="col-lg-6 col-md-12 col-sm-12 mt-2">
+              <button class="btn btn-sm btn-outline px-5 closeModalButton  close_dell_model  " type="button" data-toggle="modal" data-target="#deleteadmin" style="background-color: #ffffff; border: 1px solid #D0D5DD; border-radius: 8px; width: 100%;">@lang('lang.cancel')</button>
             </div>
-            <div class="col-lg-6">
+            <div class="col-lg-6 col-md-12 col-sm-12 mt-2">
               <form method="post" id="DeleteData" action="deleteUsers">
                 <input type="hidden" id="user_id" name="id">
-                <input type="hidden" id="deleted_by" name="deleted_by" value="{{ $login_userId ?? ''}}">
+                <input type="hidden" id="deleted_by" name="deleted_by" value="{{ $user->id ?? ''}}">
                 <button type="submit" class="btn  btn_deleteUser btn-sm btn-outline text-white px-5" style="background-color: #D92D20; border-radius: 8px; width: 100%;">
                   <div class="spinner-border btn_spinner spinner-border-sm text-white d-none"></div>
                   <span id="add_btn">@lang('lang.delete')</span>
@@ -231,26 +237,27 @@
             <path d="M32 22V21.2C32 20.0799 32 19.5198 31.782 19.092C31.5903 18.7157 31.2843 18.4097 30.908 18.218C30.4802 18 29.9201 18 28.8 18H27.2C26.0799 18 25.5198 18 25.092 18.218C24.7157 18.4097 24.4097 18.7157 24.218 19.092C24 19.5198 24 20.0799 24 21.2V22M26 27.5V32.5M30 27.5V32.5M19 22H37M35 22V33.2C35 34.8802 35 35.7202 34.673 36.362C34.3854 36.9265 33.9265 37.3854 33.362 37.673C32.7202 38 31.8802 38 30.2 38H25.8C24.1198 38 23.2798 38 22.638 37.673C22.0735 37.3854 21.6146 36.9265 21.327 36.362C21 35.7202 21 34.8802 21 33.2V22" stroke="#D92D20" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
             <rect x="4" y="4" width="48" height="48" rx="24" stroke="#FEF3F2" stroke-width="8" />
           </svg>
-          <button class="btn p-0 float-right closeModalButton" data-dismiss="modal">
+          <button class="btn p-0 float-right closeModalButton close_dell_model " data-dismiss="modal">
             <svg width="40" height="40" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M28 16L16 28M16 16L28 28" stroke="#667085" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
             </svg>
           </button>
           <div class="mt-3">
-            <h6>@lang('lang.really_want_to_delete_admin')</h6>
+            <h6>@lang('Are you really want to delete Admin ?')</h6>
             <p>@lang('Admin has assigned Users what to do with them')</p>
           </div>
           <form method="post" id="DeleteData" action="deleteUsers">
             <input type="hidden" id="user_id" name="id">
-            <input type="hidden" id="deleted_by" name="deleted_by" value="{{ $login_userId ?? ''}}">
+            <input type="hidden" id="deleted_by" name="deleted_by" value="{{ $user->id ?? ''}}">
             <div class="mt-3">
               <input type="checkbox" name="delete_all_user" id="delete_all_drivers"> @lang('Delete his all users')
             </div>
-            <div class="row mt-3 text-center">
-              <div class="col-lg-6">
-                <button data-dismiss="modal" type="button" class="btn btn-sm btn-outline px-5 closeModalButton" style="background-color: #ffffff; border: 1px solid #D0D5DD; border-radius: 8px; width: 100%;">@lang('lang.cancel')</button>
+
+            <div class="row mb-3 text-center">
+              <div class="col-lg-6 col-md-12 col-sm-12 mt-2">
+                <button class="btn btn-sm btn-outline px-5 closeModalButton" type="button" data-toggle="modal" data-target="#deleteadmin" style="background-color: #ffffff; border: 1px solid #D0D5DD; border-radius: 8px; width: 100%;">@lang('lang.cancel')</button>
               </div>
-              <div class="col-lg-6">
+              <div class="col-lg-6 col-md-12 col-sm-12 mt-2">
                 <button type="submit" class="btn  btn_deleteUser btn-sm btn-outline text-white px-5" style="background-color: #D92D20; border-radius: 8px; width: 100%;">
                   <div class="spinner-border btn_spinner spinner-border-sm text-white d-none"></div>
                   <span id="add_btn">@lang('lang.delete')</span>
@@ -266,7 +273,7 @@
             <path d="M32 22V21.2C32 20.0799 32 19.5198 31.782 19.092C31.5903 18.7157 31.2843 18.4097 30.908 18.218C30.4802 18 29.9201 18 28.8 18H27.2C26.0799 18 25.5198 18 25.092 18.218C24.7157 18.4097 24.4097 18.7157 24.218 19.092C24 19.5198 24 20.0799 24 21.2V22M26 27.5V32.5M30 27.5V32.5M19 22H37M35 22V33.2C35 34.8802 35 35.7202 34.673 36.362C34.3854 36.9265 33.9265 37.3854 33.362 37.673C32.7202 38 31.8802 38 30.2 38H25.8C24.1198 38 23.2798 38 22.638 37.673C22.0735 37.3854 21.6146 36.9265 21.327 36.362C21 35.7202 21 34.8802 21 33.2V22" stroke="#D92D20" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
             <rect x="4" y="4" width="48" height="48" rx="24" stroke="#FEF3F2" stroke-width="8" />
           </svg>
-          <button class="btn p-0 float-right closeModalButton" data-dismiss="modal">
+          <button class="btn p-0 float-right closeModalButton  close_dell_model " data-dismiss="modal">
             <svg width="40" height="40" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M28 16L16 28M16 16L28 28" stroke="#667085" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
             </svg>
@@ -278,18 +285,17 @@
 
           <form method="post" id="DeleteData" action="deleteUsers">
             <input type="hidden" id="user_id" name="id">
-            <input type="hidden" id="deleted_by" name="deleted_by" value="{{ $login_userId ?? ''}}">
+            <input type="hidden" id="deleted_by" name="deleted_by" value="{{ $user->id ?? ''}}">
             <div class="my-2">
-              <div class="row mt-3 text-center">
-                <div class="col-lg-6">
-                  <button data-dismiss="modal" type="button" class="btn btn-sm btn-outline px-5 closeModalButton" style="background-color: #ffffff; border: 1px solid #D0D5DD; border-radius: 8px; width: 100%;">@lang('lang.cancel')</button>
+              <div class="row mb-3 text-center">
+                <div class="col-lg-6 col-md-12 col-sm-12 mt-2">
+                  <button class="btn btn-sm btn-outline px-5 closeModalButton  close_dell_model " type="button" data-toggle="modal" data-target="#deleteadmin" style="background-color: #ffffff; border: 1px solid #D0D5DD; border-radius: 8px; width: 100%;">@lang('lang.cancel')</button>
                 </div>
-                <div class="col-lg-6">
+                <div class="col-lg-6 col-md-12 col-sm-12 mt-2">
                   <button type="submit" class="btn  btn_deleteUser btn-sm btn-outline text-white px-5" style="background-color: #D92D20; border-radius: 8px; width: 100%;">
                     <div class="spinner-border btn_spinner spinner-border-sm text-white d-none"></div>
                     <span id="add_btn">@lang('lang.delete')</span>
                   </button>
-                  <!-- <button class="btn btn-sm btn-outline text-white px-5" style="background-color: #D92D20; border-radius: 8px; width: 100%;">@lang('lang.delete')</button> -->
                 </div>
               </div>
           </form>
@@ -338,7 +344,6 @@
 
       });
 
-      // Add a click event handler to the submit button
       $('#btn_save').click(function(event) {
         event.preventDefault(); // Prevent the default form submission
 
@@ -374,7 +379,6 @@
         }
       });
 
-      // Add input event handlers to the name and email fields
       $('#name').on('input', function() {
         $('#nameError').addClass('d-none'); // Hide the name error message when input is provided
       });
@@ -383,7 +387,6 @@
         $('#emailError').addClass('d-none'); // Hide the email error message when input is provided
       });
 
-      // Add a change event handler to the admin select element
       $('#admin_id').change(function() {
         if ($(this).val() !== null) {
           $('#adminError').addClass('d-none'); // Hide the error message when admin is selected
@@ -396,4 +399,218 @@
       var re = /\S+@\S+\.\S+/;
       return re.test(email);
     }
+
+
+    //user status changes
+    $(document).on('click', '.btn_status', function() {
+      let id = $(this).find('span').attr('data-user_id');
+      $('#sts_user_id').val(id);
+      $('#user_sts_modal').modal('show');
+    });
+
+    $(document).on('submit', '#user_sts', function(event) {
+      event.preventDefault();
+      var id = $('#sts_user_id').val();
+      var status = $('#status').val();
+      var _token = $(this).find('input[name="_token"]').val();
+
+      $.ajax({
+        url: '/change_status',
+        method: 'POST',
+        beforeSend: function() {
+          $('#change_sts').prop('disabled', true);
+          $('#change_sts #spinner').removeClass('d-none');
+          $('#change_sts #add_btn').addClass('d-none');
+        },
+        data: {
+          'id': id,
+          '_token': _token,
+          'status': status
+        },
+        success: function(response) {
+          $('#change_sts').prop('disabled', false);
+          $('#change_sts #spinner').addClass('d-none');
+          $('#change_sts #add_btn').removeClass('d-none');
+          if (response == 'changed') {
+            $('#sts_user_id').val('');
+            $('#user_sts').off('submit');
+            $('#tableData').load(location.href + " #tableData > *");
+            $('.close_st_model').trigger('click');
+          } else {
+            $('.status_change_error').text(response)
+          }
+        }
+      });
+    });
+
+    // deleting users ... calling modals
+    $(document).on('click', '#btn_dell_user', function() {
+      let user_id = $(this).attr('data-id');
+      $('#userDeleteModal #user_id').val(user_id);
+      $('#userDeleteModal').modal('show');
+    });
+
+    // Delete users  data in through the api...
+    $('#DeleteData').on('submit', function(e) {
+      e.preventDefault();
+
+      var form = $(this);
+      var button = form.find('.btn_deleteUser');
+      var spinner = button.find('.btn_spinner');
+      var buttonText = button.find('#add_btn');
+
+      var apiname = $(this).attr('action');
+      var apiurl = "{{ end_url('') }}" + apiname;
+      var formData = new FormData(this);
+      var bearerToken = "{{session('user')}}";
+
+      $.ajax({
+        url: apiurl,
+        type: 'POST',
+        data: formData,
+        headers: {
+          'Authorization': 'Bearer ' + bearerToken
+        },
+        contentType: false,
+        processData: false,
+        beforeSend: function() {
+          button.prop('disabled', true);
+          spinner.removeClass('d-none');
+          buttonText.addClass('d-none');
+          // showloading('Wait', 'saving......');
+        },
+        success: function(response) {
+
+          button.prop('disabled', false);
+          spinner.addClass('d-none');
+          buttonText.removeClass('d-none');
+
+          if (response.status === 'success') {
+            $('#DeleteData')[0].reset();
+            $('#tableData').load(location.href + " #tableData > *");
+            $('.close_dell_model').trigger('click');
+            if (response.logout) {
+              setTimeout(function() {
+                window.location.href = '/logout';
+              }, 2000);
+            }
+
+          } else if (response.status === 'error') {
+            showAlert("Warning", "Please fill the form correctly", response.status);
+            console.log(response.message);
+            $('.error-label').remove();
+
+            $.each(response.message, function(field, errorMessages) {
+              var inputField = $('input[name="' + field + '"]');
+
+              $.each(errorMessages, function(index, errorMessage) {
+                var errorLabel = $('<label class="error-label text-danger">* ' + errorMessage + '</label>');
+                inputField.addClass('error');
+                inputField.after(errorLabel);
+              });
+            });
+
+          }
+        },
+        error: function(xhr, status, error) {
+          console.log(status);
+
+          button.prop('disabled', false);
+          spinner.addClass('d-none');
+          buttonText.removeClass('d-none');
+          showAlert("warning", 'Request Can not Procceed', 'Can not Procceed furhter');
+        }
+      });
+    });
+
+    // get users api .....
+    $(document).on('click', '#btn_edit_user', function() {
+      var id = $(this).data('user_id');
+      var apiname = $(this).data('api_name');
+      var apiurl = "{{ end_url('') }}" + apiname;
+      var bearerToken = "{{session('user')}}";
+      $.ajax({
+        url: apiurl + '?id=' + id,
+        type: 'GET',
+        data: {
+          'id': id
+        },
+        headers: {
+          'Authorization': 'Bearer ' + bearerToken
+        },
+        contentType: false,
+        processData: false,
+        beforeSend: function() {
+          $('#addUsers #btn_save').css('background-color', '#233A85');
+          $('#addUsers').modal('show');
+          $('#btn_save #spinner').removeClass('d-none');
+          $('#btn_save #add_btn').addClass('d-none');
+          // showloading('Wait', 'loading......');
+        },
+        success: function(response) {
+
+          if (response.status === 'success') {
+
+            let responseData = response.data[0];
+            let formattedDateTime = moment(responseData.created_at).format("YYYY-MM-DDTHH:mm");
+            $('#addUsers #btn_save').html('<div class="spinner-border spinner-border-sm text-white d-none" id="spinner"></div><span id="add_btn">' + "{{ trans('lang.update') }}" + '</span>').css('background-color', '#184A45');
+            if (responseData.user_pic) {
+              $('#addUsers #user_pic').attr('src', "{{ asset('storage') }}/" + responseData.user_pic).removeClass('d-none');
+            } else {
+              $('#addUsers #user_pic').attr('src', "assets/images/user.png").removeClass('d-none');
+            }
+            if (responseData.com_pic) {
+              $('#addUsers #com_pic').attr('src', "{{ asset('storage') }}/" + responseData.com_pic).removeClass('d-none');
+            } else {
+              $('#addUsers #com_pic').attr('src', "assets/images/user.png").removeClass('d-none');
+            }
+            $('#addUsers #id').val(responseData.id);
+            $('#addUsers #admin_id').val(responseData.admin_id);
+            $('#addUsers #role').val(responseData.role);
+            $('#addUsers #name').val(responseData.name);
+            $('#addUsers #phone').val(responseData.phone);
+            $('#addUsers #email').val(responseData.email);
+            $('#addUsers #com_name').val(responseData.com_name);
+            $('#addUsers #address').val(responseData.address);
+            $('#addUsers #joining_date').val(formattedDateTime);
+
+            $('#spinner').addClass('d-none');
+            $('#add_btn').removeClass('d-none');
+          } else {
+            showAlert("Warning", response.message, response.status);
+          }
+        },
+        error: function(xhr, status, error) {
+          $('#spinner').addClass('d-none');
+          $('#add_btn').removeClass('d-none');
+          showAlert("Error", status, error);
+        }
+      });
+
+      function showAlert(title, message, type) {
+        swal({
+          title: title,
+          text: message,
+          icon: type,
+          showClass: {
+            popup: 'swal2-show',
+            backdrop: 'swal2-backdrop-show',
+            icon: 'swal2-icon-show'
+          },
+          hideClass: {
+            popup: 'swal2-hide',
+            backdrop: 'swal2-backdrop-hide',
+            icon: 'swal2-icon-hide'
+          },
+          onOpen: function() {
+            $('.swal2-popup').css('animation', 'swal2-show 0.5s');
+          },
+          onClose: function() {
+            $('.swal2-popup').css('animation', 'swal2-hide 0.5s');
+          }
+        });
+
+      }
+
+    });
   </script>

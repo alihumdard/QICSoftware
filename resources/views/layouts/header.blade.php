@@ -137,6 +137,11 @@ $notifications = NULL;
     body {
       zoom: 90%;
     }
+
+    .menu-acitve {
+      background-color: #B0B8B4FF !important;
+      border-left: 5px solid #E45F00 !important;
+    }
   </style>
   <!-- <link rel="stylesheet" href="https://cdn.datatables.net/1.13.5/css/jquery.dataTables.min.css"> -->
   <!-- <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit" type="text/javascript"></script> -->
@@ -170,7 +175,7 @@ $notifications = NULL;
     <ul class="nav-list pl-0 sidebar_list">
       @if(view_permission('index'))
       <li>
-        <a href="{{ '/' }}">
+        <a href="{{ '/' }}"  {{(request()->routeIs('/')) ? 'menu-acitve' : ''}}>
           <i class="mt-3 ml-3">
             <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path fill-rule="evenodd" clip-rule="evenodd" d="M15.317 0H12.3519C11.115 0 10.1237 1.035 10.1237 2.3049V5.373C10.1237 6.65099 11.115 7.67699 12.3519 7.67699H15.317C16.5452 7.67699 17.5452 6.65099 17.5452 5.373V2.3049C17.5452 1.035 16.5452 0 15.317 0ZM2.22823 1.7589e-05H5.19336C6.43029 1.7589e-05 7.42159 1.03502 7.42159 2.30492V5.37301C7.42159 6.65101 6.43029 7.67701 5.19336 7.67701H2.22823C1.00007 7.67701 0 6.65101 0 5.37301V2.30492C0 1.03502 1.00007 1.7589e-05 2.22823 1.7589e-05ZM2.22823 10.3229H5.19336C6.43029 10.3229 7.42159 11.3498 7.42159 12.6278V15.6959C7.42159 16.9649 6.43029 17.9999 5.19336 17.9999H2.22823C1.00007 17.9999 0 16.9649 0 15.6959V12.6278C0 11.3498 1.00007 10.3229 2.22823 10.3229ZM12.3519 10.3229H15.317C16.5452 10.3229 17.5452 11.3498 17.5452 12.6278V15.6959C17.5452 16.9649 16.5452 17.9999 15.317 17.9999H12.3519C11.115 17.9999 10.1237 16.9649 10.1237 15.6959V12.6278C10.1237 11.3498 11.115 10.3229 12.3519 10.3229Z" fill="white" />
@@ -178,23 +183,21 @@ $notifications = NULL;
           </i>
           <span class="link_name">@lang('lang.dashboard')</span>
         </a>
-        <!-- <span class="tooltip">@lang('lang.dashboard')</span> -->
       </li>
       @endif
 
       @if(view_permission('quotations'))
       <li>
-        <a href="{{ route('quotations') }}">
+        <a href="{{ route('quotations') }}" class="{{(request()->routeIs('quotations')) ? 'menu-acitve' : ''}}">
           <i class="ml-3 fa-regular fa-file-lines"></i>
           <span class="link_name">@lang('lang.quotations')</span>
         </a>
-        <!-- <span class="tooltip">@lang('lang.routes')</span> -->
       </li>
       @endif
 
       @if(view_permission('contracts'))
       <li>
-        <a href="{{ route('contracts') }}">
+        <a href="{{ route('contracts') }}" class="{{(request()->routeIs('contracts')) ? 'menu-acitve' : ''}}" >
           <i class="ml-3 fa-solid fa-file-signature" style="color: #fefffa;"></i>
           <span class="link_name">@lang('lang.contracts')</span>
         </a>
@@ -203,7 +206,7 @@ $notifications = NULL;
 
       @if(view_permission('invoices'))
       <li>
-        <a href="{{ route('invoices') }}">
+        <a href="{{ route('invoices') }}" class="{{(request()->routeIs('invoices')) ? 'menu-acitve' : ''}}" >
           <i class=" ml-3 fa-solid fa-receipt"></i>
           <span class="link_name">@lang('lang.invoices')</span>
         </a>
