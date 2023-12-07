@@ -175,7 +175,7 @@ $notifications = NULL;
     <ul class="nav-list pl-0 sidebar_list">
       @if(view_permission('index'))
       <li>
-        <a href="{{ '/' }}"  {{(request()->routeIs('/')) ? 'menu-acitve' : ''}}>
+        <a href="{{ route('dashboard') }}" class="{{(request()->routeIs('dashboard')) ? 'menu-acitve' : ''}}">
           <i class="mt-3 ml-3">
             <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path fill-rule="evenodd" clip-rule="evenodd" d="M15.317 0H12.3519C11.115 0 10.1237 1.035 10.1237 2.3049V5.373C10.1237 6.65099 11.115 7.67699 12.3519 7.67699H15.317C16.5452 7.67699 17.5452 6.65099 17.5452 5.373V2.3049C17.5452 1.035 16.5452 0 15.317 0ZM2.22823 1.7589e-05H5.19336C6.43029 1.7589e-05 7.42159 1.03502 7.42159 2.30492V5.37301C7.42159 6.65101 6.43029 7.67701 5.19336 7.67701H2.22823C1.00007 7.67701 0 6.65101 0 5.37301V2.30492C0 1.03502 1.00007 1.7589e-05 2.22823 1.7589e-05ZM2.22823 10.3229H5.19336C6.43029 10.3229 7.42159 11.3498 7.42159 12.6278V15.6959C7.42159 16.9649 6.43029 17.9999 5.19336 17.9999H2.22823C1.00007 17.9999 0 16.9649 0 15.6959V12.6278C0 11.3498 1.00007 10.3229 2.22823 10.3229ZM12.3519 10.3229H15.317C16.5452 10.3229 17.5452 11.3498 17.5452 12.6278V15.6959C17.5452 16.9649 16.5452 17.9999 15.317 17.9999H12.3519C11.115 17.9999 10.1237 16.9649 10.1237 15.6959V12.6278C10.1237 11.3498 11.115 10.3229 12.3519 10.3229Z" fill="white" />
@@ -197,7 +197,7 @@ $notifications = NULL;
 
       @if(view_permission('contracts'))
       <li>
-        <a href="{{ route('contracts') }}" class="{{(request()->routeIs('contracts')) ? 'menu-acitve' : ''}}" >
+        <a href="{{ route('contracts') }}" class="{{(request()->routeIs('contracts')) ? 'menu-acitve' : ''}}">
           <i class="ml-3 fa-solid fa-file-signature" style="color: #fefffa;"></i>
           <span class="link_name">@lang('lang.contracts')</span>
         </a>
@@ -206,7 +206,7 @@ $notifications = NULL;
 
       @if(view_permission('invoices'))
       <li>
-        <a href="{{ route('invoices') }}" class="{{(request()->routeIs('invoices')) ? 'menu-acitve' : ''}}" >
+        <a href="{{ route('invoices') }}" class="{{(request()->routeIs('invoices')) ? 'menu-acitve' : ''}}">
           <i class=" ml-3 fa-solid fa-receipt"></i>
           <span class="link_name">@lang('lang.invoices')</span>
         </a>
@@ -215,7 +215,7 @@ $notifications = NULL;
 
       @if(view_permission('users'))
       <li>
-        <a href="{{ '/users'}}">
+        <a href="{{ route('users') }}" class="{{(request()->routeIs('users')) ? 'menu-acitve' : ''}}">
           <i class="mt-3 ml-3">
             <svg width="22" height="18" viewBox="0 0 22 18" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M16.543 5.49893C17.0059 5.49893 17.4297 5.26539 17.7405 4.88785C18.0704 4.48718 18.2744 3.92745 18.2744 3.30369C18.2744 2.65093 18.2094 2.06985 17.9556 1.68087C17.7249 1.32719 17.297 1.1084 16.543 1.1084C15.7889 1.1084 15.361 1.32719 15.1303 1.68087C14.8766 2.06983 14.8115 2.65092 14.8115 3.30369C14.8115 3.92749 15.0156 4.48721 15.3455 4.88789C15.6563 5.26542 16.08 5.49893 16.543 5.49893ZM18.4018 5.43166C17.9304 6.00417 17.2735 6.35831 16.543 6.35831C15.8124 6.35831 15.1555 6.00419 14.6842 5.43169C14.2319 4.88236 13.9521 4.12961 13.9521 3.30368C13.9521 2.50677 14.046 1.77532 14.4119 1.21426C14.8009 0.617907 15.4536 0.249023 16.543 0.249023C17.6323 0.249023 18.285 0.617907 18.674 1.21426C19.04 1.77531 19.1338 2.50678 19.1338 3.30368C19.1338 4.12961 18.8541 4.88236 18.4018 5.43166Z" fill="white" />
@@ -233,7 +233,7 @@ $notifications = NULL;
 
       @if(view_permission('admins'))
       <li>
-        <a href="{{'/admins'}}">
+        <a href="{{ route('admins') }}" class="{{(request()->routeIs('admins')) ? 'menu-acitve' : ''}}">
           <i class="mt-3 ml-3">
             <svg width="15" height="22" viewBox="0 0 15 22" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path fill-rule="evenodd" clip-rule="evenodd" d="M2.71206 18.615H6.60217V14.7249C4.55965 14.9507 2.93787 16.5725 2.71206 18.615ZM7.58141 14.7249V18.615H11.4715C11.2457 16.5725 9.62393 14.9507 7.58141 14.7249ZM11.4716 19.5942C11.4032 20.2135 11.2066 20.7934 10.9092 21.3076L11.7568 21.7979C12.2154 21.0052 12.4776 20.0848 12.4776 19.1046C12.4776 16.1301 10.0663 13.7188 7.09179 13.7188C4.11728 13.7188 1.70593 16.1301 1.70593 19.1046C1.70593 20.0848 1.96822 21.0052 2.42676 21.7979L3.27439 21.3076C2.97695 20.7934 2.78041 20.2135 2.71201 19.5942H11.4716Z" fill="white" />
@@ -252,7 +252,7 @@ $notifications = NULL;
 
       @if(view_permission('super_admins'))
       <li>
-        <a href="{{'/superAdmins'}}">
+        <a href="{{ route('superAdmins') }}" class="{{(request()->routeIs('superAdmins')) ? 'menu-acitve' : ''}}">
           <i class="mt-3 ml-3">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M18.1401 21.62C17.2601 21.88 16.2201 22 15.0001 22H9.00011C7.78011 22 6.74011 21.88 5.86011 21.62C6.08011 19.02 8.75011 16.97 12.0001 16.97C15.2501 16.97 17.9201 19.02 18.1401 21.62Z" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
@@ -267,7 +267,7 @@ $notifications = NULL;
 
       @if(view_permission('revenue'))
       <li>
-        <a href="{{'/revenue'}}">
+        <a href="{{ route('revenue') }}" class="{{(request()->routeIs('revenue')) ? 'menu-acitve' : ''}}">
           <i class="ml-3 fas fa-coins"></i>
           <span class="link_name">@lang('Revenue')</span>
         </a>
@@ -276,7 +276,7 @@ $notifications = NULL;
 
       @if(view_permission('currencies'))
       <li>
-        <a href="{{'/currencies'}}">
+        <a href="{{ route('currencies') }}" class="{{(request()->routeIs('currencies')) ? 'menu-acitve' : ''}}">
           <i class=" ml-3 fas fa-money-bill"></i>
           <span class="link_name">@lang('Currencies')</span>
         </a>
@@ -285,7 +285,7 @@ $notifications = NULL;
 
       @if(view_permission('locations'))
       <li>
-        <a href="{{'/locations'}}">
+        <a href="{{ route('locations') }}" class="{{(request()->routeIs('locations')) ? 'menu-acitve' : ''}}">
           <i class=" ml-3 fas fa-map-marker-alt"></i>
           <span class="link_name">@lang('Locations')</span>
         </a>
@@ -294,7 +294,7 @@ $notifications = NULL;
 
       @if(view_permission('services'))
       <li>
-        <a href="{{'/services'}}">
+        <a href="{{ route('services') }}" class="{{(request()->routeIs('services')) ? 'menu-acitve' : ''}}">
           <i class=" ml-3 fas fa-people-arrows"></i>
           <span class="link_name">@lang('Services')</span>
         </a>
@@ -303,7 +303,7 @@ $notifications = NULL;
 
       @if(view_permission('transactional'))
       <li>
-        <a href="{{'/transactional'}}">
+        <a href="{{ route('transactional') }}" class="{{(request()->routeIs('transactional')) ? 'menu-acitve' : ''}}">
           <i class=" ml-3 fa-solid fa-envelope-open-text"></i>
           <span class="link_name">@lang('Transactional')</span>
         </a>
@@ -312,7 +312,7 @@ $notifications = NULL;
 
       @if(view_permission('settings'))
       <li>
-        <a href="{{'/settings'}}">
+        <a href="{{ route('settings') }}" class="{{(request()->routeIs('settings')) ? 'menu-acitve' : ''}} scroll-item">
           <i class="mt-3 ml-3">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path fill-rule="evenodd" clip-rule="evenodd" d="M20.4023 13.5801C20.76 13.7701 21.036 14.0701 21.2301 14.3701C21.6083 14.9901 21.5776 15.7501 21.2097 16.4201L20.4943 17.6201C20.1162 18.2601 19.411 18.6601 18.6855 18.6601C18.3278 18.6601 17.9292 18.5601 17.6022 18.3601C17.3365 18.1901 17.0299 18.1301 16.7029 18.1301C15.6911 18.1301 14.8429 18.9601 14.8122 19.9501C14.8122 21.1001 13.872 22.0001 12.6968 22.0001H11.3069C10.1215 22.0001 9.18125 21.1001 9.18125 19.9501C9.16081 18.9601 8.31259 18.1301 7.30085 18.1301C6.96361 18.1301 6.65702 18.1901 6.40153 18.3601C6.0745 18.5601 5.66572 18.6601 5.31825 18.6601C4.58245 18.6601 3.87729 18.2601 3.49917 17.6201L2.79402 16.4201C2.4159 15.7701 2.39546 14.9901 2.77358 14.3701C2.93709 14.0701 3.24368 13.7701 3.59115 13.5801C3.87729 13.4401 4.06125 13.2101 4.23498 12.9401C4.74596 12.0801 4.43937 10.9501 3.57071 10.4401C2.55897 9.87012 2.23194 8.60012 2.81446 7.61012L3.49917 6.43012C4.09191 5.44012 5.35913 5.09012 6.38109 5.67012C7.27019 6.15012 8.425 5.83012 8.9462 4.98012C9.10972 4.70012 9.20169 4.40012 9.18125 4.10012C9.16081 3.71012 9.27323 3.34012 9.4674 3.04012C9.84553 2.42012 10.5302 2.02012 11.2763 2.00012H12.7172C13.4735 2.00012 14.1582 2.42012 14.5363 3.04012C14.7203 3.34012 14.8429 3.71012 14.8122 4.10012C14.7918 4.40012 14.8838 4.70012 15.0473 4.98012C15.5685 5.83012 16.7233 6.15012 17.6226 5.67012C18.6344 5.09012 19.9118 5.44012 20.4943 6.43012L21.179 7.61012C21.7718 8.60012 21.4447 9.87012 20.4228 10.4401C19.5541 10.9501 19.2475 12.0801 19.7687 12.9401C19.9322 13.2101 20.1162 13.4401 20.4023 13.5801ZM9.10972 12.0101C9.10972 13.5801 10.4076 14.8301 12.0121 14.8301C13.6165 14.8301 14.8838 13.5801 14.8838 12.0101C14.8838 10.4401 13.6165 9.18012 12.0121 9.18012C10.4076 9.18012 9.10972 10.4401 9.10972 12.0101Z" fill="white" />
@@ -587,97 +587,107 @@ $notifications = NULL;
       </nav>
       <!-- partial -->
 
-      <!-- partial:partials/_sidebar.html -->
+  <!-- partial:partials/_sidebar.html -->
+  <script>
+    $(document).ready(function() {
+      let activeMenuItem = $(document).find('.menu-acitve');
+      if (activeMenuItem.length) {
+        let position = activeMenuItem.offset().top;
+        $('.sidebar').animate({
+          scrollTop: position
+        }, 800);
+      }
+    });
+  </script>
 
+  <script>
+    // Show the preloader when the page starts loading
+    showPreloader();
 
-      <script>
-        // Show the preloader when the page starts loading
-        showPreloader();
+    // Hide the preloader when the page finishes loading
+    $(window).on('load', function() {
+      hidePreloader();
+    });
 
-        // Hide the preloader when the page finishes loading
-        $(window).on('load', function() {
-          hidePreloader();
-        });
+    function showPreloader() {
+      $('.preloader').show(); // Show the preloader element
+    }
 
-        function showPreloader() {
-          $('.preloader').show(); // Show the preloader element
+    function hidePreloader() {
+      $('.preloader').fadeOut('fast', function() {
+        $(this).remove();
+      });
+    }
+  </script>
+  <script>
+    window.onload = function() {
+      const sidebar = document.querySelector(".sidebar");
+      const closeBtn = document.querySelector(".btn-menu-openClose");
+      const searchBtn = document.querySelector(".bx-search");
+
+      // Initial check for screen size and adjust sidebar accordingly
+      if (window.innerWidth >= 992) {
+        sidebar.classList.add("open");
+        setLargeScreenStyles();
+      }
+
+      closeBtn.addEventListener("click", function() {
+        sidebar.classList.toggle("open");
+        menuBtnChange();
+      });
+
+      function menuBtnChange() {
+        if (sidebar.classList.contains("open")) {
+          setLargeScreenStyles();
+        } else {
+          setSmallScreenStyles();
         }
+      }
 
-        function hidePreloader() {
-          $('.preloader').fadeOut('fast', function() {
-            $(this).remove();
-          });
+      function setLargeScreenStyles() {
+        sidebar.style.width = "250px";
+        closeBtn.classList.replace("menu", "menu-alt-right");
+        $('#logo-name').removeClass('d-none');
+        $('#logo-full-img').removeClass('d-none');
+        $('#logo-img').addClass('d-none');
+        $('#profile_img').addClass('pl-5');
+        $('#profile_img').removeClass('pl-3');
+        $('#close-icon').removeClass('d-none');
+        $('#open-icon').addClass('d-none');
+        $('.btn-menu-openClose').css('left', 235);
+        $('.btn-menu-openClose').css('top', 82);
+        $('#logout_btn').addClass('d-block');
+        $('#logout_btn').removeClass('d-none');
+        $('#logout_icon').removeClass('d-block');
+        $('#logout_icon').addClass('d-none');
+      }
+
+      function setSmallScreenStyles() {
+        sidebar.style.width = "78px";
+        closeBtn.classList.replace("menu-alt-right", "menu");
+        $('#logo-name').addClass('d-none');
+        $('#logo-full-img').addClass('d-none');
+        $('#logo-img').removeClass('d-none');
+        $('#profile_img').addClass('pl-3');
+        $('#profile_img').removeClass('pl-5');
+        $('#close-icon').addClass('d-none');
+        $('#open-icon').removeClass('d-none');
+        $('.btn-menu-openClose').css('left', 63);
+        $('.btn-menu-openClose').css('top', 73);
+        $('#logout_btn').removeClass('d-block');
+        $('#logout_btn').addClass('d-none');
+        $('#logout_icon').addClass('d-block');
+      }
+
+      // Listen for window resize events to update sidebar behavior
+      window.addEventListener("resize", function() {
+        if (window.innerWidth >= 992) {
+          sidebar.classList.add("open");
+          setLargeScreenStyles();
+        } else {
+          sidebar.classList.remove("open");
+          setSmallScreenStyles();
         }
-      </script>
-      <script>
-        window.onload = function() {
-          const sidebar = document.querySelector(".sidebar");
-          const closeBtn = document.querySelector(".btn-menu-openClose");
-          const searchBtn = document.querySelector(".bx-search");
-
-          // Initial check for screen size and adjust sidebar accordingly
-          if (window.innerWidth >= 992) {
-            sidebar.classList.add("open");
-            setLargeScreenStyles();
-          }
-
-          closeBtn.addEventListener("click", function() {
-            sidebar.classList.toggle("open");
-            menuBtnChange();
-          });
-
-          function menuBtnChange() {
-            if (sidebar.classList.contains("open")) {
-              setLargeScreenStyles();
-            } else {
-              setSmallScreenStyles();
-            }
-          }
-
-          function setLargeScreenStyles() {
-            sidebar.style.width = "250px";
-            closeBtn.classList.replace("menu", "menu-alt-right");
-            $('#logo-name').removeClass('d-none');
-            $('#logo-full-img').removeClass('d-none');
-            $('#logo-img').addClass('d-none');
-            $('#profile_img').addClass('pl-5');
-            $('#profile_img').removeClass('pl-3');
-            $('#close-icon').removeClass('d-none');
-            $('#open-icon').addClass('d-none');
-            $('.btn-menu-openClose').css('left', 235);
-            $('.btn-menu-openClose').css('top', 82);
-            $('#logout_btn').addClass('d-block');
-            $('#logout_btn').removeClass('d-none');
-            $('#logout_icon').removeClass('d-block');
-            $('#logout_icon').addClass('d-none');
-          }
-
-          function setSmallScreenStyles() {
-            sidebar.style.width = "78px";
-            closeBtn.classList.replace("menu-alt-right", "menu");
-            $('#logo-name').addClass('d-none');
-            $('#logo-full-img').addClass('d-none');
-            $('#logo-img').removeClass('d-none');
-            $('#profile_img').addClass('pl-3');
-            $('#profile_img').removeClass('pl-5');
-            $('#close-icon').addClass('d-none');
-            $('#open-icon').removeClass('d-none');
-            $('.btn-menu-openClose').css('left', 63);
-            $('.btn-menu-openClose').css('top', 73);
-            $('#logout_btn').removeClass('d-block');
-            $('#logout_btn').addClass('d-none');
-            $('#logout_icon').addClass('d-block');
-          }
-
-          // Listen for window resize events to update sidebar behavior
-          window.addEventListener("resize", function() {
-            if (window.innerWidth >= 992) {
-              sidebar.classList.add("open");
-              setLargeScreenStyles();
-            } else {
-              sidebar.classList.remove("open");
-              setSmallScreenStyles();
-            }
-          });
-        };
-      </script>
+      });
+    };
+  </script>

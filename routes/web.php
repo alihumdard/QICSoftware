@@ -43,19 +43,19 @@ Route::middleware('check.userAuthCheck')->group(function () {
     Route::match(['post', 'get'], '/add_invoice', [UserController::class, 'add_invoice'])->name('add_invoice');
 
     //other modules 
-    Route::match(['post', 'get'], '/settings', [UserController::class, 'settings']);
-    Route::match(['post', 'get'], '/lang_change', [UserController::class, 'lang_change']);
-    Route::match(['post','get'],'/currencies', [UserController::class, 'currencies']);
-    Route::match(['post','get'],'/locations', [UserController::class, 'locations']);
-    Route::match(['post','get'],'/services', [UserController::class, 'services']);
-    Route::match(['post','get'],'/revenue', [UserController::class, 'revenue']);
-    Route::match(['post','get'],'/transactional', [UserController::class, 'transactionals']);
+    Route::match(['post','get'], '/settings', [UserController::class, 'settings'])->name('settings');
+    Route::match(['post','get'], '/lang_change', [UserController::class, 'lang_change']);
+    Route::match(['post','get'],'/currencies', [UserController::class, 'currencies'])->name('currencies');
+    Route::match(['post','get'],'/locations', [UserController::class, 'locations'])->name('locations');
+    Route::match(['post','get'],'/services', [UserController::class, 'services'])->name('services');
+    Route::match(['post','get'],'/revenue', [UserController::class, 'revenue'])->name('revenue');
+    Route::match(['post','get'],'/transactional', [UserController::class, 'transactionals'])->name('transactional');
     Route::match(['post','get'],'/demomail', [UserController::class, 'demomail']);
 
 });
 
 // basic routes of login and registeration ...
-Route::get('/', [UserController::class, 'index']);
+Route::get('/', [UserController::class, 'index'])->name('dashboard');
 Route::match(['post', 'get'], '/login', [UserController::class, 'user_login']);
 Route::match(['post', 'get'], '/forgot_password', [UserController::class, 'forgot_password']);
 Route::match(['post', 'get'], '/set_password', [UserController::class, 'set_password']);
