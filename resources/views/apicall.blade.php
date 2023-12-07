@@ -339,11 +339,12 @@ $user = auth()->user();
 
                         } else {
                             $('#tableData').load(location.href + " #tableData > *");
-                            $('#formData').load(location.href + " #formData > *", function() {
+                            $('.apiform').load(location.href + " .apiform > *", function() {
                                 destory_summernote('.summernote');
                                 init_summernote('.summernote', simple_toolbar);
                             });
                             $('#closeicon').trigger('click');
+                            $('.close-serviceModel').trigger('click');
                         }
 
                         $('#addclient').modal('hide');

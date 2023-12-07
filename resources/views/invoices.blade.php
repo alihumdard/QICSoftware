@@ -125,36 +125,21 @@ $qouteStatus_trans = config('constants.QUOTE_STATUS_' . app()->getLocale());
                     </span>
                   </td>
                   <td>
-                    <button class="btn btn_status_q">
-                      @if ($value['status'] == $qouteStatus['In Progress'])
-                      <span data-qoute_id="{{$value['id']}}">
-                        <div class="bg-info text-white f-w-bold rounded-1" style="width: 100%; height: 100%; padding-top: 7px; padding-bottom: 7px; padding-left: 12px; padding-right: 13px; justify-content: center; align-items: center; display: inline-flex">
-                          <div style="text-align: center; font-size: 14px; font-weight:700; word-wrap: break-word">{{$qouteStatus_trans[$value['status']]}}</div>
-                        </div>
+                    <button class="btn btn_status_change">
+                      <span data-row_id="{{$value['id']}}">
+                        <div class="{{ 
+                                        ($value['status'] == $qouteStatus['In Progress']) ? 'bg-info' :
+                                        (($value['status'] == $qouteStatus['Pending']) ? 'bg-secondary' :
+                                        (($value['status'] == $qouteStatus['Completed']) ? 'bg-success' :
+                                        (($value['status'] == $qouteStatus['Deleted']) ? 'bg-danger' :
+                                        ''))) 
+                                    }}
+                                    text-white f-w-bold rounded-1" style="width: 100%; height: 100%; padding-top: 7px; padding-bottom: 7px; padding-left: 12px; padding-right: 13px; justify-content: center; align-items: center; display: inline-flex">
+                          <div style="text-align: center; font-size: 12px; font-weight: 700; word-wrap: break-word">{{$qouteStatus_trans[$value['status']]}}</div>
+                        </div>  
                       </span>
-                      @elseif ($value['status'] == $qouteStatus['Pending'])
-                      <span data-qoute_id="{{$value['id']}}">
-                        <div class="bg-secondary text-white f-w-bold rounded-1 " style="width: 100%; height: 100%; padding-top: 7px; padding-bottom: 7px; padding-left: 23px; padding-right: 23px; justify-content: center; align-items: center; display: inline-flex">
-                          <div style="text-align: center;  font-size: 14px; font-weight: 700; word-wrap: break-word">{{$qouteStatus_trans[$value['status']]}}</div>
-                        </div>
-                      </span>
-                      @elseif ($value['status'] == $qouteStatus['Completed'])
-                      <span data-qoute_id="{{$value['id']}}">
-                        <div class="bg-success text-white f-w-bold rounded-1" style="width: 100%; height: 100%; padding-top: 7px; padding-bottom: 7px; padding-left: 15px; padding-right: 13px; justify-content: center; align-items: center; display: inline-flex">
-                          <div style="font-size: 14px; font-weight: 700; word-wrap: break-word">{{$qouteStatus_trans[$value['status']]}}</div>
-                        </div>
-                      </span>
-                      @elseif ($value['status'] == $qouteStatus['Deleted'])
-                      <span data-qoute_id="{{$value['id']}}">
-                        <div class="bg-danger text-white f-w-bold rounded-1" style="width: 100%; height: 100%; padding-top: 7px; padding-bottom: 7px; padding-left: 25px; padding-right: 25px;   justify-content: center; align-items: center; display: inline-flex">
-                          <div style="text-align: center; font-size: 14px; font-weight: 700; word-wrap: break-word">{{$qouteStatus_trans[$value['status']]}}</div>
-                        </div>
-                      </span>
-                      @endif
                     </button>
                   </td>
-
-
                   <td class="">
                     <div class="d-flex my-auto">
 
@@ -171,7 +156,6 @@ $qouteStatus_trans = config('constants.QUOTE_STATUS_' . app()->getLocale());
                       </form>
                       @endif
                       <a href="{{ asset($value['file'])}}" download="Invoice{{$value['id']}}_for_{{$value['client_name']}}">
-
                         <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
                           <circle opacity="0.1" cx="18" cy="18" r="18" fill="#452C88" />
                           <path d="M23.2857 12.8571V12H20.7143V16.2857H21.5714V14.5714H22.8572V13.7143H21.5714V12.8571H23.2857Z" fill="#452C88" />
@@ -275,47 +259,6 @@ $qouteStatus_trans = config('constants.QUOTE_STATUS_' . app()->getLocale());
   </div>
 </div>
 
-
-<!-- Invoice Status Modal -->
-<div class="modal fade" id="qoute_sts_modal" tabindex="-1" aria-labelledby="user_stsLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content bg-white" style="border-radius: 10px;">
-      <div class="modal-header pb-0" style="border: none;">
-        <h5 class="modal-title" id="user_stsLabel"></h5>
-        <button type="button" id="closeicon" class="close" data-bs-dismiss="modal" aria-label="Close">
-          <svg width="40" height="40" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M28 16L16 28M16 16L28 28" stroke="#667085" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-          </svg>
-        </button>
-      </div>
-
-      <form id="formData" method="post" action="invoiceStatus">
-        <input type="hidden" id="qoute_id" name="id">
-        <div class="modal-body pt-0">
-          <svg width="56" height="56" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect x="4" y="4" width="48" height="48" rx="24" fill="#D1FADF" />
-            <path d="M23.5 28L26.5 31L32.5 25M38 28C38 33.5228 33.5228 38 28 38C22.4772 38 18 33.5228 18 28C18 22.4772 22.4772 18 28 18C33.5228 18 38 22.4772 38 28Z" stroke="#039855" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-            <rect x="4" y="4" width="48" height="48" rx="24" stroke="#ECFDF3" stroke-width="8" />
-          </svg>
-          <select name="status" id="status" class="form-select mt-3">
-            <option disabled selected> select status </option>
-            @foreach($qouteStatus_trans as $key => $value)
-            <option value="{{$key}}">{{ $value }}</option>
-            @endforeach
-          </select>
-        </div>
-        <div class="modal-footer">
-          <button class="btn btn-sm text-white px-5" id="change_sts" type="submit" style="background-color: #233A85; border-radius: 8px;">
-            <div class="spinner-border spinner-border-sm text-white d-none" id="spinner"></div>
-            <span id="add_btn">@lang('lang.ok')</span>
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
-<!-- Invoice Status Modal End -->
-
 @if($user->role == user_roles('1'))
 <script>
   var users_table = $('#qoute-table').DataTable({});
@@ -355,22 +298,12 @@ $qouteStatus_trans = config('constants.QUOTE_STATUS_' . app()->getLocale());
   });
 </script>
 @endif
-<script>
-  function downloadPDF() {
-    // Create a link element
-    var link = document.createElement('a');
 
-    // Set the link's attributes
-    link.href = pdfUrl;
-    link.target = '_blank';
-    link.download = 'pdf_templates.pdf';
-
-    // Simulate a click on the link to trigger the download
-    link.click();
-  }
-</script>
 @include('invoicedetail_modal')
 @include('invoiceMail_modal')
 @include('snaktoast')
-
+@php
+$status_api = 'invoiceStatus';
+@endphp
+@include('services_statusModel')
 @endsection
