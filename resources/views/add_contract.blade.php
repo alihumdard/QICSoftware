@@ -213,7 +213,18 @@
                                 <span>@lang('Upload')</span>
                             </label>
                             <input type="file" id="q_file" name="file" style="display: none;">
-                            <p class="float-right mr-3 file-uploaded d-none text-success" style="font-size: smaller; margin-top:-5px;">@lang('File Uploaded') <i class="fas fa-check-circle fa-lg"></i></p>
+                            <p class="float-right mr-1 file-uploaded d-none text-success" style="font-size: smaller; margin-top:-5px;">@lang('File Uploaded') <i class="fas fa-check-circle fa-lg"></i></p>
+                            <span id="q_file_error" class="error-message text-danger"></span>
+                            @if($data['file'] ?? NULL)
+                            <p class="float-right  text-black previous-file" style="font-size: smaller; margin-top:-9px;"><span class="mr-2">@lang('* Pervious File ')</span>                         
+                            <a class="text-info" href="{{ asset($data['file']) }}" target="_blank">
+                                <i class="fa fa-eye"></i> 
+                            </a>
+                            <a class="text-secondary text-bold bold btn btn-link" href="{{ asset($data['file']) }}" download="Contract{{$data['id']}}_for_{{$data['client_name']}}" target="_blank" >
+                                <i class="fa fa-download"></i> 
+                            </a>
+                            </p>
+                            @endif
                         </div>
                     </div>
 
@@ -249,6 +260,7 @@
             var fileUploadedParagraph = $('.file-uploaded');
             if ($(this).prop('files').length > 0) {
                 fileUploadedParagraph.removeClass('d-none');
+                $('.previous-file').addClass('d-none');
             } else {
                 fileUploadedParagraph.addClass('d-none');
             }
@@ -297,6 +309,8 @@
             var q_amount = $('#q_amount').val();
             var currency_code = $('#currency_code').val();
             var location = $('#location').val();
+            var q_file = $('#q_file').val();
+
 
             // Reset error messages
             $('.error-message text-danger').text('');
@@ -351,6 +365,11 @@
                 event.preventDefault();
             }
 
+            if (q_file == '') {
+                $('#q_file_error').text('*Please select file');
+                event.preventDefault();
+            }
+
         });
 
 
@@ -395,6 +414,10 @@
             $('#location_error').text('');
         });
 
+        $('#q_file').on('change', function() {
+            $('#q_file_error').text('');
+            $('.previous-file').addClass('d-none');
+        });
     });
 
     function getUsers(clientId) {

@@ -194,8 +194,6 @@
   </div>
   <!-- User Status Modal End -->
 
-
-
   <!-- Delete admin Modal -->
   <div class="modal fade" id="userDeleteModal" tabindex="-1" aria-labelledby="deleteAdminLabel" aria-hidden="true">
     <div class="modal-dialog">

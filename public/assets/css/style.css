@@ -20454,9 +20454,9 @@ dl li {
   padding: 0;
 }
 
-@media (min-width: 991px){
-  .navbar .navbar-menu-wrapper .navbar-nav .nav-item.dropdown .dropdown-menu.navbar-dropdown{
-  left: -218px !important;
+@media (min-width: 991px) {
+  .navbar .navbar-menu-wrapper .navbar-nav .nav-item.dropdown .dropdown-menu.navbar-dropdown {
+    left: -218px !important;
   }
 }
 
@@ -20829,60 +20829,60 @@ dl li {
 /* Sidebar */
 @import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
 
-:root{
+:root {
 
-  --color-second:#424242;
-  --color-white:#fff;
-  --color-body:#e4e9f7;
-  --color-light:#e0e0e0;
+  --color-second: #424242;
+  --color-white: #fff;
+  --color-body: #e4e9f7;
+  --color-light: #e0e0e0;
 }
 
 
-*{
+* {
   padding: 0%;
   margin: 0%;
   box-sizing: border-box;
   font-family: 'Poppins', sans-serif;
 }
 
-body{
+body {
   min-height: 100vh;
 }
 
-.sidebar{
+.sidebar {
   height: 115vh;
   overflow-y: auto;
   overflow-x: hidden;
   width: 78px;
   padding: 10px 0px 10px 0px;
   /* z-index: 99; */
-  background-color:#184A45FF;
+  background-color: #184A45FF;
   transition: all .5s ease;
   position: fixed;
-  top:0;
+  top: 0;
   left: 0;
 }
 
-.sidebar.open{
+.sidebar.open {
   width: 260px;
 }
 
-.sidebar .logo_details{
+.sidebar .logo_details {
   height: 60px;
   display: flex;
   align-items: center;
   position: relative;
 }
 
-.sidebar .logo_details .icon{
+.sidebar .logo_details .icon {
   opacity: 0;
-  transition: all 0.5s ease ;
+  transition: all 0.5s ease;
 }
 
 
 
-.sidebar .logo_details .logo_name{
-  color:white;
+.sidebar .logo_details .logo_name {
+  color: white;
   font-size: 22px;
   font-weight: 600;
   opacity: 0;
@@ -20890,13 +20890,13 @@ body{
 }
 
 .sidebar.open .logo_details .icon,
-.sidebar.open .logo_details .logo_name{
+.sidebar.open .logo_details .logo_name {
   opacity: 1;
 }
 
-.sidebar .logo_details #btn{
+.sidebar .logo_details #btn {
   position: absolute;
-  top:50%;
+  top: 50%;
   right: 0;
   transform: translateY(-50%);
   font-size: 23px;
@@ -20905,12 +20905,12 @@ body{
   transition: all .5s ease;
 }
 
-.sidebar.open .logo_details #btn{
+.sidebar.open .logo_details #btn {
   text-align: right;
 }
 
-.sidebar i{
-  color:white;
+.sidebar i {
+  color: white;
   height: 60px;
   line-height: 60px;
   min-width: 50px;
@@ -20918,22 +20918,22 @@ body{
   text-align: center;
 }
 
-.sidebar .nav-list{
+.sidebar .nav-list {
   margin-top: 20px;
   /* height: 100%; */
   line-height: 60px;
 }
 
-.sidebar li{
+.sidebar li {
   position: relative;
-  margin:8px 0;
+  margin: 8px 0;
   list-style: none;
 }
 
-.sidebar li .tooltip{
+.sidebar li .tooltip {
   position: absolute;
-  top:-20px;
-  left:calc(100% + 15px);
+  top: -20px;
+  left: calc(100% + 15px);
   z-index: 3;
   background-color: white;
   box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
@@ -20946,21 +20946,21 @@ body{
   pointer-events: none;
 }
 
-.sidebar li:hover .tooltip{
+.sidebar li:hover .tooltip {
   opacity: 1;
   pointer-events: auto;
   transition: all 0.4s ease;
-  top:50%;
+  top: 50%;
   transform: translateY(-50%);
 }
 
-.sidebar.open li .tooltip{
+.sidebar.open li .tooltip {
   display: none;
 }
 
 
 
-.sidebar li a{
+.sidebar li a {
   display: flex;
   height: 100%;
   width: 100%;
@@ -20971,7 +20971,7 @@ body{
   z-index: 12;
 }
 
-.sidebar li a::after{
+.sidebar li a::after {
   content: "";
   position: absolute;
   width: 100%;
@@ -20985,13 +20985,13 @@ body{
   z-index: -2;
 }
 
-.sidebar li a:hover::after{
+.sidebar li a:hover::after {
   transform: scaleX(1);
-  color:#B0B8B4FF
+  color: #B0B8B4FF
 }
 
-.sidebar li a .link_name{
-  color:var(--color-white);
+.sidebar li a .link_name {
+  color: var(--color-white);
   font-size: 15px;
   font-weight: 400;
   white-space: nowrap;
@@ -21002,43 +21002,43 @@ body{
 }
 
 .sidebar li a:hover .link_name,
-.sidebar li a:hover i{
+.sidebar li a:hover i {
   transition: all 0.5s ease;
-  color:#f1f1f1
+  color: #f1f1f1
 }
 
-.sidebar.open li a .link_name{
+.sidebar.open li a .link_name {
   opacity: 1;
   pointer-events: auto;
 }
 
-.sidebar li i{
+.sidebar li i {
   height: 35px;
   line-height: 35px;
   font-size: 18px;
   border-radius: 5px;
 }
 
-.sidebar li.profile{
+.sidebar li.profile {
   /* position: fixed; */
   height: 60px;
   width: 78px;
   left: 0;
-  bottom:-8px;
+  bottom: -8px;
   transition: all .5s ease;
 }
 
-.sidebar.open li.profile{
+.sidebar.open li.profile {
   width: 250px;
 }
 
-.sidebar li.profile .designation{
+.sidebar li.profile .designation {
   font-size: 12px;
 }
 
-.sidebar .profile #log_out{
+.sidebar .profile #log_out {
   position: absolute;
-  top:50%;
+  top: 50%;
   right: 0;
   transform: translateY(-50%);
   background-color: #B0B8B4FF;
@@ -21050,22 +21050,22 @@ body{
   transition: all 0.5s ease;
 }
 
-.sidebar.open .profile #log_out{
+.sidebar.open .profile #log_out {
   width: 50px;
   background: none;
 }
 
-.home-section{
+.home-section {
   position: relative;
-  top:0;
-  left:78px;
+  top: 0;
+  left: 78px;
   width: calc(100% - 78px);
   transition: all .5s ease;
   z-index: 2;
 }
 
-.sidebar.open ~ .home-section{
-  left:250px;
+.sidebar.open~.home-section {
+  left: 250px;
   width: calc(100% - 250px);
 }
 
@@ -21111,11 +21111,25 @@ body{
 
 .content-wrapper {
   background: #f5f5f5;
-  padding: 2.75rem 2.25rem;
+  padding: 1.75rem 1.2rem;
   width: 100%;
   -webkit-box-flex: 1;
   -ms-flex-positive: 1;
   flex-grow: 1;
+}
+
+/* Large screens (lg) */
+@media (min-width: 992px) {
+  .content-wrapper {
+    padding: 2rem 1.5rem !important;
+  }
+}
+
+/* Medium and small screens */
+@media (max-width: 991px) {
+  .content-wrapper {
+    padding: 1rem 0.55rem !important;
+  }
 }
 
 /*# sourceMappingURL=style.css.map */
@@ -21128,7 +21142,7 @@ body{
   text-align: center;
 }
 
-.content-background{
+.content-background {
   background-color: #184A45FF !important;
 }
 
@@ -21321,31 +21335,33 @@ body{
 }
 
 
-@media (max-width: 1150px)  and (min-width:767px) {
-  .progress_charts{
+@media (max-width: 1150px) and (min-width:767px) {
+  .progress_charts {
     width: 200%;
-    
+
   }
 }
 
 
 
 @media (max-width: 360px) {
-  .progress_charts{
+  .progress_charts {
     width: 200%;
-    
+
   }
 }
-@media (max-width: 760px)  and (min-width:320px) {
-  span.pro{
+
+@media (max-width: 760px) and (min-width:320px) {
+  span.pro {
     top: 50%;
-    
+
   }
 }
+
 @media (max-width: 2660px) {
-  span.pro{
+  span.pro {
     top: 35%;
-    
+
   }
 }
 
@@ -21526,18 +21542,19 @@ body{
 .wave-group .input:focus~.bar:after {
   width: 50%;
 }
- /* Style the search input */
- #users-table_filter input[type="search"] {
+
+/* Style the search input */
+#users-table_filter input[type="search"] {
   border: 1px solid #ccc;
   border-radius: 4px;
   padding: 6px;
-  box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
   width: 200px;
   font-size: 14px;
 }
 
-.sidebar_list li{
-  height: 60px ;
+.sidebar_list li {
+  height: 60px;
 }
 
 .sidebar::-webkit-scrollbar-thumb {
@@ -21550,58 +21567,74 @@ body{
   background-color: #CDCDCD;
   display: none;
 }
-.open-btn-menu{
+
+.open-btn-menu {
   position: fixed;
   z-index: 3;
   transition: left 0.5s, top 0.5s;
 }
 
-@media (max-width: 690px){
-  .open-btn-menu{
+@media (max-width: 690px) {
+  .open-btn-menu {
     z-index: 0 !important;
     display: none !important;
   }
 }
 
-input::placeholder, textarea::placeholder, select, input[type="date"]::placeholder{
+input::placeholder,
+textarea::placeholder,
+select,
+input[type="date"]::placeholder {
   opacity: 0.7 !important;
 }
+
 /* Select the disabled input element */
-input:disabled,textarea:disabled {
+input:disabled,
+textarea:disabled {
   /* Apply your desired styles here */
-  background-color: white !important; /* Example background color */
+  background-color: white !important;
+  /* Example background color */
   /* color: red !important; Example text color */
   /* border: 1px solid #ccc; Example border style */
   /* Add more styles as needed */
 }
 
-@media (max-width: 1080px)  and (min-width:992px){
-  span#procent, span#procent1, span#procent2{
+@media (max-width: 1080px) and (min-width:992px) {
+
+  span#procent,
+  span#procent1,
+  span#procent2 {
     margin-top: 25px !important;
   }
 }
 
-@media (max-width: 925px)  and (min-width:768px){
-  span#procent, span#procent1, span#procent2{
+@media (max-width: 925px) and (min-width:768px) {
+
+  span#procent,
+  span#procent1,
+  span#procent2 {
     margin-top: 18px !important;
   }
 }
 
-.add-btn{
+.add-btn {
   padding: 10px !important;
 }
 
-.select-group{
+.select-group {
   border-left: none;
 }
-@media (max-width: 575px){
-  .add-btn{
+
+@media (max-width: 575px) {
+  .add-btn {
     padding: 5px !important;
   }
-  .add-btn span{
+
+  .add-btn span {
     font-size: smaller;
   }
-  .select-group{
+
+  .select-group {
     border-left: 1px solid #DDDDDD;
   }
 }

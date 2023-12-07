@@ -139,8 +139,7 @@ $notifications = NULL;
     }
 
     .menu-acitve {
-      background-color: #B0B8B4FF !important;
-      border-left: 5px solid #E45F00 !important;
+      background-color: #C0C0C0 !important;
     }
   </style>
   <!-- <link rel="stylesheet" href="https://cdn.datatables.net/1.13.5/css/jquery.dataTables.min.css"> -->
@@ -188,7 +187,7 @@ $notifications = NULL;
 
       @if(view_permission('quotations'))
       <li>
-        <a href="{{ route('quotations') }}" class="{{(request()->routeIs('quotations')) ? 'menu-acitve' : ''}}">
+        <a href="{{ route('quotations') }}" class="{{(request()->routeIs(['quotations','add_quotation','create_quotation'])) ? 'menu-acitve' : ''}}">
           <i class="ml-3 fa-regular fa-file-lines"></i>
           <span class="link_name">@lang('lang.quotations')</span>
         </a>
@@ -197,7 +196,7 @@ $notifications = NULL;
 
       @if(view_permission('contracts'))
       <li>
-        <a href="{{ route('contracts') }}" class="{{(request()->routeIs('contracts')) ? 'menu-acitve' : ''}}">
+        <a href="{{ route('contracts') }}" class="{{(request()->routeIs(['contracts','add_contract'])) ? 'menu-acitve' : ''}}">
           <i class="ml-3 fa-solid fa-file-signature" style="color: #fefffa;"></i>
           <span class="link_name">@lang('lang.contracts')</span>
         </a>
@@ -206,7 +205,7 @@ $notifications = NULL;
 
       @if(view_permission('invoices'))
       <li>
-        <a href="{{ route('invoices') }}" class="{{(request()->routeIs('invoices')) ? 'menu-acitve' : ''}}">
+        <a href="{{ route('invoices') }}" class="{{(request()->routeIs(['invoices', 'add_invoice'])) ? 'menu-acitve' : ''}}">
           <i class=" ml-3 fa-solid fa-receipt"></i>
           <span class="link_name">@lang('lang.invoices')</span>
         </a>
@@ -359,15 +358,15 @@ $notifications = NULL;
     </ul>
   </div>
   <section class="home-section">
-    <i class="menu btn-menu-openClose open-btn-menu" id="btn" style=" cursor: pointer; top: 82; left: 63;">
-      <svg width="40" height="50" id="open-icon" viewBox="0 0 15 39" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <i class="menu btn-menu-openClose open-btn-menu" id="btn" style=" cursor: pointer;  left: 63;">
+      <!-- <svg width="40" height="50" id="open-icon" viewBox="0 0 15 39" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M0 5.19807C0 2.88825 2.50083 1.44493 4.50083 2.60048L13.5008 7.80048C14.4286 8.33651 15 9.32662 15 10.3981V28.6019C15 29.6734 14.4286 30.6635 13.5008 31.1995L4.50083 36.3995C2.50083 37.5551 0 36.1118 0 33.8019V5.19807Z" fill="#184A45FF" />
         <path d="M7.58929 16.638C7.5 16.5469 7.35714 16.5469 7.28571 16.638L6.92857 17.0026C6.83929 17.0755 6.83929 17.2214 6.92857 17.3125L8.66071 19.026L4.21429 19.026C4.10714 19.026 4 19.1172 4 19.2448L4 19.7552C4 19.8646 4.10714 19.974 4.21429 19.974L8.66071 19.974L6.92857 21.6693C6.83929 21.7604 6.83929 21.9062 6.92857 21.9792L7.28571 22.3437C7.35714 22.4349 7.5 22.4349 7.58929 22.3437L10.2321 19.6458C10.3214 19.5547 10.3214 19.4271 10.2321 19.3359L7.58929 16.638ZM11.0714 16.2187L11.0714 22.7812C11.0714 22.8906 11.1786 23 11.2857 23L11.7857 23C11.9107 23 12 22.8906 12 22.7812L12 16.2188C12 16.0911 11.9107 16 11.7857 16L11.2857 16C11.1786 16 11.0714 16.0911 11.0714 16.2187Z" fill="white" />
       </svg>
       <svg width="40" height="50" class="d-none close-btn-menu" id="close-icon" viewBox="0 0 15 37" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M0 3.21168C0 0.74256 2.50083 -0.800304 4.50083 0.434943L13.5008 5.99358C14.4286 6.56658 15 7.62497 15 8.77035L15 28.2296C15 29.375 14.4286 30.4334 13.5008 31.0064L4.50083 36.565C2.50083 37.8003 0 36.2575 0 33.7883L0 3.21168Z" fill="#184A45FF" />
         <path d="M7.41071 20.362C7.5 20.4531 7.64286 20.4531 7.71429 20.362L8.07143 19.9974C8.16071 19.9245 8.16071 19.7786 8.07143 19.6875L6.33929 17.974L10.7857 17.974C10.8929 17.974 11 17.8828 11 17.7552V17.2448C11 17.1354 10.8929 17.026 10.7857 17.026L6.33929 17.026L8.07143 15.3307C8.16071 15.2396 8.16071 15.0938 8.07143 15.0208L7.71429 14.6563C7.64286 14.5651 7.5 14.5651 7.41071 14.6563L4.7679 17.3542C4.6786 17.4453 4.6786 17.5729 4.7679 17.6641L7.41071 20.362ZM3.9286 20.7813L3.9286 14.2188C3.9286 14.1094 3.8214 14 3.7143 14H3.2143C3.0893 14 3 14.1094 3 14.2188L3 20.7812C3 20.9089 3.0893 21 3.2143 21H3.7143C3.8214 21 3.9286 20.9089 3.9286 20.7813Z" fill="white" />
-      </svg>
+      </svg> -->
     </i>
     <div class="container-scroller">
       <!-- partial:partials/_navbar.html -->
@@ -587,107 +586,107 @@ $notifications = NULL;
       </nav>
       <!-- partial -->
 
-  <!-- partial:partials/_sidebar.html -->
-  <script>
-    $(document).ready(function() {
-      let activeMenuItem = $(document).find('.menu-acitve');
-      if (activeMenuItem.length) {
-        let position = activeMenuItem.offset().top;
-        $('.sidebar').animate({
-          scrollTop: position
-        }, 800);
-      }
-    });
-  </script>
+      <!-- partial:partials/_sidebar.html -->
+      <script>
+        $(document).ready(function() {
+          let activeMenuItem = $(document).find('.menu-acitve');
+          if (activeMenuItem.length) {
+            let position = activeMenuItem.offset().top - 80;
+            $('.sidebar').animate({
+              scrollTop: position
+            }, 0);
+          }
+          // let selectedMenu = $(document).find('.menu-acitve');
+          // if (selectedMenu.length) {
+          //   let selectedPosit = selectedMenu.offset().top -80;
+          //   alert(selectedPosit)
+          //   $('.btn-menu-openClose').css('top', selectedPosit);
+          // }
+        });
 
-  <script>
-    // Show the preloader when the page starts loading
-    showPreloader();
+        showPreloader();
+        $(window).on('load', function() {
+          hidePreloader();
+        });
 
-    // Hide the preloader when the page finishes loading
-    $(window).on('load', function() {
-      hidePreloader();
-    });
-
-    function showPreloader() {
-      $('.preloader').show(); // Show the preloader element
-    }
-
-    function hidePreloader() {
-      $('.preloader').fadeOut('fast', function() {
-        $(this).remove();
-      });
-    }
-  </script>
-  <script>
-    window.onload = function() {
-      const sidebar = document.querySelector(".sidebar");
-      const closeBtn = document.querySelector(".btn-menu-openClose");
-      const searchBtn = document.querySelector(".bx-search");
-
-      // Initial check for screen size and adjust sidebar accordingly
-      if (window.innerWidth >= 992) {
-        sidebar.classList.add("open");
-        setLargeScreenStyles();
-      }
-
-      closeBtn.addEventListener("click", function() {
-        sidebar.classList.toggle("open");
-        menuBtnChange();
-      });
-
-      function menuBtnChange() {
-        if (sidebar.classList.contains("open")) {
-          setLargeScreenStyles();
-        } else {
-          setSmallScreenStyles();
+        function showPreloader() {
+          $('.preloader').show(); // Show the preloader element
         }
-      }
 
-      function setLargeScreenStyles() {
-        sidebar.style.width = "250px";
-        closeBtn.classList.replace("menu", "menu-alt-right");
-        $('#logo-name').removeClass('d-none');
-        $('#logo-full-img').removeClass('d-none');
-        $('#logo-img').addClass('d-none');
-        $('#profile_img').addClass('pl-5');
-        $('#profile_img').removeClass('pl-3');
-        $('#close-icon').removeClass('d-none');
-        $('#open-icon').addClass('d-none');
-        $('.btn-menu-openClose').css('left', 235);
-        $('.btn-menu-openClose').css('top', 82);
-        $('#logout_btn').addClass('d-block');
-        $('#logout_btn').removeClass('d-none');
-        $('#logout_icon').removeClass('d-block');
-        $('#logout_icon').addClass('d-none');
-      }
-
-      function setSmallScreenStyles() {
-        sidebar.style.width = "78px";
-        closeBtn.classList.replace("menu-alt-right", "menu");
-        $('#logo-name').addClass('d-none');
-        $('#logo-full-img').addClass('d-none');
-        $('#logo-img').removeClass('d-none');
-        $('#profile_img').addClass('pl-3');
-        $('#profile_img').removeClass('pl-5');
-        $('#close-icon').addClass('d-none');
-        $('#open-icon').removeClass('d-none');
-        $('.btn-menu-openClose').css('left', 63);
-        $('.btn-menu-openClose').css('top', 73);
-        $('#logout_btn').removeClass('d-block');
-        $('#logout_btn').addClass('d-none');
-        $('#logout_icon').addClass('d-block');
-      }
-
-      // Listen for window resize events to update sidebar behavior
-      window.addEventListener("resize", function() {
-        if (window.innerWidth >= 992) {
-          sidebar.classList.add("open");
-          setLargeScreenStyles();
-        } else {
-          sidebar.classList.remove("open");
-          setSmallScreenStyles();
+        function hidePreloader() {
+          $('.preloader').fadeOut('fast', function() {
+            $(this).remove();
+          });
         }
-      });
-    };
-  </script>
+
+        window.onload = function() {
+          const sidebar = document.querySelector(".sidebar");
+          const closeBtn = document.querySelector(".btn-menu-openClose");
+          const searchBtn = document.querySelector(".bx-search");
+
+          // Initial check for screen size and adjust sidebar accordingly
+          if (window.innerWidth >= 991) {
+            sidebar.classList.add("open");
+            setLargeScreenStyles();
+          }
+
+          closeBtn.addEventListener("click", function() {
+            sidebar.classList.toggle("open");
+            menuBtnChange();
+          });
+
+          function menuBtnChange() {
+            if (sidebar.classList.contains("open")) {
+              setLargeScreenStyles();
+            } else {
+              setSmallScreenStyles();
+            }
+          }
+
+          function setLargeScreenStyles() {
+            sidebar.style.width = "250px";
+            closeBtn.classList.replace("menu", "menu-alt-right");
+            $('#logo-name').removeClass('d-none');
+            $('#logo-full-img').removeClass('d-none');
+            $('#logo-img').addClass('d-none');
+            $('#profile_img').addClass('pl-5');
+            $('#profile_img').removeClass('pl-3');
+            $('#close-icon').removeClass('d-none');
+            $('#open-icon').addClass('d-none');
+            $('.btn-menu-openClose').css('left', 235);
+            $('#logout_btn').addClass('d-block');
+            $('#logout_btn').removeClass('d-none');
+            $('#logout_icon').removeClass('d-block');
+            $('#logout_icon').addClass('d-none');
+            $('.content-wrapper').css('padding', '.75rem .2rem');
+          }
+
+          function setSmallScreenStyles() {
+            sidebar.style.width = "78px";
+            closeBtn.classList.replace("menu-alt-right", "menu");
+            $('#logo-name').addClass('d-none');
+            $('#logo-full-img').addClass('d-none');
+            $('#logo-img').removeClass('d-none');
+            $('#profile_img').addClass('pl-3');
+            $('#profile_img').removeClass('pl-5');
+            $('#close-icon').addClass('d-none');
+            $('#open-icon').removeClass('d-none');
+            $('.btn-menu-openClose').css('left', 63);
+            $('.content-wrapper').css('padding', '.75rem .2rem');
+            $('#logout_btn').removeClass('d-block');
+            $('#logout_btn').addClass('d-none');
+            $('#logout_icon').addClass('d-block');
+          }
+
+          // Listen for window resize events to update sidebar behavior
+          window.addEventListener("resize", function() {
+            if (window.innerWidth >= 991) {
+              sidebar.classList.add("open");
+              setLargeScreenStyles();
+            } else {
+              sidebar.classList.remove("open");
+              setSmallScreenStyles();
+            }
+          });
+        };
+      </script>
