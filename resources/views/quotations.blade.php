@@ -28,9 +28,9 @@ $qouteStatus_trans = config('constants.QUOTE_STATUS_' . app()->getLocale());
           <div class="col-lg-12">
             <div class="row mx-1">
               <div class="col-lg-6 col-md-12 col-sm-12 my-2 pr-0" style="text-align: right;">
-                <a href="{{ route('create_quotation') }}">
+                <!-- <a href="{{ route('create_quotation') }}"> -->
                   <button class="btn content-background add-btn text-white"><span><i class=" fa-regular fa-file-lines"></i> @lang('lang.create_quotation')</span></button>
-                </a>
+                <!-- </a> -->
                 <a href="{{ route('add_quotation') }}">
                   <button class="btn add-btn text-white" style="background-color: #E95C20FF;"><span><i class="fa fa-plus"></i> @lang('lang.add_quotation')</span></button>
                 </a>
