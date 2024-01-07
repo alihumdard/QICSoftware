@@ -375,9 +375,7 @@ class UserController extends Controller
 
         $data['user'] = $user;
         $data['duplicate_qoute'] = NULL;
-        $data['currencies'] = Currency::select('id', 'name')->where(['status' => $this->sev_status['Active'], 'sadmin_id' => $user->id])->pluck('name', 'id')->toArray();
-        $data['location']   = Location::select('id', 'name')->where(['status' => $this->sev_status['Active'], 'sadmin_id' => $user->id])->pluck('name', 'id')->toArray();
-        $data['services']   = Service::select('id', 'title')->where(['status' => $this->sev_status['Active'], 'type' => $this->sev_type[1], 'sadmin_id' => $user->id])->pluck('title', 'id')->toArray();
+        $data += $this->getCLS(1);
 
         if ($request->has('id')) {
             $data['duplicate_qoute'] = $request->duplicate_qoute ?? NULL;
@@ -474,9 +472,7 @@ class UserController extends Controller
 
         $data['user'] = $user;
         $data['duplicate_contract'] = NULL;
-        $data['currencies'] = Currency::select('id', 'name')->where(['status' => $this->sev_status['Active'], 'sadmin_id' => $user->id])->pluck('name', 'id')->toArray();
-        $data['location']   = Location::select('id', 'name')->where(['status' => $this->sev_status['Active'], 'sadmin_id' => $user->id])->pluck('name', 'id')->toArray();
-        $data['services']   = Service::select('id', 'title')->where(['status' => $this->sev_status['Active'], 'type' => $this->sev_type[2], 'sadmin_id' => $user->id])->pluck('title', 'id')->toArray();
+        $data += $this->getCLS(2);
 
         if ($request->has('id')) {
 
@@ -563,9 +559,7 @@ class UserController extends Controller
         }
 
         $data['user'] = $user;
-        $data['currencies'] = Currency::select('id', 'name')->where(['status' => $this->sev_status['Active'], 'sadmin_id' => $user->id])->pluck('name', 'id')->toArray();
-        $data['location']   = Location::select('id', 'name')->where(['status' => $this->sev_status['Active'], 'sadmin_id' => $user->id])->pluck('name', 'id')->toArray();
-        $data['services']   = Service::select('id', 'title')->where(['status' => $this->sev_status['Active'], 'type' => $this->sev_type[2], 'sadmin_id' => $user->id])->pluck('title', 'id')->toArray();
+        $data += $this->getCLS(3);
 
         if ($request->has('id')) {
             $invoices = Invoice::find($request->id);
@@ -1073,5 +1067,14 @@ class UserController extends Controller
         } catch (\Exception $e) {
             echo $e->getMessage();
         }
+    }
+
+    protected function getCLS($type){
+        $user = auth()->user();
+        $id = ($user->role == user_roles('1')) ? $user->id : $user->sadmin_id; 
+        $data['currencies'] = Currency::select('id', 'name')->where(['status' => $this->sev_status['Active'], 'sadmin_id' => $id])->pluck('name', 'id')->toArray();
+        $data['location']   = Location::select('id', 'name')->where(['status' => $this->sev_status['Active'], 'sadmin_id' => $id])->pluck('name', 'id')->toArray();
+        $data['services']   = Service::select('id', 'title')->where(['status' => $this->sev_status['Active'], 'type' => $this->sev_type[$type], 'sadmin_id' => $id])->pluck('title', 'id')->toArray();
+        return $data;
     }
 }
