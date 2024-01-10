@@ -71,6 +71,7 @@ function view_permission($page_name)
                 case 'settings':
                 case 'super_admins':
                 case 'logout':
+                case 're-subscription':
                 // case 'currencies':
                 // case 'locations':
                 // case 'services':

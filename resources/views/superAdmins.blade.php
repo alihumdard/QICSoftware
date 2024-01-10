@@ -72,7 +72,21 @@
                     <td>{{ $value['email'] }}</td>
                     <td>{{ $value['phone'] }}</td>
                     <td> {{ $value['com_name'] }}</td>
-                    <td>{{$value['sub_exp_date']}}</td>
+                    <td>
+                        @if(strtotime($value['sub_exp_date']) < strtotime(now())) 
+                        <div class="my-1" >
+                          <form id="form-resubscribe" name="form-resubscribe"  method="POST" action="{{ route('re-subscription') }}">
+                            @csrf
+                            <input type="hidden" name="id" id="resubscribe" value="{{$value['id']}}">
+                          </form>
+                          <button  type="submit" form="form-resubscribe" class="btn btn-danger">Re-Subscribe</button>
+                        </div>
+                        @else
+                        <div class="my-2 text-center" >
+                          <span class="font-weight-bold text-center">{{ $value['sub_exp_date'] }}</span>
+                        </div>
+                        @endif
+                    </td>
                     @if($value['status'] == 1)
                     <td>
                       <button class="btn btn_status">
@@ -130,30 +144,30 @@
                       </button>
                       @endif
                     </td>
-                  </tr>
-                  @endforeach
+                    </tr>
+                    @endforeach
 
-                </tbody>
-              </table>
+                    </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </div>
-  </div>
-</div>
-<!-- content-wrapper ends -->
-@php
-$user_role_static = user_roles('1');
-@endphp
+        </div>
+        <!-- content-wrapper ends -->
+        @php
+        $user_role_static = user_roles('1');
+        @endphp
 
-@include('usermodal')
- <!-- filter selection active ,pendding, dell .... -->
-<script>
-  var users_table = $('#users-table').DataTable();
-  $('#filter_by_sts_superadmin').on('change', function() {
-    let selectedStatus = $(this).val();
-    users_table.column(7).search(selectedStatus).draw();
-  });
-</script>
-@endsection
+        @include('usermodal')
+        <!-- filter selection active ,pendding, dell .... -->
+        <script>
+          var users_table = $('#users-table').DataTable();
+          $('#filter_by_sts_superadmin').on('change', function() {
+            let selectedStatus = $(this).val();
+            users_table.column(7).search(selectedStatus).draw();
+          });
+        </script>
+        @endsection

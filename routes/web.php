@@ -51,6 +51,7 @@ Route::middleware('check.userAuthCheck')->group(function () {
     Route::match(['post','get'],'/revenue', [UserController::class, 'revenue'])->name('revenue');
     Route::match(['post','get'],'/transactional', [UserController::class, 'transactionals'])->name('transactional');
     Route::match(['post','get'],'/demomail', [UserController::class, 'demomail']);
+    Route::match(['post','get'],'/reSubscription', [UserController::class, 're_subscription'])->name('re-subscription');
 
 });
 
