@@ -1077,4 +1077,29 @@ class UserController extends Controller
         $data['services']   = Service::select('id', 'title')->where(['status' => $this->sev_status['Active'], 'type' => $this->sev_type[$type], 'sadmin_id' => $id])->pluck('title', 'id')->toArray();
         return $data;
     }
+
+    public function re_subscription(REQUEST $request){
+
+        $user = auth()->user();
+        $page_name = 're-subscription';
+
+        if (!view_permission($page_name)) {
+            return redirect()->back();
+        }
+
+        $validator = Validator::make($request->all(), ['id' => 'required']);
+
+        if ($validator->fails()) {
+            return redirect()->back();
+        }
+
+        $user =  User::find($request->id); 
+        $user->sub_exp_date   = Carbon::now()->addDays(30);
+        $save = $user->save();
+
+        if ($save) {
+            return redirect()->back();
+        }
+
+    }
 }
