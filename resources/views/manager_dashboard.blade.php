@@ -169,7 +169,7 @@
     <div class=" col-xl-6 col-lg-6 mb-4">
       <div class="card shadow mb-4 h-100 ">
         <div class="card-header py-3">
-          <h6 class="m-0 font-weight-bold text-primary">Rolse Statistics</h6>
+          <h6 class="m-0 font-weight-bold text-primary">Roles Statistics</h6>
         </div>
         <div class="card-body">
 

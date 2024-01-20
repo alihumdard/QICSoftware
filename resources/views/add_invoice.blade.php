@@ -113,7 +113,7 @@
                             <span id="admin_id_error" class="error-message text-danger"></span>
                         </div>
                         @else
-                        <input type="hidden" name="admin_id" id="admin_id" value="{{ ($user->role == user_roles('2')) ? $user->id : $user->client_id }}" />
+                        <input type="hidden" name="admin_id" id="admin_id" value="{{ ($user->role == user_roles('2')) ? $user->id : $user->admin_id }}" />
                         @endif
 
                         @if (isset($user->role) && ($user->role == user_roles('1') || $user->role == user_roles('2')))
@@ -213,7 +213,7 @@
                                 <span>@lang('Upload')</span>
                             </label>
 
-                            <input type="file" id="q_file" name="file" style="display: none;">
+                            <input type="file" id="q_file" name="file" data-file_exists="{{ ($data['file'] ?? NULL) ? 'yes' : 'no'; }}" style="display: none;">
                             <p class="float-right mr-3 file-uploaded d-none text-success" style="font-size: smaller; margin-top:-5px;">@lang('File Uploaded') <i class="fas fa-check-circle fa-lg"></i></p>
                             <span id="q_file_error" class="error-message text-danger"></span>
                             @if($data['file'] ?? NULL)
@@ -310,6 +310,7 @@
             var location = $('#location').val();
             var client_mail = $('#client_mail').val();
             var q_file = $('#q_file').val();
+            var file_exists = $('#q_file').attr('data-file_exists');
 
             // Reset error messages
             $('.error-message text-danger').text('');
@@ -364,7 +365,7 @@
                 event.preventDefault();
             }
 
-            if (q_file == '') {
+            if (q_file == ''  && file_exists == 'no') {
                 $('#q_file_error').text('*Please select file');
                 event.preventDefault();
             }
