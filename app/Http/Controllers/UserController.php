@@ -342,7 +342,7 @@ class UserController extends Controller
                 ->get()
                 ->toArray();
         } else if (isset($user->role) && $user->role == user_roles('2')) {
-            $data['quotations'] = Quotation::with(['location:id,name,code'])
+            $data['quotations'] = Quotation::with(['location:id,name,code','currency:id,code,name'])
                 ->join('users as u', 'u.id', '=', 'quotations.user_id')
                 ->join('users as admins', 'admins.id', '=', 'quotations.admin_id')
                 ->select('quotations.*', 'u.name as user_name', 'admins.name as admin_name')
@@ -351,7 +351,7 @@ class UserController extends Controller
                 ->get()
                 ->toArray();
         } else {
-            $data['quotations'] = Quotation::with(['location:id,name,code'])
+            $data['quotations'] = Quotation::with(['location:id,name,code','currency:id,code,name'])
                 ->join('users as u', 'u.id', '=', 'quotations.user_id')
                 ->join('users as admins', 'admins.id', '=', 'quotations.admin_id')
                 ->select('quotations.*', 'u.name as user_name', 'admins.name as admin_name')
@@ -387,15 +387,24 @@ class UserController extends Controller
                 $data['admins_list'] = User::where(['role' => user_roles('2'), 'status' => active_users(), 'sadmin_id' => $user->id])->orderBy('id', 'desc')->select('id', 'name')->get()->toArray();
                 $data['users_list']  = User::where(['role' => user_roles('3'), 'status' => active_users(), 'admin_id' => $quotation->admin_id])->orderBy('id', 'desc')->get()->toArray();
             } else if (isset($user->role) && ($user->role == user_roles('2'))) {
+                $data['sadmin_id']   = $user->sadmin_id;
                 $data['users_list'] = User::where(['role' => user_roles('3'), 'status' => active_users(), 'admin_id' => $user->id])->orderBy('id', 'desc')->get()->toArray();
             }
+            else if (isset($user->role) && ($user->role == user_roles('3'))) {
+                $data['sadmin_id']   = $user->sadmin_id;
+            }
+
         } else {
             if (isset($user->role) && $user->role == user_roles('1')) {
                 $data['sadmin_id']   = $user->id;
                 $data['users_list']  = [];
                 $data['admins_list'] = User::where(['role' => user_roles('2'), 'status' => active_users(), 'sadmin_id' => $user->id])->orderBy('id', 'desc')->select('id', 'name')->get()->toArray();
             } else if (isset($user->role) && $user->role == user_roles('2')) {
+                $data['sadmin_id']   = $user->sadmin_id;
                 $data['users_list']  = User::where(['role' => user_roles('3'), 'status' => active_users(), 'admin_id' => $user->id])->orderBy('id', 'desc')->select('id', 'name')->get()->toArray();
+            }
+            else if (isset($user->role) && ($user->role == user_roles('3'))) {
+                $data['sadmin_id']   = $user->sadmin_id;
             }
         }
 
@@ -485,15 +494,24 @@ class UserController extends Controller
                 $data['admins_list'] = User::where(['role' => user_roles('2'), 'status' => active_users(), 'sadmin_id' => $user->id])->orderBy('id', 'desc')->select('id', 'name')->get()->toArray();
                 $data['users_list'] = User::where(['role' => user_roles('3'), 'status' => active_users(), 'admin_id' => $contract->admin_id])->orderBy('id', 'desc')->get()->toArray();
             } else if (isset($user->role) && ($user->role == user_roles('2'))) {
+                $data['sadmin_id']   = $user->sadmin_id;
                 $data['users_list'] = User::where(['role' => user_roles('3'), 'status' => active_users(), 'admin_id' => $user->id])->orderBy('id', 'desc')->get()->toArray();
             }
+            else if (isset($user->role) && ($user->role == user_roles('3'))) {
+                $data['sadmin_id']   = $user->sadmin_id;
+            }
+            
         } else {
             if (isset($user->role) && $user->role == user_roles('1')) {
                 $data['sadmin_id']   = $user->id;
                 $data['users_list'] = [];
                 $data['admins_list'] = User::where(['role' => user_roles('2'), 'status' => active_users(), 'sadmin_id' => $user->id])->orderBy('id', 'desc')->select('id', 'name')->get()->toArray();
             } else if (isset($user->role) && $user->role == user_roles('2')) {
+                $data['sadmin_id']   = $user->sadmin_id;
                 $data['users_list'] = User::where(['role' => user_roles('3'), 'status' => active_users(), 'admin_id' => $user->id])->orderBy('id', 'desc')->select('id', 'name')->get()->toArray();
+            }
+            else if (isset($user->role) && ($user->role == user_roles('3'))) {
+                $data['sadmin_id']   = $user->sadmin_id;
             }
         }
 
@@ -569,7 +587,14 @@ class UserController extends Controller
                 $data['admins_list'] = User::where(['role' => user_roles('2'), 'status' => active_users(), 'sadmin_id' => $user->id])->orderBy('id', 'desc')->select('id', 'name')->get()->toArray();
                 $data['users_list'] = User::where(['role' => user_roles('3'), 'status' => active_users(), 'admin_id' => $invoices->admin_id])->orderBy('id', 'desc')->get()->toArray();
             } else if (isset($user->role) && ($user->role == user_roles('2'))) {
+                $data['sadmin_id']   = $user->sadmin_id;
                 $data['users_list'] = User::where(['role' => user_roles('3'), 'status' => active_users(), 'admin_id' => $user->id])->orderBy('id', 'desc')->get()->toArray();
+            }
+            else if (isset($user->role) && $user->role == user_roles('3')) {
+                $data['sadmin_id']   = $user->sadmin_id;
+            }
+            else if (isset($user->role) && ($user->role == user_roles('3'))) {
+                $data['sadmin_id']   = $user->sadmin_id;
             }
         } else {
             if (isset($user->role) && $user->role == user_roles('1')) {
@@ -577,7 +602,14 @@ class UserController extends Controller
                 $data['users_list']  = [];
                 $data['admins_list'] = User::where(['role' => user_roles('2'), 'status' => active_users(), 'sadmin_id' => $user->id])->orderBy('id', 'desc')->select('id', 'name')->get()->toArray();
             } else if (isset($user->role) && $user->role == user_roles('2')) {
+                $data['sadmin_id']   = $user->sadmin_id;
                 $data['users_list'] = User::where(['role' => user_roles('3'), 'status' => active_users(), 'admin_id' => $user->id])->orderBy('id', 'desc')->select('id', 'name')->get()->toArray();
+            }
+            else if (isset($user->role) && $user->role == user_roles('3')) {
+                $data['sadmin_id']   = $user->sadmin_id;
+            }
+            else if (isset($user->role) && ($user->role == user_roles('3'))) {
+                $data['sadmin_id']   = $user->sadmin_id;
             }
         }
 
