@@ -152,7 +152,7 @@ $notifications = NULL;
   </div>
   <div class="sidebar">
     <div class="navbar-brand brand-logo d-none mx-5 px-2 mb-2" id="logo-full-img">
-      <img src="assets/images/Logo.svg" alt="logo">
+      <img src="assets/images/logo.svg" alt="logo">
     </div>
     <div class="navbar-brand brand-logo mb-2 mx-2" id="logo-img">
       <img src="assets/images/scooble.svg" style="width: 100%; " alt="logo">
