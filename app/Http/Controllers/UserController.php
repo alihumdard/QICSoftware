@@ -342,7 +342,7 @@ class UserController extends Controller
                 ->get()
                 ->toArray();
         } else if (isset($user->role) && $user->role == user_roles('2')) {
-            $data['quotations'] = Quotation::with(['location:id,name,code','currency:id,code,name'])
+            $data['quotations'] = Quotation::with(['location:id,name,code', 'currency:id,code,name'])
                 ->join('users as u', 'u.id', '=', 'quotations.user_id')
                 ->join('users as admins', 'admins.id', '=', 'quotations.admin_id')
                 ->select('quotations.*', 'u.name as user_name', 'admins.name as admin_name')
@@ -351,7 +351,7 @@ class UserController extends Controller
                 ->get()
                 ->toArray();
         } else {
-            $data['quotations'] = Quotation::with(['location:id,name,code','currency:id,code,name'])
+            $data['quotations'] = Quotation::with(['location:id,name,code', 'currency:id,code,name'])
                 ->join('users as u', 'u.id', '=', 'quotations.user_id')
                 ->join('users as admins', 'admins.id', '=', 'quotations.admin_id')
                 ->select('quotations.*', 'u.name as user_name', 'admins.name as admin_name')
@@ -389,11 +389,9 @@ class UserController extends Controller
             } else if (isset($user->role) && ($user->role == user_roles('2'))) {
                 $data['sadmin_id']   = $user->sadmin_id;
                 $data['users_list'] = User::where(['role' => user_roles('3'), 'status' => active_users(), 'admin_id' => $user->id])->orderBy('id', 'desc')->get()->toArray();
-            }
-            else if (isset($user->role) && ($user->role == user_roles('3'))) {
+            } else if (isset($user->role) && ($user->role == user_roles('3'))) {
                 $data['sadmin_id']   = $user->sadmin_id;
             }
-
         } else {
             if (isset($user->role) && $user->role == user_roles('1')) {
                 $data['sadmin_id']   = $user->id;
@@ -402,8 +400,7 @@ class UserController extends Controller
             } else if (isset($user->role) && $user->role == user_roles('2')) {
                 $data['sadmin_id']   = $user->sadmin_id;
                 $data['users_list']  = User::where(['role' => user_roles('3'), 'status' => active_users(), 'admin_id' => $user->id])->orderBy('id', 'desc')->select('id', 'name')->get()->toArray();
-            }
-            else if (isset($user->role) && ($user->role == user_roles('3'))) {
+            } else if (isset($user->role) && ($user->role == user_roles('3'))) {
                 $data['sadmin_id']   = $user->sadmin_id;
             }
         }
@@ -419,7 +416,7 @@ class UserController extends Controller
         if (!view_permission($page_name)) {
             return redirect()->back();
         }
-
+        $data += $this->getCLS(1);
         $data['draft_template'] = Template::where('save_as', $this->temp_status_as['Draft'])->orderBy('id', 'DESC')->first();
         $data['template_for'] = $this->template_for['1'];
         $data['save_as'] = $this->temp_saveAs;
@@ -496,11 +493,9 @@ class UserController extends Controller
             } else if (isset($user->role) && ($user->role == user_roles('2'))) {
                 $data['sadmin_id']   = $user->sadmin_id;
                 $data['users_list'] = User::where(['role' => user_roles('3'), 'status' => active_users(), 'admin_id' => $user->id])->orderBy('id', 'desc')->get()->toArray();
-            }
-            else if (isset($user->role) && ($user->role == user_roles('3'))) {
+            } else if (isset($user->role) && ($user->role == user_roles('3'))) {
                 $data['sadmin_id']   = $user->sadmin_id;
             }
-            
         } else {
             if (isset($user->role) && $user->role == user_roles('1')) {
                 $data['sadmin_id']   = $user->id;
@@ -509,8 +504,7 @@ class UserController extends Controller
             } else if (isset($user->role) && $user->role == user_roles('2')) {
                 $data['sadmin_id']   = $user->sadmin_id;
                 $data['users_list'] = User::where(['role' => user_roles('3'), 'status' => active_users(), 'admin_id' => $user->id])->orderBy('id', 'desc')->select('id', 'name')->get()->toArray();
-            }
-            else if (isset($user->role) && ($user->role == user_roles('3'))) {
+            } else if (isset($user->role) && ($user->role == user_roles('3'))) {
                 $data['sadmin_id']   = $user->sadmin_id;
             }
         }
@@ -589,11 +583,9 @@ class UserController extends Controller
             } else if (isset($user->role) && ($user->role == user_roles('2'))) {
                 $data['sadmin_id']   = $user->sadmin_id;
                 $data['users_list'] = User::where(['role' => user_roles('3'), 'status' => active_users(), 'admin_id' => $user->id])->orderBy('id', 'desc')->get()->toArray();
-            }
-            else if (isset($user->role) && $user->role == user_roles('3')) {
+            } else if (isset($user->role) && $user->role == user_roles('3')) {
                 $data['sadmin_id']   = $user->sadmin_id;
-            }
-            else if (isset($user->role) && ($user->role == user_roles('3'))) {
+            } else if (isset($user->role) && ($user->role == user_roles('3'))) {
                 $data['sadmin_id']   = $user->sadmin_id;
             }
         } else {
@@ -604,11 +596,9 @@ class UserController extends Controller
             } else if (isset($user->role) && $user->role == user_roles('2')) {
                 $data['sadmin_id']   = $user->sadmin_id;
                 $data['users_list'] = User::where(['role' => user_roles('3'), 'status' => active_users(), 'admin_id' => $user->id])->orderBy('id', 'desc')->select('id', 'name')->get()->toArray();
-            }
-            else if (isset($user->role) && $user->role == user_roles('3')) {
+            } else if (isset($user->role) && $user->role == user_roles('3')) {
                 $data['sadmin_id']   = $user->sadmin_id;
-            }
-            else if (isset($user->role) && ($user->role == user_roles('3'))) {
+            } else if (isset($user->role) && ($user->role == user_roles('3'))) {
                 $data['sadmin_id']   = $user->sadmin_id;
             }
         }
@@ -726,16 +716,47 @@ class UserController extends Controller
     {
         $user = auth()->user();
         if (!$user) {
-            if ($request->all()) {
-                $login = $this->api->user_login($request);
-                $responseData = json_decode($login->getContent(), true);
+            if ($request->isMethod('post')) {
+                $validator = Validator::make($request->all(), [
+                    'password' => 'required',
+                    'email' => 'required|email',
+                ]);
 
-                if ($responseData['status'] == "success") {
-                    session(['user' => $responseData['token']]);
-                    session(['lang' => 'en']);
+                if ($validator->fails()) {
+                    return redirect()->back()->withErrors($validator)->withInput();
                 }
 
-                echo $login->getContent();
+                $credentials = $request->only('email', 'password');
+                $user = User::where('email', $credentials['email'])->first();
+
+                if ($user) {
+                    if (in_array($user->status, auth_users())) {
+                        if (isset($user->role) && $user->role == user_roles('3')) {
+                            $admin = User::where(['role' => user_roles('2'), 'id' => $user->admin_id])->first();
+                            if ($admin) {
+                                if (!in_array($admin->status, auth_users())) {
+                                    return redirect()->back()->with('error', 'You are Unauthorized to Login, Contact the admin');
+                                }
+                            } else {
+                                return redirect()->back()->with('error', 'You are not assigned to any admin');
+                            }
+                        }
+
+                        if (Auth::attempt($credentials)) {
+                            auth()->login($user);  // Ensure the user is logged in
+                            session(['user_details' => $user]);
+                            return redirect()->intended('/');
+                        } else {
+                            return redirect()->back()->with('error', 'Invalid Credentials or Contact Admin');
+                        }
+                    } else if ($user->status == 4) {
+                        return redirect()->back()->with('error', 'User is unverified, Please Check Your Email');
+                    } else {
+                        return redirect()->back()->with('error', 'You are Unauthorized to Login');
+                    }
+                } else {
+                    return redirect()->back()->with('error', 'User does not exist');
+                }
             } else {
                 return view('login');
             }
@@ -1058,16 +1079,15 @@ class UserController extends Controller
 
         if ($user->role == user_roles('1')) {
 
-            if ($request->action == 'edit' && $request->id ) {
+            if ($request->action == 'edit' && $request->id) {
                 $data['transectional'] = Transectional::where(['id' => $request->id])->first();
-            } 
-            else if ($request->action == 'dell') {
+            } else if ($request->action == 'dell') {
                 Transectional::where('id', $request->id)->update(['status' => $this->sev_status['Deleted']]);
                 $message = "Transectional has been deleted Successfully";
                 Session::flash('msg', $message);
             }
 
-            
+
             $data['admins'] = User::select('id', 'name')->where(['role' => user_roles('2'), 'sadmin_id' => $user->id, 'status' => $this->userStatus['Active']])->orderBy('id', 'desc')->pluck('name', 'id')->toArray();
             $data['data']   = Transectional::with(['user:id,name'])->where(['created_by' => $user->id, 'status' => $this->sev_status['Active']])->latest('id')->get()->toArray();
         }
@@ -1101,16 +1121,18 @@ class UserController extends Controller
         }
     }
 
-    protected function getCLS($type){
+    protected function getCLS($type)
+    {
         $user = auth()->user();
-        $id = ($user->role == user_roles('1')) ? $user->id : $user->sadmin_id; 
+        $id = ($user->role == user_roles('1')) ? $user->id : $user->sadmin_id;
         $data['currencies'] = Currency::select('id', 'name')->where(['status' => $this->sev_status['Active'], 'sadmin_id' => $id])->pluck('name', 'id')->toArray();
         $data['location']   = Location::select('id', 'name')->where(['status' => $this->sev_status['Active'], 'sadmin_id' => $id])->pluck('name', 'id')->toArray();
         $data['services']   = Service::select('id', 'title')->where(['status' => $this->sev_status['Active'], 'type' => $this->sev_type[$type], 'sadmin_id' => $id])->pluck('title', 'id')->toArray();
         return $data;
     }
 
-    public function re_subscription(REQUEST $request){
+    public function re_subscription(REQUEST $request)
+    {
 
         $user = auth()->user();
         $page_name = 're-subscription';
@@ -1125,13 +1147,12 @@ class UserController extends Controller
             return redirect()->back();
         }
 
-        $user =  User::find($request->id); 
+        $user =  User::find($request->id);
         $user->sub_exp_date   = Carbon::now()->addDays(30);
         $save = $user->save();
 
         if ($save) {
             return redirect()->back();
         }
-
     }
 }

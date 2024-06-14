@@ -21,12 +21,103 @@ $temp_status = config('constants.TEMP_STATUS');
           <input type="hidden" name="id" value="{{$draft_template->id}}">
           <input type="hidden" name="user_id" value="{{$user->id}}">
           <input type="hidden" name="template_for" value="{{$template_for}}">
-          <div class="row">
-            <div class="col-lg-12 mt-2 mb-4">
+          <div class="row mb-4">
+            <div class="col-lg-4 col-md-6 col-sm-12 mt-4 ">
+              <label for="title"> Title</label>
+              <input type="text" name="title" class="form-control" id="title">
+            </div>
+            <div class="col-lg-4 col-md-6 col-sm-12 mt-4 ">
+              <label for="date">Date</label>
+              <input type="date" name="date" class="form-control" id="date">
+            </div>
+            <div class="col-lg-4 col-md-6 col-sm-12 mt-4 ">
+              <label for="title">Qoute Title</label>
+              <input type="text" name="title" class="form-control" id="title">
+            </div>
+
+            <div class="col-lg-12 mt-4 mb-4">
+              <h3 class="page-title pb-1"> Items: </h3>
+
+              <div id="existing_row">
+                @forelse( json_decode($data['service_data'] ?? '[]') as $key => $serv_data)
+                <div class="row">
+                  @if($key == '0')
+                  <div class="col-lg-1 col-md-12 col-sm-12 order-lg-last">
+                    <label class="d-none d-lg-block">Add</label>
+                    <span class="fw-bold btn btn-success btn-block text-center" id="btn_addNewRow"> + </span>
+                  </div>
+                  @else
+                  <div class="col-lg-1 col-md-12 col-sm-12 order-lg-last">
+                    <label class="d-none d-lg-block">Remove</label>
+                    <span class="fw-bold btn_removeRow btn btn-danger btn-block"> - </span>
+                  </div>
+                  @endif
+
+                  <div class="col-lg-3 col-md-6  col-sm-12 ">
+                    <label for="service_id">@lang('Service')</label>
+                    <select required name="service_id[]" class="form-select service_id ">
+                      <option disabled selected> Select @lang('quote service')</option>
+                      @forelse($services ?? [] as $sid => $val)
+                      <option value="{{$sid}}" {{ isset($serv_data->service_id) && $serv_data->service_id == $sid ? 'selected' : '' }}>
+                        {{ $val }}
+                      </option>
+                      @empty
+                      <!-- Code to handle the case when $driver_list is empty or null -->
+                      @endforelse
+                    </select>
+                    <span class="error-message text-danger service_id_error"></span>
+                  </div>
+                  <div class="col-lg-3 col-md-6 col-sm-12">
+                    <label for="q_amount">@lang('Service Amount')</label>
+                    <input required type="number" min="1" name="s_amount[]" value="{{ $serv_data->s_amount ?? 1 }}" placeholder="@lang('serivce amount')" class="form-control s_amount">
+                    <span class="error-message text-danger s_amount_error "></span>
+                  </div>
+                </div>
+                @empty
+
+                <div class="row">
+                  <div class="col-lg-1 col-md-12 col-sm-12 order-lg-last">
+                    <label class="d-none d-lg-block">Add</label>
+                    <span class="fw-bold btn btn-success btn-block text-center" id="btn_addNewRow"> + </span>
+                  </div>
+
+                  <div class="col-lg-3 col-md-6  col-sm-12 ">
+                    <label for="service_id">@lang('Service')</label>
+                    <select required name="service_id[]" class="form-select service_id ">
+                      <option disabled selected> Select @lang('quote service')</option>
+                      @forelse($services ?? [] as $key => $value)
+                      <option value="{{ $key}}" {{ isset($serv_data->service_id) && $serv_data->service_id == $key ? 'selected' : '' }}>
+                        {{ $value }}
+                      </option>
+                      @empty
+                      <!-- Code to handle the case when $driver_list is empty or null -->
+                      @endforelse
+                    </select>
+                    <span class="error-message text-danger service_id_error"></span>
+                  </div>
+
+                  <div class="col-lg-3 col-md-6 col-sm-12">
+                    <label for="q_amount">@lang('Service Amount')</label>
+                    <input required type="number" min="1" name="s_amount[]" value="{{ $serv_data->s_amount ?? 1 }}" placeholder="@lang('serivce amount')" class="form-control s_amount">
+                    <span class="error-message text-danger s_amount_error "></span>
+                  </div>
+                </div>
+                <!-- Code to handle the case when $driver_list is empty or null -->
+                @endforelse
+              </div>
+              <div id="new_rowdata">
+                <!-- dynamic row added -->
+              </div>
+            </div>
+            <div class="col-lg-12 mt-4 mb-4">
+            <label for="create_quotation">Template Footer</label>
               <textarea name="template_body" id="create_quotation" class="form-control">
               {{ base64_decode($draft_template->template_body) }}
               </textarea>
             </div>
+          </div>
+          <div class="row">
+
 
             <div class="col-lg-3 col-md-6 col-sm-12 mt-4 pt-2 text-center">
               <button type="button" style="border-radius: 8px;" class="btn btn-secondary btn-sm px-4 py-2 text-white" id="btn_downloadPdf"><span>Download As PDF</span></button>
@@ -75,7 +166,7 @@ $temp_status = config('constants.TEMP_STATUS');
             <div class="bg-image hover-overlay ripple shadow-1-strong rounded" data-mdb-ripple-color="light" style="max-width: 22rem;">
               <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSk8spE7xKJJftyCC04t3l1nXl9wmaqdF0KMIO_9e3zP3X_AhZk9l3VCT-6Jy5t9IPYWsg&usqp=CAU" class="w-100" alt="Louvre" />
               <div class="mask text-light d-flex justify-content-center flex-column text-center" style="background-color: rgba(0, 0, 0, 0.5)">
-                <button class=" btn btn-primary m-0" > Apply</button>
+                <button class=" btn btn-primary m-0"> Apply</button>
                 <button class=" btn btn-secondary mt-1"> Deactive</button>
               </div>
             </div>
@@ -144,10 +235,40 @@ $temp_status = config('constants.TEMP_STATUS');
   <!-- Include the necessary libraries -->
 
   <script>
+    var newRow = `
+            <div class="row mt-md-3 mt-sm-3 mt-3">
+                <div class="col-lg-1 col-md-12 col-sm-12 order-lg-last">
+                    <label class="d-none d-lg-block">Remove</label>
+                    <span class="fw-bold btn_removeRow btn btn-danger btn-block" > - </span>
+                </div>
+                <div class="col-lg-3 col-md-6  col-sm-12">
+                    <label for="service_id">@lang('Service')</label>
+                    <select required name="service_id[]"  class="form-select service_id">
+                        <option disabled selected> Select @lang('quote service')</option>
+                        @forelse($services as $key => $value)
+                        <option value="{{ $key}}" >
+                            {{ $value }}
+                        </option>
+                        @empty
+                        <!-- Code to handle the case when $driver_list is empty or null -->
+                        @endforelse
+                    </select>
+                    <span  class="error-message text-danger service_id_error"></span>
+                </div>
+
+                <div class="col-lg-3 col-md-6 col-sm-12">
+                    <label for="q_amount">@lang('Service Aamount')</label>
+                    <input required type="number" min="1" name="s_amount[]"  value="" placeholder="@lang('service amount')" class="form-control s_amount">
+                    <span  class="error-message text-danger s_amount_error"></span>
+                </div>
+
+            </div>
+            `;
+
     $('#create_quotation').summernote({
       placeholder: "",
       tabsize: 2,
-      height: '100vh',
+      height: '50vh',
       toolbar: [
         ['style', ['style']],
         ['font', ['bold', 'italic', 'underline', 'strikethrough', 'superscript', 'subscript', 'clear']],
@@ -174,31 +295,46 @@ $temp_status = config('constants.TEMP_STATUS');
         }
       }
     });
-    
-
-$('#btn_downloadPdf').on('click', function() {
-  var content = $('#create_quotation').val();
-  console.log(content);
-  // Define the PDF document definition
-  const pdfDefinition = {
-    content: [
-      { text: 'PDF Document', style: 'header' },
-      { text: content }
-    ],
-    styles: {
-      header: { fontSize: 18, bold: true }
-    }
-  };
-
-  // Generate the PDF
-  pdfMake.createPdf(content).download('template.pdf');
-  
-  // You can optionally show an alert or perform other actions here
-  alert('PDF downloaded!');
-});
 
 
-    </script>
+    $('#btn_downloadPdf').on('click', function() {
+      var content = $('#create_quotation').val();
+      console.log(content);
+      // Define the PDF document definition
+      const pdfDefinition = {
+        content: [{
+            text: 'PDF Document',
+            style: 'header'
+          },
+          {
+            text: content
+          }
+        ],
+        styles: {
+          header: {
+            fontSize: 18,
+            bold: true
+          }
+        }
+      };
+
+      // Generate the PDF
+      pdfMake.createPdf(content).download('template.pdf');
+
+      // You can optionally show an alert or perform other actions here
+      alert('PDF downloaded!');
+    });
+
+    $('#btn_addNewRow').on('click', function() {
+      $('#new_rowdata').append(newRow);
+    });
+
+    $(document).on('click', '.btn_removeRow', function() {
+      $(this).closest('.row').fadeOut('slow', function() {
+        $(this).remove();
+      });
+    });
+  </script>
 
 
 
