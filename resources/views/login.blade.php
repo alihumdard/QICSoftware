@@ -99,7 +99,7 @@
           </a>
         </div>
         <div class="row mt-4">
-          <form action="login" id="login-form" method="post" style="width: 500px !important;">
+          <form action="login"  method="post" style="width: 500px !important;">
             @csrf
             <div class="row">
               <div class="w-100" style="padding-left: 15px;">
