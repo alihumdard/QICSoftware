@@ -284,7 +284,6 @@ $currentDate = time();
                     // Ensure $value['user_quote_percentage'] is a number, default to 0 if not set or not a number
                     $percentage = isset($value['user_quote_percentage']) && is_numeric($value['user_quote_percentage']) ? $value['user_quote_percentage'] : 0;
                     @endphp
-
                     arcMove('can{{ $key }}', 'pro{{ $key }}', @json($percentage));
                     @endforeach
 
