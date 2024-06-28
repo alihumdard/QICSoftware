@@ -167,7 +167,7 @@
       user_id: user_id,
     };
 
-    var bearerToken = "{{session('user')}}";
+    var bearerToken = "{{session('access_token')}}";
 
     $.ajax({
       url: apiurl,

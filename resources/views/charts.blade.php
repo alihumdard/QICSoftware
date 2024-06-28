@@ -49,7 +49,7 @@
     function updateCharts(selectedDate, user_id) {
         var apiname = 'dashboardCharts';
         var apiurl = "{{ end_url('') }}" + apiname;  
-        var bearerToken = "{{session('user')}}";
+        var bearerToken = "{{session('access_token')}}";
 
         $.ajax({
             url: apiurl + `?selected_date=${selectedDate}&id=${user_id}`,
