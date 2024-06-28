@@ -108,7 +108,7 @@
       role: 'Admin',
     };
 
-    var bearerToken = "{{session('user')}}";
+    var bearerToken = "{{session('access_token')}}";
 
     $.ajax({
       url: apiurl,

@@ -59,7 +59,7 @@ $user = auth()->user();
                 comment_for_id: rowId,
             };
 
-            var bearerToken = "{{session('user')}}";
+            var bearerToken = "{{session('access_token')}}";
 
             $.ajax({
                 url: apiurl,
@@ -135,7 +135,7 @@ $user = auth()->user();
             var formData = new FormData(this);
             var inv_id = formData.get('comment_for_id');
             var inv_comment = formData.get('comment');
-            var bearerToken = "{{session('user')}}";
+            var bearerToken = "{{session('access_token')}}";
             $.ajax({
                 url: apiurl,
                 type: 'POST',
@@ -208,7 +208,7 @@ $user = auth()->user();
             var apiname = $(this).attr('action');
             var apiurl = "{{ end_url('') }}" + apiname;
             var formData = new FormData(this);
-            var bearerToken = "{{session('user')}}";
+            var bearerToken = "{{session('access_token')}}";
             $.ajax({
                 url: apiurl,
                 type: 'POST',
@@ -300,7 +300,7 @@ $user = auth()->user();
             var apiname = $(this).attr('action');
             var apiurl = "{{ end_url('') }}" + apiname;
             var formData = new FormData(this);
-            var bearerToken = "{{session('user')}}";
+            var bearerToken = "{{session('access_token')}}";
             $.ajax({
                 url: apiurl,
                 type: 'POST',
@@ -392,7 +392,7 @@ $user = auth()->user();
             var apiname = $(this).attr('action');
             var apiurl = "{{ end_url('') }}" + apiname;
             var formData = new FormData(this);
-            var bearerToken = "{{session('user')}}";
+            var bearerToken = "{{session('access_token')}}";
             $.ajax({
                 url: apiurl,
                 type: 'POST',

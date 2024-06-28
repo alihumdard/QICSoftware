@@ -712,6 +712,7 @@ class UserController extends Controller
         }
     }
 
+
     public function user_login(Request $request)
     {
         $user = auth()->user();
@@ -745,6 +746,11 @@ class UserController extends Controller
                         if (Auth::attempt($credentials)) {
                             auth()->login($user);  // Ensure the user is logged in
                             session(['user_details' => $user]);
+
+                            // Create an access token
+                            $token = $user->createToken('auth_token')->plainTextToken;
+                            session(['access_token' => $token]); // Store the token in the session
+
                             return redirect()->intended('/');
                         } else {
                             return redirect()->back()->with('error', 'Invalid Credentials or Contact Admin');
@@ -764,6 +770,7 @@ class UserController extends Controller
             return redirect('/');
         }
     }
+
 
     public function logout(REQUEST $request)
     {

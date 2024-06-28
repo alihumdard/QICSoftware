@@ -460,7 +460,7 @@
       var apiname = $(this).attr('action');
       var apiurl = "{{ end_url('') }}" + apiname;
       var formData = new FormData(this);
-      var bearerToken = "{{session('user')}}";
+      var bearerToken = "{{session('access_token')}}";
 
       $.ajax({
         url: apiurl,
@@ -526,7 +526,7 @@
       var id = $(this).data('user_id');
       var apiname = $(this).data('api_name');
       var apiurl = "{{ end_url('') }}" + apiname;
-      var bearerToken = "{{session('user')}}";
+      var bearerToken = "{{session('access_token')}}";
       $.ajax({
         url: apiurl + '?id=' + id,
         type: 'GET',
