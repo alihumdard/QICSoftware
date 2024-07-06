@@ -21,6 +21,7 @@ use App\Jobs\SendInvoiceEmail;
 use Illuminate\Support\Str;
 use App\Models\Invoice;
 use App\Models\Template;
+use App\Models\Company;
 use App\Models\Comment;
 use App\Models\Transectional;
 use App\Mail\InvoiceEmail;
@@ -31,7 +32,7 @@ use App\Models\Location;
 use App\Models\Service;
 use App\Models\Currency;
 use Carbon\Carbon;
-
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class APIController extends Controller
 {
@@ -221,10 +222,10 @@ class APIController extends Controller
             $user->admin_id           = $request->admin_id ?? NULL;
             $user->created_by         = Auth::id();
 
-            if($request->role == user_roles(1) && $request->id == NULL){ 
+            if ($request->role == user_roles(1) && $request->id == NULL) {
                 $user->sub_exp_date   = Carbon::now()->addDays(30);
             }
-            if($request->status){ 
+            if ($request->status) {
                 $user->status   = $request->status;
             }
             if ($request->password) {
@@ -262,6 +263,21 @@ class APIController extends Controller
             $save = $user->save();
 
             if ($save) {
+                if ($user->role == user_roles('1')) {
+                    $company = Company::where('user_id', $request->id)->first() ?? new Company();
+                    $company->user_id        = $request->id;
+                    $company->name           = $request->com_name;
+                    if ($comPicPath ?? null) {
+                        $company->logo           = $comPicPath ?? null;
+                    }
+                    $company->email          = $request->email ?? null;
+                    $company->address        = $request->address ?? null;
+                    $company->phone          = $request->phone ?? null;
+                    $company->status         = $this->temp_status['Active'];
+                    $company->created_by     = Auth::id();
+                    $save = $company->save();
+                }
+
                 if ($request->password) {
                 } else {
 
@@ -794,6 +810,51 @@ class APIController extends Controller
         }
     }
 
+    public function company_store(Request $request): JsonResponse
+    {
+
+        try {
+            $company = ($request->id) ? Company::find($request->id) : new Company();
+
+            $isExistcompany = $company->exists;
+
+            $company->user_id        = Auth::id();
+            $company->name           = $request->name;
+            $company->email          = $request->email ?? null;
+            $company->address        = $request->address ?? null;
+            $company->status         = $this->temp_status['Active'];
+            $company->created_by     = Auth::id();
+            $company->updated_by     = Auth::id();
+
+            $oldComPicPath = $company->logo;
+
+            if ($request->hasFile('logo')) {
+                if ($request->id && $oldComPicPath) {
+                    Storage::disk('public')->delete($oldComPicPath);
+                }
+
+                $comPic = $request->file('logo');
+                $comPicPath = $comPic->store('com_pics', 'public');
+                $company->logo = $comPicPath;
+            }
+            $save = $company->save();
+
+            $message = $isExistcompany ? 'company updated successfully' : 'company saved successfully';
+            return response()->json(['status' => 'success', 'message' => $message, 'data' => $save]);
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => 'Error storing Quotation', 'error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function generate_pdf_quote(Request $request)
+    {
+ 
+        $user = auth()->user();
+        $data['qoute'] = $request->all();
+        $pdf = Pdf::loadView('pdf.templates.qoute.first',$data);
+        return $pdf->download();
+    }
+
     public function sendMail_invoice(Request $request): JsonResponse
     {
 
@@ -838,7 +899,7 @@ class APIController extends Controller
                             $transectional->port,
                             ['encryption' => $transectional->mail_encryption]
                         ));
-                        
+
                         $mailer = new \Symfony\Component\Mailer\Mailer($transport);
 
                         $email = (new \Symfony\Component\Mime\Email())
@@ -1002,7 +1063,7 @@ class APIController extends Controller
             if ($request->currencies) {
                 $selectedCurrencies = Currency::whereIn('id', $request->currencies)->get();
                 foreach ($selectedCurrencies as $currencies) {
-                    Currency::create(                [
+                    Currency::create([
                         'name' => ucwords($currencies->name),
                         'code' => strtoupper($currencies->code),
                         'type' => $currencies->type,

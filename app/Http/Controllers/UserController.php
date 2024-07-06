@@ -34,6 +34,7 @@ use App\Models\Location;
 use App\Models\Service;
 use App\Models\Comment;
 use App\Models\Transectional;
+use App\Models\Company;
 
 use App;
 
@@ -415,6 +416,12 @@ class UserController extends Controller
         $page_name = 'create_quotation';
         if (!view_permission($page_name)) {
             return redirect()->back();
+        }
+        if ($user->role == user_roles('1')) {
+            $data['company'] = Company::where('user_id', $user->id)->first();
+        }else{
+            $user_id = user::find($user->sadmin_id)->id;
+            $data['company'] = Company::where('user_id', $user_id)->first();
         }
         $data += $this->getCLS(1);
         $data['draft_template'] = Template::where('save_as', $this->temp_status_as['Draft'])->orderBy('id', 'DESC')->first();
