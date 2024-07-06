@@ -95,6 +95,7 @@ function view_permission($page_name)
             switch ($page_name) {
                 case 'index':
                 case 'settings':
+                case 'pdf_quote':
                 case 'quotations':
                 case 'invoices':
                 case 'admins':

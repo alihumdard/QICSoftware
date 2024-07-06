@@ -379,7 +379,7 @@ $user = auth()->user();
         });
 
         // Adding savetemplate data in through the api...
-        $('#savetemplate').on('submit', function(e) {
+        $('.savetemplate').on('submit', function(e) {
 
             e.preventDefault();
             var button = $(this);

@@ -47,6 +47,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::match(['post','get'],'/dashboardCharts', [APIController::class, 'dashboardCharts']);
 
     Route::match(['post','get'],'/templateStore', [APIController::class, 'template_store']);
+
+    Route::match(['post','get'],'/companyStore', [APIController::class, 'company_store']);
+
+    Route::match(['post','get'],'/pdfQuoute', [APIController::class, 'generate_pdf_quote']);
       
     Route::match(['post','get'],'/comments', [APIController::class, 'comments']); 
 
